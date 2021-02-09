@@ -22,8 +22,9 @@ logger.initializeGlobalHandlers();
 const { authFactory } = require('./middleware/auth-handler');
 
 const corsOptions = {
-    origin: '*',
+    origin: 'http://localhost:3001',
     credentials: true,
+    withCredentials: true,
 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -60,7 +61,11 @@ app.use((err, req, res, next) => {
         err.status = 422;
     }
     if (err.name === 'SequelizeUniqueConstraintError') {
-        err.message = `${err.message} : SequelizeUniqueConstraintError : ${JSON.stringify(err.fields)}`;
+        if (Object.keys(err.fields).includes('users.email')) {
+            err.message = 'E-mail already exists.';
+        } else {
+            err.message = `${err.message} : SequelizeUniqueConstraintError : ${JSON.stringify(err.fields)}`;
+        }
     }
 
     res.status(err.status || 500).json({
@@ -75,5 +80,15 @@ if (!module.parent) {
     });
 }
 console.log('Endpoints: \n', listEndpoints(app));
+
+// const model = require('./models/index');
+
+// model.categories.findAll({
+//     where: { },
+//     include: [{
+//         model: model.users,
+        
+//     }],
+// }).then((data) => { console.log(data[0]); });
 
 module.exports = app;

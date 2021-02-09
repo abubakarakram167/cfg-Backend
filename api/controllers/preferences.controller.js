@@ -1,0 +1,56 @@
+/* Controller 1 */
+
+const preferenceService = require('../dal/preferences.dao');
+module.exports = {
+          createOnePreference,
+          getOnePreferenceByID,
+          getListPreferenceMultiple,
+          deletePreference,
+      
+      };
+      async function insertPreference(preferenceData) {
+        const preference = { ...preferenceData };
+        const preferenceDb = await preferenceService.add(preference);
+        const preferenceRaw = await preferenceDb.get({ plain: true });
+    
+        return preferenceRaw;
+    }
+    async function getByIDPreference(preferenceData) {
+        const preference = { ...preferenceData };
+        const preferenceDb = await preferenceService.getOneByID(preference);
+        const preferenceRaw = await preferenceDb.get({ plain: true });
+    
+        return preferenceRaw;
+    }
+    
+    async function findAllPreference() {
+        const preferenceDb = await preferenceService.getList();
+        return preferenceDb;
+    }
+    
+    async function deleteByIDPreference(preferenceData) {
+        const preference = { ...preferenceData };
+        const preferenceDb = await preferenceService.deleteOne(preference);
+        return preferenceDb;
+    }
+    async function createOnePreference(req, res) {
+        const preference = await insertPreference(req.body);
+        res.send(preference);
+    }
+    
+    async function getOnePreferenceByID(req, res) {
+        const preference = await getByIDPreference(req.params.id);
+        res.send(preference);
+    }
+    
+    async function getListPreferenceMultiple(_req, res) {
+        const preference = await findAllPreference();
+        res.send(preference);
+    }
+    
+    async function deletePreference(req, res) {
+        const preference = await deleteByIDPreference(req);
+        res.send(preference);
+    }
+    
+      

@@ -1,97 +1,166 @@
 /* jshint indent: 1 */
 
 module.exports = (sequelize, DataTypes) => sequelize.define('users', {
-    userId: {
+    id: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        field: 'user_id',
     },
-    firstName: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
-        field: 'first_name',
-    },
-    lastName: {
-        type: DataTypes.STRING(45),
+    first_name: {
+        type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'last_name',
     },
-    middleName: {
-        type: DataTypes.STRING(45),
+    last_name: {
+        type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'middle_name',
     },
-    about: {
+    middle_name: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    bio: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'about',
     },
-    userName: {
-        type: DataTypes.STRING(45),
+    user_name: {
+        type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'user_name',
     },
     email: {
-        type: DataTypes.STRING(254),
-        allowNull: false,
-        unique: true,
-        field: 'email',
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    region: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    parish: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    age_range: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    affiliation: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
+    institution: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
     },
     phone: {
-        type: DataTypes.STRING(45),
+        type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'phone',
     },
-    photoUrl: {
-        type: DataTypes.STRING(350),
+    photo_url: {
+        type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'photo_url',
     },
     password: {
         type: DataTypes.TEXT,
-        allowNull: false,
-        field: 'password',
+        allowNull: true,
     },
     salt: {
         type: DataTypes.TEXT,
-        allowNull: false,
-        field: 'salt',
+        allowNull: true,
     },
     role: {
-        type: DataTypes.ENUM,
-        values: [
+        type: DataTypes.ENUM(
             'candidate',
             'facilitator',
             'content-manager',
-            'support', 'reviewer',
-            'system-admin',
+            'support',
+            'reviewer',
+            'system-administrator',
             'auditor',
-        ],
-        field: 'role',
+        ),
+        defaultValue: 'candidate',
+        allowNull: false,
     },
     status: {
-        type: DataTypes.INTEGER(1),
+        type: DataTypes.INTEGER(11),
+        defaultValue: 0, // 0: pending, 1: active and 2: disabled
+        allowNull: true,
+    },
+    deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'deleted_at',
+    },
+    deletedBy: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id',
+        },
+        field: 'deleted_by',
+    },
+    passwordAttemptsCount: {
+        type: DataTypes.INTEGER(11),
         allowNull: false,
-        defaultValue: 1,
-        field: 'status',
+        defaultValue: 0,
+        field: 'password_attempts_count',
     },
-    createdAt: {
+    passwordAttemptTime: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'created_at',
+        field: 'password_attempt_time',
     },
-    updatedAt: {
+    password_changed_at: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'updated_at',
+    },
+    passwordResetToken: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'password_reset_token',
+    },
+    passwordResetTokenSentTime: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'password_reset_token_sent_time',
+    },
+    facebookId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'facebook_id',
+    },
+    googleId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'google_id',
+    },
+    twitterId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'twitter_id',
+    },
+    microsoftId: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'microsoft_id',
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    createdBy: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        field: 'created_by',
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
     },
 }, {
     tableName: 'users',
     timestamps: false,
 });
-
 module.exports.initRelations = () => {
     delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
 };

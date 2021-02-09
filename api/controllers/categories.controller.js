@@ -1,57 +1,56 @@
+/* Controller 1 */
+
 const categoryService = require('../dal/categories.dao');
-
 module.exports = {
-    createOne,
-    getOneByID,
-    getListMultiple,
-    deleteCategory,
-
-};
-
-async function insert(categoryData) {
-    const category = { ...categoryData };
-    const categoryDb = await categoryService.addCategory(category);
-    const categoryRaw = await categoryDb.get({ plain: true });
-
-    return categoryRaw;
-}
-async function getByID(categoryData) {
-    const category = { ...categoryData };
-    const categoryDb = await categoryService.getOneByID(category);
-    const categoryRaw = await categoryDb.get({ plain: true });
-
-    return categoryRaw;
-}
-
-async function findAll() {
-    // const category = { ...categoryData };
-    const categoryDb = await categoryService.getList();
-    // const categoryRaw = await categoryDb.get({ plain: true });
-
-    return categoryDb;
-}
-
-async function deleteByID(categoryData) {
-    const category = { ...categoryData };
-    const categoryDb = await categoryService.deleteCategory(category);    
-    return categoryDb;
-}
-async function createOne(req, res) {
-    const category = await insert(req.body);
-    res.send(category);
-}
-
-async function getOneByID(req, res) {
-    const category = await getByID(req.params.id);
-    res.send(category);
-}
-
-async function getListMultiple(_req, res) {
-    const category = await findAll();
-    res.send(category);
-}
-
-async function deleteCategory(req, res) {
-    const category = await deleteByID(req);
-    res.send(category);
-}
+          createOneCategory,
+          getOneCategoryByID,
+          getListCategoryMultiple,
+          deleteCategory,
+      
+      };
+      async function insertCategory(categoryData) {
+        const category = { ...categoryData };
+        const categoryDb = await categoryService.add(category);
+        const categoryRaw = await categoryDb.get({ plain: true });
+    
+        return categoryRaw;
+    }
+    async function getByIDCategory(categoryData) {
+        const category = { ...categoryData };
+        const categoryDb = await categoryService.getOneByID(category);
+        const categoryRaw = await categoryDb.get({ plain: true });
+    
+        return categoryRaw;
+    }
+    
+    async function findAllCategory() {
+        const categoryDb = await categoryService.getList();
+        return categoryDb;
+    }
+    
+    async function deleteByIDCategory(categoryData) {
+        const category = { ...categoryData };
+        const categoryDb = await categoryService.deleteOne(category);
+        return categoryDb;
+    }
+    async function createOneCategory(req, res) {
+        const category = await insertCategory(req.body);
+        res.send(category);
+    }
+    
+    async function getOneCategoryByID(req, res) {
+        const category = await getByIDCategory(req.params.id);
+        res.send(category);
+    }
+    
+    async function getListCategoryMultiple(_req, res) {
+        const category = await findAllCategory();
+        res.send(category);
+    }
+    
+    async function deleteCategory(req, res) {
+        const category = await deleteByIDCategory(req);
+        res.send(category);
+    }
+    
+      

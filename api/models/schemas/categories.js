@@ -1,47 +1,65 @@
 /* jshint indent: 1 */
+const model = require('../index');
+const content = require('./content');
+const user = model.users;
+const category = model.categories;
 
 module.exports = (sequelize, DataTypes) => sequelize.define('categories', {
-    categoryId: {
+    id: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        field: 'category_id',
     },
     name: {
         type: DataTypes.STRING(255),
         allowNull: true,
-        field: 'name',
     },
     description: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'description',
     },
-    createdBy: {
+    created_by: {
         type: DataTypes.INTEGER(11),
         allowNull: true,
         references: {
             model: 'users',
-            key: 'user_id',
+            key: 'id',
         },
-        field: 'created_by',
     },
-    createdAt: {
+    created_at: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'created_at',
     },
-    updatedAt: {
+    updated_at: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'updated_at',
     },
 }, {
     tableName: 'categories',
     timestamps: false,
 });
-
 module.exports.initRelations = () => {
     delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
+    model.categories.belongsTo(user, {
+        foreignKey: 'created_by'
+    });
+    // user.hasMany(model.categories,{
+    //     foreignKey: {
+    //         id: 'id'
+    // }});
+
+    // categories has many contents
+    model.categories.belongsToMany(model.content, {
+        through: "content_categories",
+        as: "contents",
+        foreignKey: "category_id",
+    });
+
+// categories has many contents
+    model.content.belongsToMany(model.categories, {
+        through: "content_categories",
+        as: "categories",
+        foreignKey: "content_id",
+});
 };

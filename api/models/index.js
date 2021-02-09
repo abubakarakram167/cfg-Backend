@@ -10,9 +10,27 @@ function init(sequelize) {
     delete module.exports.init; // Destroy itself to clash with a model named 'init'.
     initialized = true;
     model.sequelize = sequelize;
-    // users related models
+    // All Models
+    model.keywords = sequelize.import('./schemas/keywords.js');
+    model.preferences = sequelize.import('./schemas/preferences.js');
+    model.question = sequelize.import('./schemas/question.js');
+    model.status = sequelize.import('./schemas/status.js');
     model.users = sequelize.import('./schemas/users.js');
     model.categories = sequelize.import('./schemas/categories.js');
+    model.content_subscribers = sequelize.import('./schemas/content_subscribers.js');
+    model.gift_rewards = sequelize.import('./schemas/gift_rewards.js');
+    model.groups = sequelize.import('./schemas/groups.js');
+    model.media = sequelize.import('./schemas/media.js');
+    model.question_options = sequelize.import('./schemas/question_options.js');
+    model.sessions = sequelize.import('./schemas/sessions.js');
+    model.content = sequelize.import('./schemas/content.js');
+    model.content_categories = sequelize.import('./schemas/content_categories.js');
+    model.content_keywords = sequelize.import('./schemas/content_keywords.js');
+    model.quiz = sequelize.import('./schemas/quiz.js');
+    model.quiz_questions = sequelize.import('./schemas/quiz_questions.js');
+    model.session_categories = sequelize.import('./schemas/session_categories.js');
+    model.session_groups = sequelize.import('./schemas/session_groups.js');
+    model.user_groups = sequelize.import('./schemas/user_groups.js');
 
     fs.readdirSync(schemaPath).forEach((file) => {
         if (file.match(/(.+)\.js(on)?$/)) {

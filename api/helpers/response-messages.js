@@ -1,7 +1,15 @@
 module.exports = Object.freeze({
+    invalidSocial: 'Invalid source for social or Invalid params',
     invalidLoginCreds: 'Your login details could not be verified. Please try again.',
+    invalidPasswordFormat: 'Invalid password format. Length between 8 and 15.'
+        + ' Must contain at least 1 Capital, 1 symbol and 1 number',
+    accountLockedFor30Minutes: 'Your account is disabled for multiple invalid attempts. Please try again in 30 minutes',
     userInactive: 'User is not active. Please contact support.',
     badRequest: 'Bad Request.',
+    passwordResetRequestSent: 'Email have been sent to the associated account',
+    passwordResetRequested: 'Password Reset Requested',
+    passwordResetTokenInvalid: 'Password Reset token is invalid or expired.',
+    passwordChangeSuccess: 'Password changed successfully.',
     recordAddSuccess: 'Record Added successfully.',
     recordUpdateSuccess: 'Record Updated successfully.',
     recordDeleteSuccess: 'Record Deleted successfully',

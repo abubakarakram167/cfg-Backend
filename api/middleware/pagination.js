@@ -1,15 +1,15 @@
 function pagination(req, res, next) {
-    let { count, pageNo } = req.query;
+    let { _count, _pageNo } = req.query;
 
-    if (!count) { count = 10; }
-    count = +count;
+    if (!_count) { _count = 10; }
+    _count = +_count;
 
-    if (!pageNo) { pageNo = 1; }
+    if (!_pageNo) { _pageNo = 1; }
 
-    const offset = (pageNo - 1) * count;
+    const offset = (_pageNo - 1) * _count;
 
     req.pagination = {
-        offset, count,
+        offset, limit: _count,
     };
     next();
 }

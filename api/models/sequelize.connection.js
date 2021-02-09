@@ -5,6 +5,7 @@ function sequelizeConnect(config) {
     if (config.logging) {
         delete config.logging;
     }
+    //config.logging = true;
     const sequelize = new Sequelize(config);
     sequelize.authenticate()
         .then(() => {

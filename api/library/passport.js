@@ -1,5 +1,6 @@
 /* eslint consistent-return:0 */
 const passport = require('passport');
+const dayjs = require('dayjs');
 const LocalStrategy = require('passport-local');
 const JwtStrategy = require('passport-jwt').Strategy;
 const { ExtractJwt } = require('passport-jwt');
@@ -13,18 +14,43 @@ const localLogin = new LocalStrategy({
     usernameField: 'email',
 }, async (email, password, done) => {
     let user = await userDao.findOne({ where: { email } });
-    if (!user || !await bcrypt.compare(password + user.salt, user.password)) {
-        return done(null, false, { error: responseMessages.invalidLoginCreds });
+    if (user && dayjs(user.passwordAttemptTime).add(30, 'minutes') < new Date() && user.passwordAttemptsCount >= 5) {
+        return done(null, false, { message: responseMessages.accountLockedFor30Minutes });
     }
+    if (!user || !await bcrypt.compare(password + user.salt, user.password)) {
+        if (user) {
+            user.update({
+                passwordAttemptsCount: user.passwordAttemptsCount + 1,
+                passwordAttemptTime: new Date(),
+            });
+        }
+        return done(null, false, { message: responseMessages.invalidLoginCreds });
+    }
+    user.update({
+        passwordAttemptsCount: 0,
+        passwordAttemptTime: new Date(),
+    });
+
     if (user.status !== 1) {
-        return done(null, false, { error: responseMessages.userInactive });
+        return done(null, false, { message: responseMessages.userInactive });
     }
     user = await user.get({ plain: true });
     done(null, user);
 });
 
+const cookieExtractor = (req) => {
+    let token = null;
+    if (req && req.cookies) {
+        token = req.cookies.access;
+    }
+    return token;
+};
+
 const jwtLogin = new JwtStrategy({
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: ExtractJwt.fromExtractors([
+        cookieExtractor,
+        ExtractJwt.fromAuthHeaderAsBearerToken,
+    ]),
     secretOrKey: config.jwtSecret,
 }, async (payload, done) => {
     const user = payload;

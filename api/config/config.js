@@ -6,6 +6,7 @@ env.required([
     'JWT_COOKIE_SECRET',
     'SUPPORT_EMAIL',
     'SERVICE_LOG_TAG',
+    'APP_BASE_URL',
 ]);
 const config = {
     env: env.get('NODE_ENV', 'development'),
@@ -15,6 +16,7 @@ const config = {
     apiUrl: env.get('API_URL'),
     supportEmail: env.get('SUPPORT_EMAIL'),
     serviceLogTag: env.get('SERVICE_LOG_TAG'),
+    appBaseUrl: env.get('APP_BASE_URL', 'localhost:30001/reset'),
 };
 
 module.exports = config;
