@@ -5,13 +5,14 @@ const exportObj = {
     sendEmail: async (emailTo, subject, message, messageHtml = message) => {
         // create reusable transporter object using the default SMTP transport
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: smtp.host,
+            port: smtp.port,
             auth: {
                 user: smtp.user, // generated ethereal user
                 pass: smtp.pass, // generated ethereal password
             },
             secure: false,
-            port: 25,
+            // port: 25,
             tls: {
                 rejectUnauthorized: false,
             },

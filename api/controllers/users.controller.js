@@ -21,7 +21,7 @@ module.exports = {
 
 async function insert(userData) {
     const user = { ...userData };
-    user.passwordResetToken = authHelper.generateToken(64);
+    user.passwordResetToken = authHelper.generateResetToken(64);
     user.passwordResetTokenSentTime = new Date();
     user.salt = authHelper.generateRandomSalt();
     user.password = bcrypt.hashSync(user.password + user.salt, 10);
@@ -67,9 +67,7 @@ async function register(req, res) {
     }
     requestObject.passwordResetToken = authHelper.generateToken(64);
     requestObject.passwordResetTokenSentTime = new Date();
-    const user = await insert(requestObject);
-    const resetLink = authHelper.getResetPasswordLink(requestObject.passwordResetToken);
-    sendWelcomeEmail(user.email, resetLink);
+    await insert(requestObject);
     res.send({ message: responseMessages.recordAddSuccess });
 }
 
