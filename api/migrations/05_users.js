@@ -30,7 +30,8 @@ module.exports = {
         },
         email: {
             type: Sequelize.DataTypes.STRING(255),
-            allowNull: true,
+            unique: true,
+            allowNull: false,
         },
         region: {
             type: Sequelize.DataTypes.STRING(255),

@@ -1,56 +1,80 @@
 /* Controller 1 */
 
 const contentService = require('../dal/content.dao');
+const responseMessages = require('../helpers/response-messages');
+
+const allowedTypes = [
+    'reward',
+    'tool',
+    'session',
+    'quiz',
+    'event',
+    'mini',
+];
 module.exports = {
-          createOneContent,
-          getOneContentByID,
-          getListContentMultiple,
-          deleteContent,
-      
-      };
-      async function insertContent(contentData) {
-        const content = { ...contentData };
-        const contentDb = await contentService.add(content);
-        const contentRaw = await contentDb.get({ plain: true });
-    
-        return contentRaw;
+    createOneContent,
+    getOneContentByID,
+    getListContentMultiple,
+    deleteContent,
+};
+async function insertContent(contentData) {
+    const content = { ...contentData };
+    const contentDb = await contentService.add(content);
+    const contentRaw = await contentDb.get({ plain: true });
+
+    return contentRaw;
+}
+async function getByIDContent(contentData) {
+    const content = { ...contentData };
+    const contentDb = await contentService.getOneByID(content);
+    const contentRaw = await contentDb.get({ plain: true });
+
+    return contentRaw;
+}
+
+async function findAllContent(options) {
+    const contentDb = await contentService.findAnCountWhere(options);
+    return contentDb;
+}
+
+async function deleteByIDContent(contentData) {
+    const content = { ...contentData };
+    const contentDb = await contentService.deleteOne(content);
+    return contentDb;
+}
+async function createOneContent(req, res) {
+    const { type } = req.params;
+    const requestObject = req.body;
+    if (!allowedTypes.includes(type)) {
+        res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
+        return;
     }
-    async function getByIDContent(contentData) {
-        const content = { ...contentData };
-        const contentDb = await contentService.getOneByID(content);
-        const contentRaw = await contentDb.get({ plain: true });
-    
-        return contentRaw;
+    delete requestObject.id;
+    requestObject.type = type;
+    requestObject.create_by = req.user.id;
+    const content = await insertContent(requestObject);
+    res.send(content);
+}
+
+async function getOneContentByID(req, res) {
+    const content = await getByIDContent(req.params.id);
+    res.send(content);
+}
+
+async function getListContentMultiple(req, res) {
+    const { type } = req.params;
+    if (!allowedTypes.includes(type)) {
+        res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
+        return;
     }
-    
-    async function findAllContent() {
-        const contentDb = await contentService.getList();
-        return contentDb;
-    }
-    
-    async function deleteByIDContent(contentData) {
-        const content = { ...contentData };
-        const contentDb = await contentService.deleteOne(content);
-        return contentDb;
-    }
-    async function createOneContent(req, res) {
-        const content = await insertContent(req.body);
-        res.send(content);
-    }
-    
-    async function getOneContentByID(req, res) {
-        const content = await getByIDContent(req.params.id);
-        res.send(content);
-    }
-    
-    async function getListContentMultiple(_req, res) {
-        const content = await findAllContent();
-        res.send(content);
-    }
-    
-    async function deleteContent(req, res) {
-        const content = await deleteByIDContent(req);
-        res.send(content);
-    }
-    
-      
+    const content = await findAllContent({
+        where: { type },
+        ...req.pagination,
+    });
+    res.send({ data: content.rows, count: content.count });
+}
+
+async function deleteContent(req, res) {
+    const content = await deleteByIDContent(req);
+    res.send(content);
+}

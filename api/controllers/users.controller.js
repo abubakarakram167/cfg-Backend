@@ -45,6 +45,7 @@ async function editUser(req, res) {
     const { password, salt, ...user } = req.body;
     if (password && !authHelper.validatePassword(password)) {
         res.status(422).json({ message: responseMessages.invalidPasswordFormat });
+        return;
     }
     if (password) {
         user.salt = authHelper.generateRandomSalt();
@@ -64,6 +65,7 @@ async function register(req, res) {
     const requestObject = req.body;
     if (!authHelper.validatePassword(password)) {
         res.status(422).json({ message: responseMessages.invalidPasswordFormat });
+        return;
     }
     requestObject.passwordResetToken = authHelper.generateToken(64);
     requestObject.passwordResetTokenSentTime = new Date();

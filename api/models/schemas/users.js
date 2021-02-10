@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
     },
     email: {
         type: DataTypes.STRING(255),
-        allowNull: true,
+        allowNull: false,
+        unique: true,
     },
     region: {
         type: DataTypes.STRING(255),
