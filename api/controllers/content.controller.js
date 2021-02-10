@@ -16,6 +16,7 @@ module.exports = {
     getOneContentByID,
     getListContentMultiple,
     deleteContent,
+    editContent,
 };
 async function insertContent(contentData) {
     const content = { ...contentData };
@@ -51,9 +52,28 @@ async function createOneContent(req, res) {
     }
     delete requestObject.id;
     requestObject.type = type;
-    requestObject.create_by = req.user.id;
+    requestObject.created_by = req.user.id;
     const content = await insertContent(requestObject);
     res.send(content);
+}
+
+async function editContent(req, res) {
+    const { id, type } = req.body;
+    const requestObject = req.body;
+    if (!allowedTypes.includes(type)) {
+        res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
+        return;
+    }
+    const contentDb = await contentService.getOneByID({
+        where: {
+            id,
+        },
+    });
+    delete requestObject.id;
+    requestObject.type = type;
+    requestObject.created_by = req.user.id;
+    await contentDb.update(requestObject);
+    res.send({ message: responseMessages.recordUpdateSuccess });
 }
 
 async function getOneContentByID(req, res) {

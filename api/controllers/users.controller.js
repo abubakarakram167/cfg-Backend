@@ -67,7 +67,7 @@ async function register(req, res) {
         res.status(422).json({ message: responseMessages.invalidPasswordFormat });
         return;
     }
-    requestObject.passwordResetToken = authHelper.generateToken(64);
+    requestObject.passwordResetToken = authHelper.generateResetToken(64);
     requestObject.passwordResetTokenSentTime = new Date();
     await insert(requestObject);
     res.send({ message: responseMessages.recordAddSuccess });
@@ -144,7 +144,7 @@ async function forgotPassword(req, res) {
     const { email } = req.body;
     const user = await userService.findOne({ where: { email } });
     if (user) {
-        const token = authHelper.generateToken(64);
+        const token = authHelper.generateResetToken(64);
         user.update({
             passwordResetToken: token,
             passwordResetTokenSentTime: new Date(),
@@ -161,9 +161,10 @@ async function forgotPassword(req, res) {
 
 async function resetPassword(req, res) {
     const { token, password } = req.body;
-    const hash = token.split[1];
+    const tmptoken = token.split('.');
+    const hash = tmptoken[1];
 
-    const user = await userService.findOne({ where: { passwordResetToken: token } });
+    const user = await userService.findOne({ where: { passwordResetToken: tmptoken[0] } });
     if (!user || dayjs(user.passwordResetTokenSentTime).add(30, 'minutes') < new Date()) {
         res.status(422).send({ message: responseMessages.passwordResetTokenInvalid });
         return;

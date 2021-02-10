@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const smtp = require('../config/smtp');
+const config = require('../config/config');
 
 const exportObj = {
     sendEmail: async (emailTo, subject, message, messageHtml = message) => {
@@ -35,7 +36,7 @@ const exportObj = {
         await exportObj.sendEmail(
             email,
             'Welcome to CFG',
-            `Welcome to CFG <br/> click link to set the password: ${link}`,
+            `Welcome to CFG <br/> click link to set the password: <a href="${link}">Reset Password</a>`,
         );
     },
 };

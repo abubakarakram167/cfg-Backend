@@ -4,6 +4,7 @@ const guestURLs = [
     'POST::/api/auth/forgot-password',
     'POST::/api/auth/reset-password',
     'POST::/api/auth/login/social',
+    'GET::/api/preferences/list',
     // Public URIs
     'GET::/api/hello',
 ];

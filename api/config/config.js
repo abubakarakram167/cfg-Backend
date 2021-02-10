@@ -16,7 +16,7 @@ const config = {
     apiUrl: env.get('API_URL'),
     supportEmail: env.get('SUPPORT_EMAIL'),
     serviceLogTag: env.get('SERVICE_LOG_TAG'),
-    appBaseUrl: env.get('APP_BASE_URL', 'localhost:30001/reset'),
+    appBaseUrl: env.get('APP_BASE_URL', 'http://localhost:3001'),
 };
 
 module.exports = config;
