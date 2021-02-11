@@ -10,6 +10,7 @@ const allowedTypes = [
     'quiz',
     'event',
     'mini',
+    'timeline',
 ];
 module.exports = {
     createOneContent,

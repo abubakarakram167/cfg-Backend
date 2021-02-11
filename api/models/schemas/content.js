@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
         type: DataTypes.TEXT,
         allowNull: true,
     },
+    detailJsonMeta: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        field: 'detail_json_meta',
+    },
     start_date: {
         type: DataTypes.DATEONLY,
         allowNull: true,
@@ -48,6 +53,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
             'quiz',
             'event',
             'mini',
+            'timeline',
         ),
         allowNull: true,
     },
