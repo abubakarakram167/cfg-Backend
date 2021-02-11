@@ -43,7 +43,8 @@
     "bootsrap": "sequelize  db:migrate",
     "start": "npm run bootsrap && node -r dotenv/config api/app.js",
     "start:prod": "node -r dotenv/config api/app.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start": "node app.js"
   },
   "pre-commit": [
     
