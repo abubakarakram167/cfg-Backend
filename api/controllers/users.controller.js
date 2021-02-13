@@ -5,6 +5,7 @@ const userService = require('../dal/users.dao');
 const authHelper = require('../helpers/auth.helper');
 const responseMessages = require('../helpers/response-messages');
 const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
+const model = require('../models/index');
 
 module.exports = {
     addUser,
@@ -56,6 +57,12 @@ async function editUser(req, res) {
         res.status(404).send({ message: responseMessages.notFound.replace('?', 'User not registered or') });
         return;
     }
+    const statusObj = {
+        approved: 1,
+        pending: 0,
+        disabled: 2,
+    };
+    user.status = statusObj[user.status.toLowerCase()] || 3;
     await userRef.update(user);
     res.send({ message: responseMessages.recordUpdateSuccess });
 }
@@ -110,9 +117,13 @@ async function loginSocial(req, res) {
         const requestObject = {
             firstName: firstName || '',
             email,
+            [`${source}Id`]: socialId,
             password: Math.random().toString(36).substring(8),
         };
         user = await insert(requestObject);
+
+        res.send({ message: responseMessages.recordUpdateSuccess });
+        return;
     }
     await user.update({ [`${source}Id`]: socialId });
     user = await user.get({ plain: true });

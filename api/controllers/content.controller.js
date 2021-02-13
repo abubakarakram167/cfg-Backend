@@ -1,6 +1,8 @@
 /* Controller 1 */
 
 const contentService = require('../dal/content.dao');
+
+const model = require('../models');
 const responseMessages = require('../helpers/response-messages');
 
 const allowedTypes = [
@@ -54,8 +56,36 @@ async function createOneContent(req, res) {
     delete requestObject.id;
     requestObject.type = type;
     requestObject.created_by = req.user.id;
+    if (!requestObject.tags) requestObject.tags = [];
     const content = await insertContent(requestObject);
-    res.send(content);
+    // content = await content.get({ plain: true });
+    const tagsData = requestObject.tags.map((t) => {
+        const r = t;
+        if (!r.createdBy) {
+            r.createdBy = req.user.id;
+        }
+        r.updatedAt = new Date();
+        return r;
+    });
+    const tags = await model.tags.bulkCreate(tagsData,
+        {
+            fields: ['id', 'text', 'tagType', 'createdBy'],
+            updateOnDuplicate: ['updatedAt'],
+        });
+    const contentTags = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (let tag of tags) {
+        // eslint-disable-next-line no-await-in-loop
+        tag = await tag.get({ plain: true });
+        contentTags.push({
+            tagId: tag.id,
+            contentId: content.id,
+        });
+    }
+    // add tags for content
+    await model.contentTags.bulkCreate(contentTags);
+    content.tags = tags;
+    res.send({ content });
 }
 
 async function editContent(req, res) {

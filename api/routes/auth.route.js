@@ -5,8 +5,8 @@ const userCtrl = require('../controllers/users.controller');
 const router = express.Router();
 module.exports = router;
 
-router.post('/login', userCtrl.login);
-router.post('/connect/social', userCtrl.loginSocial);
-router.post('/forgot-password', userCtrl.forgotPassword);
-router.post('/reset-password', userCtrl.resetPassword);
+router.post('/login', asyncHandler(userCtrl.login));
+router.post('/connect/social', asyncHandler(userCtrl.loginSocial));
+router.post('/forgot-password', asyncHandler(userCtrl.forgotPassword));
+router.post('/reset-password', asyncHandler(userCtrl.resetPassword));
 router.post('/register', asyncHandler(userCtrl.register));

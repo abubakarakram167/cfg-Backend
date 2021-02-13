@@ -1,24 +1,27 @@
 /* jshint indent: 1 */
 
 module.exports = {
-    up: (queryInterface, Sequelize) => queryInterface.createTable('user_groups', {
+    up: (queryInterface, Sequelize) => queryInterface.createTable('content_tags', {
         id: {
             type: Sequelize.DataTypes.INTEGER(11),
             allowNull: false,
             primaryKey: true,
             autoIncrement: true,
         },
-        group_id: {
+        contentId: {
             type: Sequelize.DataTypes.INTEGER(11),
-            allowNull: true,
+            allowNull: false,
+            field: 'content_id',
         },
-        user_id: {
+        tagId: {
             type: Sequelize.DataTypes.INTEGER(11),
-            allowNull: true,
+            allowNull: false,
+            field: 'tag_id',
+
         },
     }, {
-        tableName: 'user_groups',
+        tableName: 'content_tags',
     }).then(() => {
     }),
-    down: (queryInterface) => queryInterface.dropTable('user_groups'),
+    down: (queryInterface) => queryInterface.dropTable('content_tags'),
 };

@@ -11,15 +11,15 @@ function init(sequelize) {
     initialized = true;
     model.sequelize = sequelize;
     // All Models
-    model.keywords = sequelize.import('./schemas/keywords.js');
+    model.keywords = sequelize.import('./schemas/keywords.js'); // todo delete
     model.preferences = sequelize.import('./schemas/preferences.js');
     model.question = sequelize.import('./schemas/question.js');
     model.status = sequelize.import('./schemas/status.js');
     model.users = sequelize.import('./schemas/users.js');
-    model.categories = sequelize.import('./schemas/categories.js');
+    model.categories = sequelize.import('./schemas/categories.js'); // todo delete
     model.content_subscribers = sequelize.import('./schemas/content_subscribers.js');
     model.gift_rewards = sequelize.import('./schemas/gift_rewards.js');
-    model.groups = sequelize.import('./schemas/groups.js');
+    model.groups = sequelize.import('./schemas/groups.js'); // todo delete
     model.media = sequelize.import('./schemas/media.js');
     model.question_options = sequelize.import('./schemas/question_options.js');
     model.sessions = sequelize.import('./schemas/sessions.js');
@@ -31,6 +31,9 @@ function init(sequelize) {
     model.session_categories = sequelize.import('./schemas/session_categories.js');
     model.session_groups = sequelize.import('./schemas/session_groups.js');
     model.user_groups = sequelize.import('./schemas/user_groups.js');
+
+    model.tags = sequelize.import('./schemas/tags.js');
+    model.contentTags = sequelize.import('./schemas/content_tags.js');
 
     fs.readdirSync(schemaPath).forEach((file) => {
         if (file.match(/(.+)\.js(on)?$/)) {

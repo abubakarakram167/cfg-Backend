@@ -8,7 +8,7 @@ const router = express.Router();
 module.exports = router;
 
 router.post('/:type', asyncHandler(ContentCtrl.createOneContent));
-router.put('/', asyncHandler(ContentCtrl.editContent));
+router.put('/:type', asyncHandler(ContentCtrl.editContent));
 router.get('/list/:type', asyncHandler(ContentCtrl.getListContentMultiple));
 router.get('/:id', ContentCtrl.getOneContentByID);
 router.delete('/:id', ContentCtrl.deleteContent);
