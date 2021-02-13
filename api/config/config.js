@@ -17,6 +17,7 @@ const config = {
     supportEmail: env.get('SUPPORT_EMAIL'),
     serviceLogTag: env.get('SERVICE_LOG_TAG'),
     appBaseUrl: env.get('APP_BASE_URL', 'http://localhost:3001'),
+    corsWhiteList: env.get('CORS_WHITELIST', 'http://localhost:3001'),
 };
 
 module.exports = config;

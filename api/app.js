@@ -22,7 +22,7 @@ logger.initializeGlobalHandlers();
 const { authFactory } = require('./middleware/auth-handler');
 
 const corsOptions = {
-    origin: 'http://localhost:3001',
+    origin: config.corsWhiteList,
     credentials: true,
     withCredentials: true,
 };
@@ -87,7 +87,7 @@ console.log('Endpoints: \n', listEndpoints(app));
 //     where: { },
 //     include: [{
 //         model: model.users,
-        
+
 //     }],
 // }).then((data) => { console.log(data[0]); });
 
