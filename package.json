@@ -45,7 +45,5 @@
     "start:prod": "node -r dotenv/config api/app.js",
     "lint": "eslint ."
   },
-  "pre-commit": [
-    
-  ]
+  "pre-commit": []
 }
