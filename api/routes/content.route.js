@@ -10,5 +10,6 @@ module.exports = router;
 router.post('/:type', asyncHandler(ContentCtrl.createOneContent));
 router.put('/:type', asyncHandler(ContentCtrl.editContent));
 router.get('/list/:type', asyncHandler(ContentCtrl.getListContentMultiple));
+router.get('/list/session/:id', asyncHandler(ContentCtrl.getSingleSessionCompleteDetails));
 router.get('/:id', ContentCtrl.getOneContentByID);
 router.delete('/:id', ContentCtrl.deleteContent);

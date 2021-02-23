@@ -11,6 +11,10 @@ module.exports = {
         content_header_id: {
             type: Sequelize.DataTypes.INTEGER(11),
             allowNull: true,
+			references: {
+				model: 'content',
+				key: 'id'
+			}
         },
         title: {
             type: Sequelize.DataTypes.STRING(255),

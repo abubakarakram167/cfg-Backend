@@ -13,11 +13,14 @@ const allowedTypes = [
     'event',
     'mini',
     'timeline',
+    'title',
+    'sub-title',
 ];
 module.exports = {
     createOneContent,
     getOneContentByID,
     getListContentMultiple,
+    getSingleSessionCompleteDetails,
     deleteContent,
     editContent,
 };
@@ -111,7 +114,38 @@ async function getOneContentByID(req, res) {
     const content = await getByIDContent(req.params.id);
     res.send(content);
 }
+// this fucntion is for session only will return compelete session details including title and sub-tilte
+async function getSingleSessionCompleteDetails(req, res) {
+    const type = 'session';
+    const {id} =req.params;
+    if (!allowedTypes.includes(type)) {
+        res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
+        return;
+    }
+    var session = await findAllContent({
+        where: { type, id },
+        ...req.pagination,
+    });
+    var titles = await findAllContent({
+        where: { type:'title', content_header_id:id },
+        ...req.pagination,
+    });
+    let OurTitles = JSON.stringify(titles);
+    OurTitles = JSON.parse(OurTitles)
 
+    console.log(OurTitles.rows);
+
+    for (let title of OurTitles.rows) {
+        // eslint-disable-next-line no-await-in-loop
+        const subtitles = await findAllContent({
+            where: { type:'sub-title', content_header_id:title.id },
+            ...req.pagination,
+        });
+        title.subtitles=subtitles;
+    }
+    session.titles=OurTitles;
+    res.send({ data: session, count: session.count });
+}
 async function getListContentMultiple(req, res) {
     const { type } = req.params;
     if (!allowedTypes.includes(type)) {
