@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('preferences', {
 		option_value: {
 			type: DataTypes.STRING(255),
 			allowNull: false
+		},
+		option_description: {
+			type: DataTypes.STRING(255),
+			allowNull: false
 		}
 	}, {
 		tableName: 'preferences',
