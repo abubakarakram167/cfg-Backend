@@ -7,10 +7,13 @@ module.exports = {
           getOneByID,
           getList,
           deleteOne,
-      
+          updateOne
       };
-      function getOneByID(options) {
+    function getOneByID(options) {
         return model.preferences.findOne(options);
+    }
+    function updateOne(options , whereClause){
+        return model.preferences.update(options , whereClause);
     }
     
     function add(preference) {

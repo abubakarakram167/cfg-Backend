@@ -6,6 +6,7 @@ module.exports = {
           getOnePreferenceByID,
           getListPreferenceMultiple,
           deletePreference,
+          editPreferenceById
       
       };
       async function insertPreference(preferenceData) {
@@ -33,6 +34,25 @@ module.exports = {
         const preferenceDb = await preferenceService.deleteOne(preference);
         return preferenceDb;
     }
+
+
+
+    async function editPreferenceById(req, res){
+        const {id} = req.params;
+        const {option_value , option_description} = req.body;
+        console.log(id + option_value + option_description)
+        let preferencedb =  await preferenceService.updateOne(
+            { 
+                option_value,
+                option_description
+            }, {
+            where: {
+              id
+            }
+          });
+        res.send({message:"preferencedb" , res:preferencedb});
+    }
+
     async function createOnePreference(req, res) {
         const preference = await insertPreference(req.body);
         res.send(preference);

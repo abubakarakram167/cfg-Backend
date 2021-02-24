@@ -8,5 +8,5 @@ module.exports = router;
 
 // router.post('/', PreferenceCtrl.createOnePreference);
 router.get('/list', PreferenceCtrl.getListPreferenceMultiple);
-// router.get('/:id', PreferenceCtrl.getOnePreferenceByID);
+router.put('/edit/:id', PreferenceCtrl.editPreferenceById);
 // router.delete('/:id', PreferenceCtrl.deletePreference);

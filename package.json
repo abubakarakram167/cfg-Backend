@@ -41,7 +41,7 @@
   "scripts": {
     "seed:data": "sequelize db:seed:all",
     "bootsrap": "sequelize  db:migrate",
-    "start": "npm run bootsrap && node -r dotenv/config api/app.js",
+    "start": "npm run bootsrap && nodemon -r dotenv/config api/app.js",
     "start:prod": "node -r dotenv/config api/app.js",
     "lint": "eslint ."
   },
