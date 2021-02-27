@@ -31,7 +31,7 @@ router.get('/health-check', (req, res) => res.send('OK'));
 router.use(pagination);
 router.use('/auth', authRoutes);
 
-// router.use('/keywords', keywordsRoutes);
+ router.use('/keywords', keywordsRoutes);
 router.use('/preferences', preferencesRoutes);
 router.use('/question', questionRoutes);
 router.use('/users', userRoutes);
@@ -40,7 +40,7 @@ router.use('/users', userRoutes);
 // router.use('/gift_rewards', gift_rewardsRoutes);
 // router.use('/groups', groupsRoutes);
  router.use('/media', mediaRoutes);
-// router.use('/question_options', question_optionsRoutes);
+router.use('/question_options', question_optionsRoutes);
 router.use('/sessions', sessionsRoutes);
 router.use('/content', contentRoutes);
 router.use('/tags', tagsRoutes);
