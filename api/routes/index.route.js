@@ -39,7 +39,7 @@ router.use('/users', userRoutes);
 // router.use('/content_subscribers',content_subscribersRoutes);
 // router.use('/gift_rewards', gift_rewardsRoutes);
 // router.use('/groups', groupsRoutes);
-// router.use('/media', mediaRoutes);
+ router.use('/media', mediaRoutes);
 // router.use('/question_options', question_optionsRoutes);
 router.use('/sessions', sessionsRoutes);
 router.use('/content', contentRoutes);
