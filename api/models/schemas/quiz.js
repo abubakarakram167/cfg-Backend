@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('quiz', {
     },
     apply_to_group: {
         type: DataTypes.INTEGER(11),
-        allowNull: false,
+        allowNull: true,
     },
     success_navigate_page: {
         type: DataTypes.STRING(255),
