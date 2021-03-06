@@ -30,7 +30,7 @@ async function insert(userData) {
   const userRaw = await userDb.get({ plain: true });
   delete userRaw.password;
   delete userRaw.salt;
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken);
+  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken , "createPassword");
   sendWelcomeEmail(user.email, resetLink);
   return userRaw;
 }
@@ -172,12 +172,11 @@ async function forgotPassword(req, res) {
         passwordResetTokenSentTime: new Date(),
       })
       .then(() => {
+        console.log(authHelper.getResetPasswordLink(token , "reset"))
         sendEmail(
           email,
           responseMessages.passwordResetRequested,
-          `click the link to reset password <a href="${authHelper.getResetPasswordLink(
-            token
-          )}</a>`
+          `click the link to reset password <a href="${authHelper.getResetPasswordLink(token , "reset")}">Reset Password</a>`
         );
       });
   }
