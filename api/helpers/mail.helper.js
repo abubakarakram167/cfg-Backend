@@ -36,7 +36,7 @@ const exportObj = {
         await exportObj.sendEmail(
             email,
             'Welcome to CFG',
-            `Welcome to CFG <br/> click link to set the password: <a href="${link}">Reset Password</a>`,
+            `Welcome to CFG <br/> click link to set the password: <a href="${link}">Set Password</a>`,
         );
     },
 };

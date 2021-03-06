@@ -47,6 +47,6 @@ function generateResetToken(length) {
 function validatePassword(password) {
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$/.test(password);
 }
-function getResetPasswordLink(token) {
-    return `${config.appBaseUrl}/reset?token=${token}`;
+function getResetPasswordLink(token , type) {
+    return `${config.appBaseUrl}/${type}?token=${token}`;
 }
