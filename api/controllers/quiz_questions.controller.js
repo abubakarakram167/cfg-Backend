@@ -6,7 +6,7 @@ module.exports = {
           getOneQuizQuestionByID,
           getListQuizQuestionMultiple,
           deleteQuizQuestion,
-      
+          getByIDQuizQuestion
       };
       async function insertQuizQuestion(quiz_questionData) {
         const quiz_question = { ...quiz_questionData };
@@ -16,11 +16,8 @@ module.exports = {
         return quiz_questionRaw;
     }
     async function getByIDQuizQuestion(quiz_questionData) {
-        const quiz_question = { ...quiz_questionData };
-        const quiz_questionDb = await quiz_questionService.getOneByID(quiz_question);
-        const quiz_questionRaw = await quiz_questionDb.get({ plain: true });
-    
-        return quiz_questionRaw;
+      const quiz_questionRaw = await quiz_questionService.findQuizSpecificAquestion(quiz_questionData);
+      return quiz_questionRaw;
     }
     
     async function findAllQuizQuestion() {
@@ -34,17 +31,19 @@ module.exports = {
         return quiz_questionDb;
     }
     async function createOneQuizQuestion(req, res) {
+
         const quiz_question = await insertQuizQuestion(req.body);
         res.send(quiz_question);
     }
     
     async function getOneQuizQuestionByID(req, res) {
-        const quiz_question = await getByIDQuizQuestion(req.params.id);
-        res.send(quiz_question);
+      const quiz_question = await getByIDQuizQuestion(req.params.id);
+      res.send(quiz_question);
     }
     
     async function getListQuizQuestionMultiple(_req, res) {
         const quiz_question = await findAllQuizQuestion();
+        console.log("thq dasd", quiz_question);
         res.send(quiz_question);
     }
     

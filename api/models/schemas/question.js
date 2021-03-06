@@ -18,7 +18,11 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('question', {
 		deleted: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false
-		}
+    },
+    detail: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+  },
 	}, {
 		tableName: 'question',
 		timestamps: false

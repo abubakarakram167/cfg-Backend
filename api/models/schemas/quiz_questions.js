@@ -46,7 +46,8 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('quiz_questions', {
 	}, {
 		tableName: 'quiz_questions',
 		timestamps: false
-	});
+  });
+
 	module.exports.initRelations = () => {
 		delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
 };

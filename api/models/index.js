@@ -35,6 +35,18 @@ function init(sequelize) {
     model.tags = sequelize.import('./schemas/tags.js');
     model.contentTags = sequelize.import('./schemas/content_tags.js');
 
+    model.quiz.belongsToMany(model.question, {
+      through: "quiz_questions",
+      as: "questions",
+      foreignKey: "quiz_id",
+    });
+    
+    model.question.belongsToMany(model.quiz, {
+      through: "quiz_questions",
+      as: "quizes",
+      foreignKey: "question_id",
+    });
+
     fs.readdirSync(schemaPath).forEach((file) => {
         if (file.match(/(.+)\.js(on)?$/)) {
             if (Object.hasOwnProperty.call(
@@ -52,6 +64,7 @@ function init(sequelize) {
 }
 
 // Note: While using this module, DO NOT FORGET FIRST CALL model.init(sequelize). Otherwise you get undefined.
+
 module.exports = model;
 module.exports.init = init;
 module.exports.isInitialized = initialized;
