@@ -10,9 +10,6 @@ module.exports = {
       };
       async function insertQuizQuestion(quiz_questionData) {
         const quiz_question = { ...quiz_questionData };
-        console.log("............")
-        console.log("//////////")
-        console.log("the quiz question", quiz_question)
         const quiz_questionDb = await quiz_questionService.add(quiz_question);
         const quiz_questionRaw = await quiz_questionDb.get({ plain: true });
     
