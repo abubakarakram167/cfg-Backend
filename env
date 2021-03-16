@@ -4,7 +4,7 @@ SERVER_PORT=3690
 JWT_SECRET=abcSecret
 JWT_COOKIE_SECRET=abcSecret
 APP_BASE_URL=http://cfg.sentiencesystems.com:3001
-CORS_WHITELIST=http://cfg.sentiencesystems.com:3001
+CORS_WHITELIST=http://localhost:3001
 # Database config
 USER_NAME=admin
 PASSWORD=Pa#9988word
