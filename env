@@ -3,18 +3,18 @@ SERVICE_LOG_TAG=todo.app
 SERVER_PORT=3690
 JWT_SECRET=abcSecret
 JWT_COOKIE_SECRET=abcSecret
-APP_BASE_URL=http://localhost:3690
+APP_BASE_URL=http://cfg.sentiencesystems.com:3001
 CORS_WHITELIST=http://localhost:3001
-
 # Database config
-USER_NAME=root
-PASSWORD=root
+USER_NAME=admin
+PASSWORD=Pa#9988word
 DATABASE=cfg_social_app
-HOST=localhost
+HOST=database-2-cfg.csfnmma0gbnw.us-east-2.rds.amazonaws.com
 LOGGING=true
 
+#Email
 SUPPORT_EMAIL=admin@expertdigitalsign.com
 SMTP_HOST=smtp.office365.com
 SMTP_PORT=587
 SMTP_USER=admin@expertdigitalsign.com
-SMTP_PASS=8899
+SMTP_PASS=Pa#9988word
