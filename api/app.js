@@ -22,9 +22,10 @@ logger.initializeGlobalHandlers();
 const { authFactory } = require('./middleware/auth-handler');
 
 const corsOptions = {
-    origin: config.corsWhiteList,
-    credentials: true,
-    withCredentials: true,
+    origin:"*"
+    // origin: config.corsWhiteList,
+    //credentials: true,
+    //withCredentials: true,
 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
