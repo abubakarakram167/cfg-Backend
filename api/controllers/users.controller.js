@@ -43,7 +43,7 @@ async function addUser(req, res) {
   res.send({ message: responseMessages.recordAddSuccess });
 }
 async function editUser(req, res) {
-  const { password, salt, ...user } = req.body;
+  const { password, ...user } = req.body;
   if (password && !authHelper.validatePassword(password)) {
     res.status(422).json({ message: responseMessages.invalidPasswordFormat });
     return;
@@ -69,7 +69,7 @@ async function editUser(req, res) {
     pending: 0,
     disabled: 2,
   };
-  user.status = statusObj[user.status.toLowerCase()] || 3;
+  user.status != undefined ? user.status = statusObj[user.status.toLowerCase()] || 3 : null;
   await userRef.update(user);
   res.send({ message: responseMessages.recordUpdateSuccess });
 }

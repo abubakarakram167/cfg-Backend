@@ -1,0 +1,55 @@
+
+// POST::/api/users/status/:staus 
+allowed status: {approved , disabled , pending}
+//request Object
+{
+    "users":[1,2]
+}
+//response object
+{
+    "message": "Record Updated successfully."
+}
+
+
+//DELETE::/api/users
+//request object
+{
+    "users": [1,2]
+}
+
+//response object
+{
+    "message": "Record Deleted successfully"
+}
+
+
+//POST::/api/users
+role: enum('candidate','facilitator','content-manager', 'support','reviewer','system-administrator','auditor')
+//request object
+{
+    "first_name":"Hassan",
+    "last_name":"Yousaf",
+    "email":"hassanyousaf2001@gmail.com",
+    "role":"candidate"
+}
+
+//response object
+{
+    "message": "Record Added successfully."
+}
+
+
+//PUT::/api/users
+//request object
+//here you can update any key value that get::user api returns but the id is to be provided must 
+{
+    "id":5,
+    "first_name":"HITEC",
+    "last_name":"Taxila",
+    "username":"hytec2020",
+    "status": "approved"
+}
+//response object
+{
+    "message": "Record Updated successfully."
+}

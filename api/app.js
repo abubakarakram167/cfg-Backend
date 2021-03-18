@@ -38,6 +38,7 @@ app.use(passport.initialize());
 
 app.use(addRequestId);
 morgan.token('id', (req) => req.id);
+//console.log("request " + req.id + "reached here")
 app.use(morgan(loggerFormat, {
     skip(req, res) {
         return res.statusCode < 400;
