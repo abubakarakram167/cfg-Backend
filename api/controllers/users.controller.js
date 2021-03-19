@@ -75,7 +75,7 @@ async function editUser(req, res) {
 }
 
 async function register(req, res) {
-  const { password } = req.body;
+  const  password  = "Jmb@123#inact"
   const requestObject = req.body;
   if (!authHelper.validatePassword(password)) {
     res.status(422).json({ message: responseMessages.invalidPasswordFormat });
