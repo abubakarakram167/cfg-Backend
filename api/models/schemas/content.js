@@ -93,6 +93,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    tags:{
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    }
 }, {
     tableName: 'content',
     timestamps: false,

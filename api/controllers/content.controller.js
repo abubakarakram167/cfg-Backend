@@ -59,8 +59,16 @@ async function createOneContent(req, res) {
     delete requestObject.id;
     requestObject.type = type;
     requestObject.created_by = req.user.id;
-    if (!requestObject.tags) requestObject.tags = [];
+    console.log(requestObject.tags);
+    if (!requestObject.tags){
+        requestObject.tags = []
+        console.log("No tags")
+    }
+    let tempTags = requestObject.tags
+    requestObject.tags = JSON.stringify(requestObject.tags);
+    console.log(requestObject);
     const content = await insertContent(requestObject);
+    requestObject.tags = tempTags
     // content = await content.get({ plain: true });
     const tagsData = requestObject.tags.map((t) => {
         const r = t;

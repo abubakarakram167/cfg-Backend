@@ -53,3 +53,266 @@ role: enum('candidate','facilitator','content-manager', 'support','reviewer','sy
 {
     "message": "Record Updated successfully."
 }
+
+
+POST::localhost:3690/api/content/:type
+
+Request Object
+:type=>allowed['reward','tool','session','event','mini','timeline','title','sub-title']
+{
+    "title":"CFG for secondary schools 3",
+    "content_header_id":content_id  //id from same table , pass only if you want one content to make child of other
+    "sub_title":"how to do it?",
+    "detail":"<p>Hi</p>",
+    "detail_json_meta":"",
+    "start_date":"2021-02-23",
+    "end_date":"2021-02-23",
+    "status":"published", //allowed=>['published','saved','draft']
+    "type":"session",
+    "total_points":500,
+    "featured_image_url":"https://google.com/image.jpg",
+    "meta":"",
+    "previous_page":"cfg.com/abc123",
+    "next_page":"cfg.com/abc124",
+    "tags":[{
+        "tag_type":"keyword",
+        "text":"schools"
+    } , {
+        "tag_type":"keyword",
+        "text":"cfg"
+    }]
+}
+
+Response Object 
+{
+    "content": {
+        "id": 18,
+        "title": "CFG for secondary schools 3",
+        "sub_title": "how to do it?",
+        "detail": "<p>Hi</p>",
+        "start_date": "2021-02-23",
+        "end_date": "2021-02-23",
+        "status": "published",
+        "type": "session",
+        "total_points": 500,
+        "featured_image_url": "https://google.com/image.jpg",
+        "meta": "",
+        "previous_page": "cfg.com/abc123",
+        "next_page": "cfg.com/abc124",
+        "tags": [
+            {
+                "id": 21,
+                "text": "schools",
+                "createdBy": 4,
+                "updatedAt": "2021-03-22T20:10:03.992Z"
+            },
+            {
+                "id": 22,
+                "text": "cfg",
+                "createdBy": 4,
+                "updatedAt": "2021-03-22T20:10:03.992Z"
+            }
+        ],
+        "created_by": 4,
+        "created_at": "2021-03-22T20:10:03.917Z"
+    }
+}
+
+
+GET::localhost:3690/api/content/list/:type?_count=100&_pageNo=1
+:type=>allowed['reward','tool','session','event','mini','timeline','title','sub-title']
+
+Response Object
+{
+    "data": [
+        {
+            "id": 2,
+            "content_header_id": null,
+            "title": "web scrap",
+            "sub_title": null,
+            "detail": null,
+            "detailJsonMeta": null,
+            "start_date": "2021-02-23",
+            "end_date": "2021-02-11",
+            "status": "",
+            "type": "session",
+            "total_points": 5000,
+            "featured_image_url": null,
+            "event_type": null,
+            "meta": null,
+            "previous_page": null,
+            "next_page": null,
+            "created_by": 4,
+            "created_at": "2021-02-28T16:19:10.000Z",
+            "updated_at": null,
+            "tags": null,
+            "author": {
+                "id": 4,
+                "first_name": "",
+                "last_name": "",
+                "user_name": null,
+                "email": "hassanyousaf565@gmail.com"
+            }
+        },
+        {
+            "id": 15,
+            "content_header_id": null,
+            "title": "CFG for secondary schools 3",
+            "sub_title": null,
+            "detail": null,
+            "detailJsonMeta": null,
+            "start_date": null,
+            "end_date": null,
+            "status": null,
+            "type": "session",
+            "total_points": 500,
+            "featured_image_url": null,
+            "event_type": null,
+            "meta": null,
+            "previous_page": null,
+            "next_page": null,
+            "created_by": 4,
+            "created_at": "2021-03-22T20:00:15.000Z",
+            "updated_at": null,
+            "tags": null,
+            "author": {
+                "id": 4,
+                "first_name": "",
+                "last_name": "",
+                "user_name": null,
+                "email": "hassanyousaf565@gmail.com"
+            }
+        }
+        
+    ],
+    "count": 5
+}
+
+
+PUT::localhost:3690/api/content/:type
+Request Object
+:type=>allowed['reward','tool','session','event','mini','timeline','title','sub-title']
+{
+    "id":2, //required
+    "type":"session", //required
+    "title":"web scrap 2"
+}
+Response Object
+{
+    "message": "Record Updated successfully."
+}
+
+
+GET::localhost:3690/api/content/list/session/:id
+:id=>content_id //only works for type session
+
+Response Object
+{
+    "data": {
+        "count": 1,
+        "rows": [
+            {
+                "id": 2,
+                "content_header_id": null,
+                "title": "web scrap 2",
+                "sub_title": null,
+                "detail": null,
+                "detailJsonMeta": null,
+                "start_date": "2021-02-23",
+                "end_date": "2021-02-11",
+                "status": "",
+                "type": "session",
+                "total_points": 5000,
+                "featured_image_url": null,
+                "event_type": null,
+                "meta": null,
+                "previous_page": null,
+                "next_page": null,
+                "created_by": 4,
+                "created_at": "2021-02-28T16:19:10.000Z",
+                "updated_at": null,
+                "tags": null,
+                "author": {
+                    "id": 4,
+                    "first_name": "",
+                    "last_name": "",
+                    "user_name": null,
+                    "email": "hassanyousaf565@gmail.com"
+                }
+            }
+        ],
+        "titles": {
+            "count": 2,
+            "rows": [
+                {
+                    "id": 3,
+                    "content_header_id": 2,
+                    "title": "Image Resolution Enhancement for Medical Images using Deep Learning Neural Network",
+                    "sub_title": "fewfwef",
+                    "detail": "<p>wefefef wefcvgfdvddhghvghcvfvgc  gdfgfg&nbsp;</p>\n",
+                    "detailJsonMeta": null,
+                    "start_date": "0000-00-00",
+                    "end_date": "0000-00-00",
+                    "status": null,
+                    "type": "title",
+                    "total_points": 0,
+                    "featured_image_url": null,
+                    "event_type": null,
+                    "meta": null,
+                    "previous_page": null,
+                    "next_page": null,
+                    "created_by": 4,
+                    "created_at": "2021-02-28T18:56:15.000Z",
+                    "updated_at": null,
+                    "tags": null,
+                    "author": {
+                        "id": 4,
+                        "first_name": "",
+                        "last_name": "",
+                        "user_name": null,
+                        "email": "hassanyousaf565@gmail.com"
+                    },
+                    "subtitles": {
+                        "count": 0,
+                        "rows": []
+                    }
+                },
+                {
+                    "id": 4,
+                    "content_header_id": 2,
+                    "title": "web scrap",
+                    "sub_title": "fghdfgh",
+                    "detail": "<p>fghdfhdfghdfhrtrhb  hert her&nbsp;</p>\n",
+                    "detailJsonMeta": null,
+                    "start_date": "0000-00-00",
+                    "end_date": "0000-00-00",
+                    "status": null,
+                    "type": "title",
+                    "total_points": 0,
+                    "featured_image_url": null,
+                    "event_type": null,
+                    "meta": null,
+                    "previous_page": null,
+                    "next_page": null,
+                    "created_by": 4,
+                    "created_at": "2021-02-28T18:56:35.000Z",
+                    "updated_at": null,
+                    "tags": null,
+                    "author": {
+                        "id": 4,
+                        "first_name": "",
+                        "last_name": "",
+                        "user_name": null,
+                        "email": "hassanyousaf565@gmail.com"
+                    },
+                    "subtitles": {
+                        "count": 0,
+                        "rows": []
+                    }
+                }
+            ]
+        }
+    },
+    "count": 1
+}
+
