@@ -316,3 +316,8 @@ Response Object
     "count": 1
 }
 
+
+GET:: 'localhost:3690/api/content/:id'
+:id=>content_id
+Returns complete data of a content
+
