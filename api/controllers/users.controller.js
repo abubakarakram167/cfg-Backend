@@ -158,7 +158,19 @@ async function listUsers(req, res) {
     if (object[field]) where[field] = { [Op.like]: `%${object[field]}%` };
   }
   const users = await userService.findWhere({ where, offset, limit });
-  res.json({ users });
+  const usersPlain = JSON.parse(JSON.stringify(users));
+  let userResponse = [];
+  usersPlain.forEach(user => {
+    let temp = user;
+    delete temp.password;
+    delete temp.salt;
+    delete temp.passwordAttemptsCount;
+    delete temp.passwordAttemptTime;
+    delete temp.passwordResetToken;
+    delete temp.passwordResetTokenSentTime;
+    userResponse.push(temp);
+  })
+  res.json({ userResponse });
 }
 
 async function forgotPassword(req, res) {
