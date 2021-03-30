@@ -18,7 +18,7 @@ module.exports = {
     });
     queryInterface.changeColumn('users', 'first_name', {
       type: Sequelize.DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     });
   },
 
