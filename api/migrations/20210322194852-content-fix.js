@@ -6,7 +6,7 @@ module.exports = {
       type: Sequelize.DataTypes.STRING(255),
       allowNull: true,
     });
-    queryInterface.changeColumn('users', 'first_name', {
+    queryInterface.changeColumn('content', 'type', {
       type: Sequelize.DataTypes.ENUM(
         'reward',
         'tool',
@@ -15,6 +15,10 @@ module.exports = {
         'mini',
     ),
       allowNull: false,
+    });
+    queryInterface.changeColumn('users', 'first_name', {
+      type: Sequelize.DataTypes.STRING(255),
+      allowNull: true,
     });
   },
 
