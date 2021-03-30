@@ -26,7 +26,8 @@ async function insert(userData) {
   user.passwordResetTokenSentTime = new Date();
   user.salt = authHelper.generateRandomSalt();
   user.password = bcrypt.hashSync(user.password + user.salt, 10);
-  console.log(user);
+  //console.log(user);
+  user.user_name = user.email.split('@')[0];
   const userDb = await userService.addUser(user);
   const userRaw = await userDb.get({ plain: true });
   delete userRaw.password;
