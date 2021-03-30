@@ -27,6 +27,7 @@ async function insert(userData) {
   user.salt = authHelper.generateRandomSalt();
   user.password = bcrypt.hashSync(user.password + user.salt, 10);
   //console.log(user);
+  //username done
   user.user_name = user.email.split('@')[0];
   const userDb = await userService.addUser(user);
   const userRaw = await userDb.get({ plain: true });
