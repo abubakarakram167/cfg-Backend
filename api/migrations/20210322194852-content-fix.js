@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    queryInterface.addColumn('content', 'tags', {
+    queryInterface.changeColumn('content', 'tags', {
       type: Sequelize.DataTypes.STRING(255),
       allowNull: true,
     });
