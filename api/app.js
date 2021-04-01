@@ -1,5 +1,7 @@
 /* eslint no-console:0, no-param-reassign:0 */
-const app = require('express')();
+const path=require('path');
+const express = require('express');
+const app = express();
 const compress = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -19,7 +21,10 @@ const logger = require('./library/logger');
 const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
 
 logger.initializeGlobalHandlers();
+app.use('/static', express.static(path.join(__dirname, '../static')));
 const { authFactory } = require('./middleware/auth-handler');
+
+
 
 const corsOptions = {
     //origin:"*"
@@ -51,6 +56,7 @@ app.use(morgan(loggerFormat, {
     },
     stream: process.stdout,
 }));
+
 app.use(authFactory);
 
 // API router

@@ -49,7 +49,8 @@ function authFactory(req, res, next) {
     }
 
     const finalEndpoint = `${req.method}::${endpoint}`;
-    if (guestURLs.includes(finalEndpoint)) {
+    
+     if (guestURLs.includes(finalEndpoint)) {
         req.ignorePermissionsCheck = true;
         next();
     } else if (localAuthURLs.includes(finalEndpoint)) {

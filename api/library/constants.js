@@ -7,6 +7,7 @@ const guestURLs = [
     'GET::/api/preferences/list',
     // Public URIs
     'GET::/api/hello',
+    'GET::/static',
 ];
 const localAuthURLs = [
     'POST::/api/auth/login',

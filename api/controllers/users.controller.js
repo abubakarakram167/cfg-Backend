@@ -254,6 +254,7 @@ async function updateStatus(req, res) {
   );
   res.send({ message: responseMessages.recordUpdateSuccess });
 }
+
 async function deleteUsers(req, res) {
   const actor = req.user;
   const { users } = req.body;

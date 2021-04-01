@@ -5,6 +5,7 @@ module.exports = {
           add,
           findWhere,
           getOneByID,
+          addMany,
           getList,
           deleteOne,
       
@@ -16,15 +17,19 @@ module.exports = {
     function add(media) {
         return model.media.create({ ...media, createdAt: new Date() });
     }
+
+    function addMany(media) {
+        return model.media.bulkCreate(media, { returning: true });
+    }
     
     function findWhere(options) {
         return model.media.findAll(options);
     }
-    function getList() {
-        return model.media.findAll();
+    function getList(options) {
+        return model.media.findAll(options);
     }
-    function deleteOne(options) {
-        const { id } = options.params;
+    function deleteOne(id) {
+        
         return model.media.destroy({
             where: { id: id },
         });
