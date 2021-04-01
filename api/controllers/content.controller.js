@@ -119,7 +119,7 @@ async function editContent(req, res) {
 }
 
 async function getOneContentByID(req, res) {
-    const content = await getByIDContent(req.params.id);
+    const content = await getByIDContent({where:{id:req.params.id}});
     res.send(content);
 }
 // this fucntion is for session only will return compelete session details including title and sub-tilte
