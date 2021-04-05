@@ -21,7 +21,7 @@ const logger = require('./library/logger');
 const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
 
 logger.initializeGlobalHandlers();
-app.use('/static', express.static(path.join(__dirname, '../static')));
+ 
 const { authFactory } = require('./middleware/auth-handler');
 
 
@@ -32,6 +32,7 @@ const corsOptions = {
     credentials: true,
     withCredentials: true,
 };
+
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -61,7 +62,7 @@ app.use(authFactory);
 
 // API router
 app.use('/api/', routes);
-
+app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use((err, req, res, next) => {
     // customize Joi validation errors
     const validationErrorsArray = ['SequelizeValidationError', 'ValidationError', 'SequelizeUniqueConstraintError'];
