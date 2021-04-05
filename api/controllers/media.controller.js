@@ -161,10 +161,12 @@ async function editMedia(req, res) {
 
     reqObj.updated_at = new Date();
     
-    let id =  reqObj.id;
+    let id =  Number(req.params.id);
 
     let updateResponse = await mediaService.update(reqObj , {where: {id: id}})
-
-    res.send(updateResponse);
+    if(updateResponse[0]>0){
+        return res.send({message: "Record Successfully Updated"});    
+    }
+    res.send({message: "Record Update Error"});
 }
 

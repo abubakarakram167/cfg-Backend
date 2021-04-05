@@ -364,6 +364,22 @@ response:
     }
 ]
 
+PUT::localhost:3690/api/media/:id
+request:
+{   
+    "title":"Hello2",
+    "description":"Kivein lala",
+    "is_global":0, =>[0,1]
+    "category":"none", //not required
+    "origin":"none, //not required
+
+}
+response: 
+{
+    "message": "Record Successfully Updated"
+}
+
+
 
 DELETE::localhost:3690/api/media/:id
 
@@ -371,6 +387,9 @@ response:
 {
     "message": "Media deleted successfully"
 }
+
+
+
 
 
 
