@@ -39,5 +39,6 @@ module.exports = router;
 router.post('/', upload.array('media', 4), MediaCtrl.createOneMedia);
 router.get('/list', MediaCtrl.getListMediaMultiple);
 router.get('/:id', MediaCtrl.getOneMediaByID);
+router.put('/:id', MediaCtrl.getOneMediaByID);
 router.delete('/:id', MediaCtrl.deleteMedia);
 

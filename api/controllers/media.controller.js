@@ -10,7 +10,7 @@ module.exports = {
     getOneMediaByID,
     getListMediaMultiple,
     deleteMedia,
-
+    editMedia
 };
 async function insertMedia(mediaData) {
     const media = mediaData;
@@ -148,5 +148,23 @@ async function deleteMedia(req, res) {
     }
     console.log(media);
 
+}
+
+
+async function editMedia(req, res) {
+    let reqObj = req.body;
+    reqObj.mime_type === undefined ? null : delete reqObj.mime_type
+    reqObj.url === undefined ? null : delete reqObj.url
+    reqObj.file_name === undefined ? null : delete reqObj.file_name
+    reqObj.created_by === undefined ? null : delete reqObj.created_by
+    reqObj.created_at === undefined ? null : delete reqObj.created_at
+
+    reqObj.updated_at = new Date();
+    
+    let id =  reqObj.id;
+
+    let updateResponse = await mediaService.update(reqObj , {where: {id: id}})
+
+    res.send(updateResponse);
 }
 

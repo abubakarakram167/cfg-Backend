@@ -8,6 +8,7 @@ module.exports = {
           addMany,
           getList,
           deleteOne,
+          update
       
       };
       function getOneByID(options) {
@@ -27,6 +28,9 @@ module.exports = {
     }
     function getList(options) {
         return model.media.findAll(options);
+    }
+    function update(data, options) {
+        return model.media.update(data, options);
     }
     function deleteOne(id) {
         

@@ -61,8 +61,9 @@ app.use(morgan(loggerFormat, {
 app.use(authFactory);
 
 // API router
+app.use(express.static(path.join(__dirname, '../static')));
 app.use('/api/', routes);
-app.use('/static', express.static(path.join(__dirname, '../static')));
+
 app.use((err, req, res, next) => {
     // customize Joi validation errors
     const validationErrorsArray = ['SequelizeValidationError', 'ValidationError', 'SequelizeUniqueConstraintError'];
