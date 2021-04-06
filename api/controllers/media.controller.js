@@ -87,9 +87,7 @@ async function getOneMediaByID(req, res) {
 
 async function getListMediaMultiple(_req, res) {
     let media = await findAllMedia({ attributes: ['id', 'file_name','title','description','created_by','created_at'] });
-    media.forEach(media => {
-        media.file_name = media.file_name.split('Z-')[1];
-    })
+    
     res.send(media);
 }
 
