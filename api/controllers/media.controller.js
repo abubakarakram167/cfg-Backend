@@ -80,13 +80,13 @@ async function createOneMedia(req, res) {
 async function getOneMediaByID(req, res) {
     const id = req.params.id;
     const media = await getByIDMedia({ where: { id } });
-    let file_path = path.join(__dirname, '../../static', media.file_name)
-    console.log(media.file_name)
-    res.sendFile(file_path);
+    // let file_path = path.join(__dirname, '../../static', media.file_name)
+    // console.log(media.file_name)
+    res.sendFile(media);
 }
 
 async function getListMediaMultiple(_req, res) {
-    let media = await findAllMedia({ attributes: ['id', 'file_name'] });
+    let media = await findAllMedia({ attributes: ['id', 'file_name','title','description','created_by','created_at'] });
     media.forEach(media => {
         media.file_name = media.file_name.split('Z-')[1];
     })
