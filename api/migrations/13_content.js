@@ -11,10 +11,10 @@ module.exports = {
         content_header_id: {
             type: Sequelize.DataTypes.INTEGER(11),
             allowNull: true,
-			references: {
-				model: 'content',
-				key: 'id'
-			}
+            references: {
+                model: 'content',
+                key: 'id'
+            }
         },
         title: {
             type: Sequelize.DataTypes.STRING(255),
@@ -28,6 +28,11 @@ module.exports = {
             type: Sequelize.DataTypes.TEXT,
             allowNull: true,
         },
+        detail_json_meta:
+        {
+            type: Sequelize.DataTypes.JSON,
+            allowNull: true,
+        },
         start_date: {
             type: Sequelize.DataTypes.DATEONLY,
             allowNull: true,
@@ -37,12 +42,20 @@ module.exports = {
             allowNull: true,
         },
         status: {
-            type: Sequelize.DataTypes.ENUM('published', 'saved', 'draft', ''),
-            allowNull: true,
+            type: Sequelize.DataTypes.ENUM('published', 'saved', 'draft'),
+            allowNull: false,
         },
-        content_category: {
-            type: Sequelize.DataTypes.ENUM('session', 'tool', 'event', 'mini-cfg', ''),
-            allowNull: true,
+        type: {
+            type: Sequelize.DataTypes.ENUM(
+                'reward',
+                'tool',
+                'session',
+                'event',
+                'mini',
+                'timeline',
+                'title',
+                'sub-title'
+            )
         },
         total_points: {
             type: Sequelize.DataTypes.INTEGER(11),
@@ -54,6 +67,10 @@ module.exports = {
         },
         event_type: {
             type: Sequelize.DataTypes.ENUM('live-video', 'group-chat', 'zoom-video', ''),
+            allowNull: true,
+        },
+        tags: {
+            type: Sequelize.DataTypes.STRING(255),
             allowNull: true,
         },
         meta: {

@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = {
-    up: (queryInterface, Sequelize) => queryInterface.createTable('question', {
+	up: (queryInterface, Sequelize) => queryInterface.createTable('question', {
 		id: {
 			type: Sequelize.DataTypes.INTEGER(11),
 			allowNull: false,
@@ -11,6 +11,11 @@ module.exports = {
 		question: {
 			type: Sequelize.DataTypes.STRING(255),
 			allowNull: false
+		},
+		detail:
+		{
+			type: Sequelize.DataTypes.TEXT,
+			allowNull: true
 		},
 		correct_answer: {
 			type: Sequelize.DataTypes.INTEGER(11),
@@ -22,7 +27,7 @@ module.exports = {
 		}
 	}, {
 		tableName: 'question',
-		}).then(() =>  {
+	}).then(() => {
 	}),
 	down: (queryInterface) => queryInterface.dropTable('question'),
 };
