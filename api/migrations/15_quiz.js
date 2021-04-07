@@ -26,7 +26,7 @@ module.exports = {
         },
         apply_to_group: {
             type: Sequelize.DataTypes.INTEGER(11),
-            allowNull: false,
+            allowNull: true,
         },
         success_navigate_page: {
             type: Sequelize.DataTypes.STRING(255),

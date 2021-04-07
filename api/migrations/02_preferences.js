@@ -20,11 +20,15 @@ module.exports = {
             type: Sequelize.DataTypes.STRING(255),
             allowNull: false,
           },
+          option_description: {
+            type: Sequelize.DataTypes.STRING(255),
+            allowNull: false,
+          }
         },
         {
           tableName: "preferences",
         }
       )
-      .then(() => {}),
+      .then(() => { }),
   down: (queryInterface) => queryInterface.dropTable("preferences"),
 };

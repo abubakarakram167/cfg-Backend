@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
     },
     first_name: {
         type: DataTypes.STRING(255),
-        allowNull: true,
+        allowNull: false,
     },
     last_name: {
         type: DataTypes.STRING(255),
-        allowNull: true,
+        allowNull: false,
     },
     middle_name: {
         type: DataTypes.STRING(255),

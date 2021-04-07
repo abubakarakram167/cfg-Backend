@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = {
-    up: (queryInterface, Sequelize) => queryInterface.createTable('media', {
+	up: (queryInterface, Sequelize) => queryInterface.createTable('media', {
 		id: {
 			type: Sequelize.DataTypes.INTEGER(11),
 			allowNull: false,
@@ -17,16 +17,37 @@ module.exports = {
 			allowNull: true
 		},
 		mime_type: {
-			type: Sequelize.DataTypes.ENUM(''),
-			allowNull: true
+			type: Sequelize.DataTypes.ENUM(
+				'png',
+				'jpeg',
+				'jpg',
+				'doc',
+				'docx',
+				'mp4',
+				'mkv',
+
+			),
+			allowNull: false,
 		},
 		url: {
 			type: Sequelize.DataTypes.TEXT,
 			allowNull: true
 		},
+		file_name: {
+			type: Sequelize.DataTypes.STRING(255),
+			allowNull: false,
+		},
 		is_global: {
-			type: Sequelize.DataTypes.INTEGER(11),
-			allowNull: true
+			type: Sequelize.DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: true,
+		},
+		category: {
+			type: Sequelize.DataTypes.STRING(255),
+			allowNull: true,
+		}, category: {
+			type: Sequelize.DataTypes.STRING(255),
+			allowNull: true,
 		},
 		created_by: {
 			type: Sequelize.DataTypes.INTEGER(11),
@@ -46,7 +67,7 @@ module.exports = {
 		}
 	}, {
 		tableName: 'media',
-		}).then(() =>  {
+	}).then(() => {
 	}),
 	down: (queryInterface) => queryInterface.dropTable('media'),
 };
