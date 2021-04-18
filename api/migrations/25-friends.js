@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
       .createTable(
-        "feelings",
+        "friends",
         {
           id: {
             type: Sequelize.DataTypes.INTEGER(11),
@@ -12,12 +12,28 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
           },
-          feeling: {
-            type: Sequelize.DataTypes.STRING(255),
+          user1: {
+            type: Sequelize.DataTypes.INTEGER(11),
             allowNull: false,
+            references: {
+              model: 'users',
+              key: 'id'
+            }
           },
-          description: {
-            type: Sequelize.DataTypes.STRING(255),
+          user2: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: false,
+            references: {
+              model: 'users',
+              key: 'id'
+            }
+          },
+          status: {
+            type: Sequelize.DataTypes.ENUM(
+              'sent',
+              'deleted',
+              'accepted',
+            ),
             allowNull: false,
           },
           createdAt: {
@@ -31,13 +47,17 @@ module.exports = {
             type: 'TIMESTAMP',
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
             allowNull: false
+          },
+          deleted_at: {
+            type: Sequelize.DataTypes.DATE,
+            allowNull: true
           }
 
         },
         {
-          tableName: "feelings",
+          tableName: "friends",
         }
       )
       .then(() => { }),
-  down: (queryInterface) => queryInterface.dropTable("feelings"),
+  down: (queryInterface) => queryInterface.dropTable("friends"),
 };

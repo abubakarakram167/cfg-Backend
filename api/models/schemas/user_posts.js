@@ -1,13 +1,13 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
+module.exports = (sequelize, DataTypes) =>  sequelize.define('user_posts', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true
 	  },
-	  created_by: {
+	  user_id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		references: {
@@ -15,23 +15,39 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		  key: 'id'
 		}
 	  },
-	  name: {
-		type: DataTypes.STRING(255),
+	  group_id: {
+		type: DataTypes.INTEGER(11),
+		allowNull: true,
+		references: {
+		  model: 'groups',
+		  key: 'id'
+		}
+	  },
+	  content: {
+		type: DataTypes.TEXT,
 		allowNull: false,
 	  },
-	  description: {
-		type: DataTypes.STRING(255),
+	  feeling: {
+		type: DataTypes.INTEGER(11),
+		allowNull: false,
+		references: {
+		  model: 'feelings',
+		  key: 'id'
+		}
+	  },
+	  media: {
+		type: DataTypes.STRING(755),
 		allowNull: true,
 	  },
-	  featured_image_url: {
-		type: DataTypes.STRING(255),
+	  love_count: {
+		type: DataTypes.INTEGER(11),
 		allowNull: true,
 	  },
-	  cover_photo_url: {
-		type: DataTypes.STRING(255),
+	  comment_count: {
+		type: DataTypes.INTEGER(11),
 		allowNull: true,
 	  },
-	  member_count: {
+	  share_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
 	  },
@@ -48,7 +64,7 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		allowNull: false
 	  }
 	}, {
-		tableName: 'groups',
+		tableName: 'user_posts',
 		timestamps: false
 	});
 	module.exports.initRelations = () => {

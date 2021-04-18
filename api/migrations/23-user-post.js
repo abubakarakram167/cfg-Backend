@@ -20,8 +20,16 @@ module.exports = {
               key: 'id'
             }
           },
+          group_id: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: true,
+            references: {
+              model: 'groups',
+              key: 'id'
+            }
+          },
           content: {
-            type: Sequelize.DataTypes.STRING(255),
+            type: Sequelize.DataTypes.TEXT,
             allowNull: false,
           },
           feeling: {
@@ -36,8 +44,30 @@ module.exports = {
             type: Sequelize.DataTypes.STRING(755),
             allowNull: true,
           },
-          createdAt: Sequelize.DATE,
-          updatedAt: Sequelize.DATE,
+          love_count: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: true,
+          },
+          comment_count: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: true,
+          },
+          share_count: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: true,
+          },
+          createdAt: {
+            field: 'created_at',
+            type: 'TIMESTAMP',
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            allowNull: false
+          },
+          updatedAt: {
+            field: 'updated_at',
+            type: 'TIMESTAMP',
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+            allowNull: false
+          }
 
         },
         {

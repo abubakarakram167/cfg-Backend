@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
       .createTable(
-        "feelings",
+        "groups",
         {
           id: {
             type: Sequelize.DataTypes.INTEGER(11),
@@ -12,13 +12,33 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
           },
-          feeling: {
+          created_by: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: false,
+            references: {
+              model: 'users',
+              key: 'id'
+            }
+          },
+          name: {
             type: Sequelize.DataTypes.STRING(255),
             allowNull: false,
           },
           description: {
             type: Sequelize.DataTypes.STRING(255),
-            allowNull: false,
+            allowNull: true,
+          },
+          featured_image_url: {
+            type: Sequelize.DataTypes.STRING(255),
+            allowNull: true,
+          },
+          cover_photo_url: {
+            type: Sequelize.DataTypes.STRING(255),
+            allowNull: true,
+          },
+          member_count: {
+            type: Sequelize.DataTypes.INTEGER(11),
+            allowNull: true,
           },
           createdAt: {
             field: 'created_at',
@@ -35,9 +55,9 @@ module.exports = {
 
         },
         {
-          tableName: "feelings",
+          tableName: "groups",
         }
       )
       .then(() => { }),
-  down: (queryInterface) => queryInterface.dropTable("feelings"),
+  down: (queryInterface) => queryInterface.dropTable("groups"),
 };

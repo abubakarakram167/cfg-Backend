@@ -1,13 +1,13 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
+module.exports = (sequelize, DataTypes) =>  sequelize.define('friends', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true
 	  },
-	  created_by: {
+	  user1: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		references: {
@@ -15,25 +15,21 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		  key: 'id'
 		}
 	  },
-	  name: {
-		type: DataTypes.STRING(255),
-		allowNull: false,
-	  },
-	  description: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  featured_image_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  cover_photo_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  member_count: {
+	  user2: {
 		type: DataTypes.INTEGER(11),
-		allowNull: true,
+		allowNull: false,
+		references: {
+		  model: 'users',
+		  key: 'id'
+		}
+	  },
+	  status: {
+		type: DataTypes.ENUM(
+		  'sent',
+		  'deleted',
+		  'accepted',
+		),
+		allowNull: false,
 	  },
 	  createdAt: {
 		field: 'created_at',
@@ -46,9 +42,13 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		type: 'TIMESTAMP',
 		defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
 		allowNull: false
+	  },
+	  deleted_at: {
+		type: DataTypes.DATE,
+		allowNull: true
 	  }
 	}, {
-		tableName: 'groups',
+		tableName: 'friends',
 		timestamps: false
 	});
 	module.exports.initRelations = () => {

@@ -1,6 +1,6 @@
 /* Data Access Object 1 */
 
-const model = require('../models');
+const {user_posts} = require('../models');
 
 module.exports = {
     add,
@@ -11,22 +11,22 @@ module.exports = {
 
 };
 function getOneByID(options) {
-    return model.groups.findOne(options);
+    return user_posts.findOne(options);
 }
 
 function add(group) {
-    return model.groups.create({ ...group });
+    return user_posts.create({ ...group });
 }
 
 function findWhere(options) {
-    return model.groups.findAll(options);
+    return user_posts.findAll(options);
 }
 function getList() {
-    return model.groups.findAll();
+    return user_posts.findAll();
 }
 function deleteOne(options) {
     const { id } = options.params;
-    return model.groups.destroy({
+    return user_posts.destroy({
         where: { id },
     });
 }
