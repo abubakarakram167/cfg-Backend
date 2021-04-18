@@ -1,6 +1,7 @@
 /* Data Access Object 1 */
 
-const {user_posts} = require('../models');
+
+const model = require('../models')
 
 module.exports = {
     add,
@@ -8,14 +9,14 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-
+    findAnCountWhere
 };
 function getOneByID(options) {
     return user_posts.findOne(options);
 }
 
 function add(group) {
-    return user_posts.create({ ...group });
+    return model.user_posts.create({ ...group });
 }
 
 function findWhere(options) {
@@ -23,6 +24,17 @@ function findWhere(options) {
 }
 function getList() {
     return user_posts.findAll();
+}
+function findAnCountWhere(args) {
+    const options = args;
+    // options.include = [
+    //     {
+    //         model: model.users,
+    //         attributes: ['id', 'first_name', 'last_name', 'user_name', 'email'],
+    //         as: 'author',
+    //     },
+    // ];
+    return model.content.findAndCountAll(options);
 }
 function deleteOne(options) {
     const { id } = options.params;

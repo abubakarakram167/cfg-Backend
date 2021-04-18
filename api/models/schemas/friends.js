@@ -34,14 +34,12 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('friends', {
 	  createdAt: {
 		field: 'created_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  },
 	  updatedAt: {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  },
 	  deleted_at: {
 		type: DataTypes.DATE,

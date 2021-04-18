@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('user_posts', {
 	  },
 	  feeling: {
 		type: DataTypes.INTEGER(11),
-		allowNull: false,
+		allowNull: true,
 		references: {
 		  model: 'feelings',
 		  key: 'id'
@@ -54,14 +54,12 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('user_posts', {
 	  createdAt: {
 		field: 'created_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  },
 	  updatedAt: {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  }
 	}, {
 		tableName: 'user_posts',

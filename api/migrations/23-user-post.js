@@ -34,7 +34,7 @@ module.exports = {
           },
           feeling: {
             type: Sequelize.DataTypes.INTEGER(11),
-            allowNull: false,
+            allowNull: true,
             references: {
               model: 'feelings',
               key: 'id'

@@ -18,14 +18,12 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('feelings', {
 	  createdAt: {
 		field: 'created_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  },
 	  updatedAt: {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
-		defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-		allowNull: false
+		allowNull: true
 	  }
 	}, {
 		tableName: 'feelings',

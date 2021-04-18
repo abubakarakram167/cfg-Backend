@@ -22,6 +22,7 @@ const quiz_questionsRoutes = require('./quiz_questions.route');
 // const session_categoriesRoutes = require('./session_categories.route');
 // const session_groupsRoutes = require('./session_groups.route');
 const user_groupsRoutes = require('./user_groups.route');
+const postRoutes = require('./posts.route');
 
 const router = express.Router();
 
@@ -35,6 +36,7 @@ router.use('/auth', authRoutes);
 router.use('/preferences', preferencesRoutes);
 router.use('/question', questionRoutes);
 router.use('/users', userRoutes);
+router.use('/userPosts',postRoutes)
 // router.use('/categories', categoriesRoutes);
 // router.use('/content_subscribers',content_subscribersRoutes);
 // router.use('/gift_rewards', gift_rewardsRoutes);
