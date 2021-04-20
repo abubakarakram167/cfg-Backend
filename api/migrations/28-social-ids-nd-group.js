@@ -36,6 +36,23 @@ module.exports = {
                 after: 'twitter_id',
             },
         );
+        await queryInterface.addColumn(
+            'content',
+            'assigned_group',
+            {
+                type: Sequelize.DataTypes.ENUM(
+                    'candidate',
+                    'facilitator',
+                    'content-manager',
+                    'support',
+                    'reviewer',
+                    'system-administrator',
+                    'auditor',
+                ),
+                defaultValue: 'candidate',
+                allowNull: false,
+            },
+        );
     },
 
     down: async (queryInterface) => {
@@ -54,6 +71,10 @@ module.exports = {
         await queryInterface.removeColumn(
             'users',
             'microsoft_id',
+        );
+        await queryInterface.removeColumn(
+            'content',
+            'assigned_group',
         );
     },
 };

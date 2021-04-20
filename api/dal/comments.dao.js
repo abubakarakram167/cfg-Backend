@@ -1,6 +1,6 @@
 /* Data Access Object 1 */
 
-const {comments} = require('../models');
+const model = require('../models');
 
 module.exports = {
     add,
@@ -8,25 +8,29 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
+    update
 
 };
 function getOneByID(options) {
-    return comments.findOne(options);
+    return model.comments.findOne(options);
 }
 
-function add(group) {
-    return comments.create({ ...group });
+function add(comment) {
+    return model.comments.create({ ...comment });
 }
 
 function findWhere(options) {
-    return comments.findAll(options);
+    return model.comments.findAll(options);
 }
 function getList() {
-    return comments.findAll();
+    return model.comments.findAll();
 }
-function deleteOne(options) {
-    const { id } = options.params;
-    return comments.destroy({
-        where: { id },
+function update(data, options) {
+    return model.comments.update(data, options);
+}
+function deleteOne(id,created_by) {
+    //const { id } = options.params;
+    return model.comments.destroy({
+        where: { id , created_by },
     });
 }

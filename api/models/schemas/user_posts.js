@@ -1,70 +1,75 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('user_posts', {
+module.exports = (sequelize, DataTypes) => sequelize.define('user_posts', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true
-	  },
-	  user_id: {
+	},
+	user_id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		references: {
-		  model: 'users',
-		  key: 'id'
+			model: 'users',
+			key: 'id'
 		}
-	  },
-	  group_id: {
+	},
+	group_id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
 		references: {
-		  model: 'groups',
-		  key: 'id'
+			model: 'groups',
+			key: 'id'
 		}
-	  },
-	  content: {
+	},
+	content: {
 		type: DataTypes.TEXT,
 		allowNull: false,
-	  },
-	  feeling: {
+	},
+	feeling: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
 		references: {
-		  model: 'feelings',
-		  key: 'id'
+			model: 'feelings',
+			key: 'id'
 		}
-	  },
-	  media: {
+	},
+	media: {
 		type: DataTypes.STRING(755),
 		allowNull: true,
-	  },
-	  love_count: {
+	},
+	love_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
-	  },
-	  comment_count: {
+	},
+	comment_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
-	  },
-	  share_count: {
+	},
+	share_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
-	  },
-	  createdAt: {
+	},
+	createdAt: {
 		field: 'created_at',
 		type: 'TIMESTAMP',
 		allowNull: true
-	  },
-	  updatedAt: {
+	},
+	updatedAt: {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
 		allowNull: true
-	  }
-	}, {
-		tableName: 'user_posts',
-		timestamps: false
-	});
-	module.exports.initRelations = () => {
-		delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
+	},
+	deletedAt: {
+		type: DataTypes.DATE,
+		allowNull: true,
+		field: 'deleted_at',
+	},
+}, {
+	tableName: 'user_posts',
+	timestamps: false
+});
+module.exports.initRelations = () => {
+	delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
 };

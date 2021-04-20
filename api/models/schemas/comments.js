@@ -48,6 +48,10 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('comments', {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
 		allowNull: true
+	  },
+	  deleted_at:{
+		type: DataTypes.DATE,
+		allowNull: true,
 	  }
 	}, {
 		tableName: 'comments',

@@ -67,6 +67,11 @@ module.exports = {
             type: 'TIMESTAMP',
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
             allowNull: false
+          },
+          deletedAt: {
+            type: Sequelize.DataTypes.DATE,
+            allowNull: true,
+            field: 'deleted_at',
           }
 
         },

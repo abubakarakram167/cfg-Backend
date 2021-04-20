@@ -9,3 +9,5 @@ module.exports = router;
 //     res.send("hello");
 // }));
 router.post('/', asyncHandler(postCtrl.createOnePost));
+router.get('/', asyncHandler(postCtrl.getTimelinePosts));
+router.delete('/:postId', asyncHandler(postCtrl.deletepost));

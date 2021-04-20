@@ -1,14 +1,16 @@
 /* Controller 1 */
 
 const postService = require('../dal/user_posts.dao');
-
 const model = require('../models');
+const { QueryTypes } = require('sequelize');
+const friendCtrl = require('./friends.controller')
 const responseMessages = require('../helpers/response-messages');
 
 
 module.exports = {
-    createOnePost
-    
+    createOnePost,
+    getTimelinePosts,
+    deletepost
 };
 async function insertPost(postData) {
     const post = { ...postData };
@@ -30,9 +32,40 @@ async function findAllpost(options) {
     return postDb;
 }
 
-async function deletePostByID(postData) {
-    const post = { ...postData };
-    const postDb = await postService.deleteOne(post);
+function transformArrayToBracket(array){
+    let bracketString = "("
+    array.forEach((element , index) => {
+        index==0 ? bracketString+= element : bracketString+= `,${element}`
+    });
+    bracketString+= ")";
+    return bracketString;
+}
+
+async function findTimelinePosts(userId){
+
+    let userFriends = await friendCtrl.getUserFriendsById(userId);
+
+    let userFriendsSQL = transformArrayToBracket(userFriends);
+    //this part selects timeline posts assigned to specific user role
+    let userRoleQuery = ` AND assigned_group = (SELECT role from users WHERE id=${userId}) `;  
+    
+    //below query gets timeline posts added by admin
+    let adminSideQuery = "SELECT * FROM (SELECT 'admin_post' as post_type , content.created_by , content.detail as content , 'dumm1' as feeling ,'dumm2' as media, 0 as love_count,0 as comment_count, 0 as share_count , created_at , updated_at from content WHERE start_date <= CURDATE() AND end_date  > CURDATE() AND type = 'timeline'"
+    
+    //below query gets timeline posts added by other candidate friends
+    let userSideQuery = "SELECT 'user_post' as post_type , user_id as created_by , content ,feeling ,media, love_count,comment_count, share_count , created_at , updated_at from user_posts WHERE deleted_at IS NULL AND user_id IN " + userFriendsSQL + "  ) dum ORDER BY created_at"
+    
+    //finally preapred query that prepares dataset for timeline
+    let timelineQuery =  adminSideQuery + userRoleQuery + " UNION " + userSideQuery;
+    
+    const posts = await model.sequelize.query( timelineQuery, { type: QueryTypes.SELECT });
+
+    return posts;
+}
+
+async function deletePostByID(postId , userId) {
+    let deletedAt =  new Date();
+    const postDb = await postService.update({deletedAt} , {where:{id:postId , user_id:userId}} );
     return postDb;
 }
 
@@ -50,75 +83,33 @@ async function createOnePost(req, res) {
     res.send({ post});
 }
 
-// async function editpost(req, res) {
-//     const { id, type } = req.body;
-//     const requestObject = req.body;
-//     if (!allowedTypes.includes(type)) {
-//         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
-//         return;
-//     }
-//     const postDb = await postService.getOneByID({
-//         where: {
-//             id,
-//         },
-//     });
-//     delete requestObject.id;
-//     requestObject.type = type;
-//     requestObject.created_by = req.user.id;
-//     await postDb.update(requestObject);
-//     res.send({ message: responseMessages.recordUpdateSuccess });
-// }
+async function getTimelinePosts(req, res) {
+    const {user} = req;
+    
+    
+    let posts =  await findTimelinePosts(user.id);
+   
+    res.send(posts)
+}
 
-// async function getOnepostByID(req, res) {
-//     const post = await getByIDpost({where:{id:req.params.id}});
-//     res.send(post);
-// }
-// // this fucntion is for session only will return compelete session details including title and sub-tilte
-// async function getSingleSessionCompleteDetails(req, res) {
-//     const type = 'session';
-//     const {id} =req.params;
-//     if (!allowedTypes.includes(type)) {
-//         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
-//         return;
-//     }
-//     var session = await findAllpost({
-//         where: { type, id },
-//         ...req.pagination,
-//     });
-//     var titles = await findAllpost({
-//         where: { type:'title', post_header_id:id },
-//         ...req.pagination,
-//     });
-//     let OurTitles = JSON.stringify(titles);
-//     OurTitles = JSON.parse(OurTitles)
-
-//     console.log(OurTitles.rows);
-
-//     for (let title of OurTitles.rows) {
-//         // eslint-disable-next-line no-await-in-loop
-//         const subtitles = await findAllpost({
-//             where: { type:'sub-title', post_header_id:title.id },
-//             ...req.pagination,
-//         });
-//         title.subtitles=subtitles;
-//     }
-//     session.titles=OurTitles;
-//     res.send({ data: session, count: session.count });
-// }
-// async function getListpostMultiple(req, res) {
-//     const { type } = req.params;
-//     if (!allowedTypes.includes(type)) {
-//         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
-//         return;
-//     }
-//     const post = await findAllpost({
-//         where: { type },
-//         ...req.pagination,
-//     });
-//     res.send({ data: post.rows, count: post.count });
-// }
-
-// async function deletepost(req, res) {
-//     const post = await deleteByIDpost(req);
-//     res.send(post);
-// }
+async function deletepost(req, res) {
+    const {user} = req;
+    const postId = req.params.postId;
+    //  postService.getOneByID({where:{
+    //     user_id:user.id,
+    //     id:postId
+    // }})
+    deletePostByID(postId,user.id)
+    .then(result => {
+        
+        if(result[0] === 0){
+            res.status(401).send({message:"Post Not Found"})
+        }else{
+            res.send({message:"Post Deleted Successfully"})
+        }
+    })
+    .catch(err => {
+        res.send({error:err})
+    })
+    
+}

@@ -9,10 +9,11 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-    findAnCountWhere
+    findAnCountWhere,
+    update
 };
 function getOneByID(options) {
-    return user_posts.findOne(options);
+    return model.user_posts.findOne(options);
 }
 
 function add(group) {
@@ -20,25 +21,21 @@ function add(group) {
 }
 
 function findWhere(options) {
-    return user_posts.findAll(options);
+    return model.user_posts.findAll(options);
 }
 function getList() {
-    return user_posts.findAll();
+    return model.user_posts.findAll();
 }
 function findAnCountWhere(args) {
     const options = args;
-    // options.include = [
-    //     {
-    //         model: model.users,
-    //         attributes: ['id', 'first_name', 'last_name', 'user_name', 'email'],
-    //         as: 'author',
-    //     },
-    // ];
-    return model.content.findAndCountAll(options);
+    return model.user_posts.findAndCountAll(options);
+}
+function update(data, options) {
+    return model.user_posts.update(data, options);
 }
 function deleteOne(options) {
     const { id } = options.params;
-    return user_posts.destroy({
+    return model.user_posts.destroy({
         where: { id },
     });
 }
