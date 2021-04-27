@@ -1,6 +1,6 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
+module.exports = (sequelize, DataTypes) =>  sequelize.define('comments', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
@@ -15,23 +15,27 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		  key: 'id'
 		}
 	  },
-	  name: {
-		type: DataTypes.STRING(255),
+	  post_id: {
+		type: DataTypes.INTEGER(11),
+		allowNull: false,
+		references: {
+		  model: 'user_posts',
+		  key: 'id'
+		}
+	  },
+	  parent_id: {
+		type: DataTypes.INTEGER(11),
+		allowNull: true,
+		references: {
+		  model: 'comments',
+		  key: 'id'
+		}
+	  },
+	  content: {
+		type: DataTypes.TEXT,
 		allowNull: false,
 	  },
-	  description: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  featured_image_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  cover_photo_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  member_count: {
+	  love_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
 	  },
@@ -44,9 +48,13 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
 		allowNull: true
+	  },
+	  deleted_at:{
+		type: DataTypes.DATE,
+		allowNull: true,
 	  }
 	}, {
-		tableName: 'groups',
+		tableName: 'comments',
 		timestamps: false
 	});
 	module.exports.initRelations = () => {

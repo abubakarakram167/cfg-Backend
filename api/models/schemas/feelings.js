@@ -1,39 +1,19 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
+module.exports = (sequelize, DataTypes) =>  sequelize.define('feelings', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true
 	  },
-	  created_by: {
-		type: DataTypes.INTEGER(11),
-		allowNull: false,
-		references: {
-		  model: 'users',
-		  key: 'id'
-		}
-	  },
-	  name: {
+	  feeling: {
 		type: DataTypes.STRING(255),
 		allowNull: false,
 	  },
 	  description: {
 		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  featured_image_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  cover_photo_url: {
-		type: DataTypes.STRING(255),
-		allowNull: true,
-	  },
-	  member_count: {
-		type: DataTypes.INTEGER(11),
-		allowNull: true,
+		allowNull: false,
 	  },
 	  createdAt: {
 		field: 'created_at',
@@ -46,7 +26,7 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
 		allowNull: true
 	  }
 	}, {
-		tableName: 'groups',
+		tableName: 'feelings',
 		timestamps: false
 	});
 	module.exports.initRelations = () => {

@@ -2,7 +2,7 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.addColumn(
             'users',
-            'facebook_id',
+            'socket_id',
             {
                 type: Sequelize.DataTypes.STRING(255),
                 allowNull: true,
@@ -11,49 +11,42 @@ module.exports = {
         );
         await queryInterface.addColumn(
             'users',
-            'google_id',
+            'online_status',
             {
-                type: Sequelize.DataTypes.STRING(255),
+                type: Sequelize.DataTypes.ENUM(
+                    'online',
+                    'away',
+                    'offline',
+
+                ),
                 allowNull: true,
-                after: 'facebook_id',
+                after: 'socket_id',
             },
         );
         await queryInterface.addColumn(
-            'users',
-            'twitter_id',
+            'comments',
+            'deleted_at',
             {
-                type: Sequelize.DataTypes.STRING(255),
+                type: Sequelize.DataTypes.DATE,
                 allowNull: true,
-                after: 'google_id',
             },
         );
-        await queryInterface.addColumn(
-            'users',
-            'microsoft_id',
-            {
-                type: Sequelize.DataTypes.STRING(255),
-                allowNull: true,
-                after: 'twitter_id',
-            },
-        );
+
     },
 
     down: async (queryInterface) => {
         await queryInterface.removeColumn(
             'users',
-            'facebook_id',
+            'socket_id',
         );
         await queryInterface.removeColumn(
             'users',
-            'google_id',
+            'online_status',
         );
         await queryInterface.removeColumn(
-            'users',
-            'twitter_id',
+            'comments',
+            'deleted_at',
         );
-        await queryInterface.removeColumn(
-            'users',
-            'microsoft_id',
-        );
+        
     },
 };
