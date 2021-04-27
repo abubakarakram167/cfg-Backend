@@ -53,6 +53,15 @@ module.exports = {
                 allowNull: false,
             },
         );
+        await queryInterface.addColumn(
+            'content',
+            'categories',
+            {
+                type: Sequelize.DataTypes.STRING(255),
+                allowNull: true,
+                after: 'tags',
+            },
+        );
     },
 
     down: async (queryInterface) => {
@@ -75,6 +84,10 @@ module.exports = {
         await queryInterface.removeColumn(
             'content',
             'assigned_group',
+        );
+        await queryInterface.removeColumn(
+            'content',
+            'categories',
         );
     },
 };

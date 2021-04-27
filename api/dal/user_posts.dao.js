@@ -34,8 +34,8 @@ function update(data, options) {
     return model.user_posts.update(data, options);
 }
 function deleteOne(options) {
-    const { id } = options.params;
+    
     return model.user_posts.destroy({
-        where: { id },
+        where: options,
     });
 }

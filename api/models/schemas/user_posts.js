@@ -15,6 +15,14 @@ module.exports = (sequelize, DataTypes) => sequelize.define('user_posts', {
 			key: 'id'
 		}
 	},
+	timeline_id: {
+		type: DataTypes.INTEGER(11),
+		allowNull: true,
+		references: {
+			model: 'content',
+			key: 'id'
+		},
+	},
 	group_id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
@@ -23,8 +31,29 @@ module.exports = (sequelize, DataTypes) => sequelize.define('user_posts', {
 			key: 'id'
 		}
 	},
+	title: {
+		type: DataTypes.STRING(755),
+		allowNull: true,
+	},
 	content: {
 		type: DataTypes.TEXT,
+		allowNull: false,
+	},
+	assigned_group: {
+		type: DataTypes.ENUM(
+			'candidate',
+			'facilitator',
+			'content-manager',
+			'support',
+			'reviewer',
+			'system-administrator',
+			'auditor',
+		),
+		allowNull: true,
+
+	},
+	status: {
+		type: DataTypes.ENUM('published', 'saved', 'draft'),
 		allowNull: false,
 	},
 	feeling: {
@@ -49,6 +78,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('user_posts', {
 	},
 	share_count: {
 		type: DataTypes.INTEGER(11),
+		allowNull: true,
+	},
+	publish_date:
+	{
+		type: DataTypes.DATEONLY,
 		allowNull: true,
 	},
 	createdAt: {

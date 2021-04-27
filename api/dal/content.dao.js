@@ -37,6 +37,7 @@ function getList() {
 }
 function deleteOne(options) {
     const { id } = options.params;
+
     return model.content.destroy({
         where: { id },
     });

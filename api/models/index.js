@@ -38,6 +38,7 @@ function init(sequelize) {
     model.friends = sequelize.import('./schemas/friends.js')
     model.feelings = sequelize.import('./schemas/feelings.js')
     model.comments = sequelize.import('./schemas/comments.js')
+    model.day_tools = sequelize.import('./schemas/day_tools.js')
 
     model.quiz.belongsToMany(model.question, {
       through: "quiz_questions",

@@ -10,4 +10,5 @@ module.exports = router;
 // }));
 router.post('/', asyncHandler(postCtrl.createOnePost));
 router.get('/', asyncHandler(postCtrl.getTimelinePosts));
+router.get('/:postId', asyncHandler(postCtrl.getOnePostById));
 router.delete('/:postId', asyncHandler(postCtrl.deletepost));
