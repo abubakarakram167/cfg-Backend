@@ -34,7 +34,8 @@
     "passport-local": "^1.0.0",
     "sequelize": "^5.21.3",
     "sequelize-cli": "^6.2.0",
-    "sharp": "^0.28.0"
+    "sharp": "^0.28.0",
+    "socket.io": "^4.0.1"
   },
   "devDependencies": {
     "eslint": "^6.7.2",
@@ -45,7 +46,7 @@
   "scripts": {
     "seed:data": "sequelize db:seed:all",
     "bootsrap": "sequelize db:seed:all",
-    "start": "npm run bootsrap && nodemon -r dotenv/config api/app.js",
+    "start": " nodemon -r dotenv/config api/app.js",
     "start:prod": "node -r dotenv/config api/app.js",
     "lint": "eslint ."
   },

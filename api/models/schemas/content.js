@@ -84,6 +84,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
     created_by: {
         type: DataTypes.INTEGER(11),
         allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
     created_at: {
         type: DataTypes.DATE,
@@ -93,7 +97,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
         type: DataTypes.DATE,
         allowNull: true,
     },
-    tags:{
+    tags: {
         type: DataTypes.STRING(255),
         allowNull: true,
     }

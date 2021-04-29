@@ -22,6 +22,9 @@ const quiz_questionsRoutes = require('./quiz_questions.route');
 // const session_categoriesRoutes = require('./session_categories.route');
 // const session_groupsRoutes = require('./session_groups.route');
 const user_groupsRoutes = require('./user_groups.route');
+const postRoutes = require('./posts.route');
+const friendsRoutes = require('./friends.route');
+const commentsRoutes = require('./comments.route');
 
 const router = express.Router();
 
@@ -35,6 +38,8 @@ router.use('/auth', authRoutes);
 router.use('/preferences', preferencesRoutes);
 router.use('/question', questionRoutes);
 router.use('/users', userRoutes);
+router.use('/userPosts',postRoutes)
+router.use('/friends',friendsRoutes)
 // router.use('/categories', categoriesRoutes);
 // router.use('/content_subscribers',content_subscribersRoutes);
 // router.use('/gift_rewards', gift_rewardsRoutes);
@@ -48,6 +53,7 @@ router.use('/tags', tagsRoutes);
 // router.use('/content_keywords',content_keywordsRoutes);
 router.use('/quiz', quizRoutes);
 router.use('/quiz_questions', quiz_questionsRoutes);
+router.use('/comments' , commentsRoutes)
 // router.use('/session_categories',session_categoriesRoutes);
 // router.use('/session_groups',session_groupsRoutes);
 // router.use('/user_groups', user_groupsRoutes);

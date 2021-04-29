@@ -86,9 +86,23 @@ app.use((err, req, res, next) => {
     next(err);
 });
 if (!module.parent) {
-    app.listen(config.port, () => {
+    let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
     });
+    console.log("here");
+    const socketIo = require('./helpers/socket.io').init(server);
+    socketIo.on('connection', socket => {
+        
+        console.log('Client connected' , socket.id);
+        socket.on('login' , sid => {
+            console.log(sid);
+        })
+        socket.on('disconnect', () => {
+            console.log('user disconnected' , socket.id);
+        });
+    });
+    
+    
 }
 console.log('Endpoints: \n', listEndpoints(app));
 
