@@ -280,8 +280,12 @@ async function getOneContentByID(req, res) {
 }
 // this fucntion is for session only will return compelete session details including title and sub-tilte
 async function getSingleSessionCompleteDetails(req, res) {
-    const type = 'session';
+    const {type} = req.params;
     const { id } = req.params;
+    let allowedTypes = [
+        'tool',
+        'session'
+    ]
     if (!allowedTypes.includes(type)) {
         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
         return;
