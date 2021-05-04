@@ -63,12 +63,14 @@ async function findTimelinePosts(userId) {
             publish_date: {
                 [Op.or]: [null, { [Op.lte]: tool_day }]
             },
-            assigned_group: {
-                [Op.or]: [null, userRole]
-            },
-            user_id: {
-                [Op.in]: userFriends
-            },
+            [Op.or]: [
+                 {assigned_group:{[Op.or]: [null, userRole]}},
+                { user_id: {[Op.in]: userFriends} }
+            ],
+            
+            // user_id: {
+            //     [Op.in]: userFriends
+            // },
             deletedAt: null,
             status: 'published'
 
