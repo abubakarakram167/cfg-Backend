@@ -12,7 +12,9 @@ module.exports = {
     getFriends,
     approveFriend,
     getUserFriendsById,
-    deleteFriendRequest
+    deleteFriendRequest,
+    getFriendRequests,
+    getSentRequests
 };
 async function insertFriend(friendId , userId) {
     
@@ -69,6 +71,8 @@ async function checkFriendStatus(userId,friendId) {
 
     return friends;
 }
+
+
 
 
 
@@ -156,5 +160,31 @@ async function getFriends(req, res) {
     const {user} = req;
     let friends = await getUserFriendsById(user.id);
     res.send(friends)
+}
+
+async function getFriendRequests(req,res){
+    const {user} = req;
+    let requests = await friendService.findWhere({where:
+        {
+            user2:user.id,
+            status:'sent'
+        },
+        attributes: [['user1','userId']]
+
+    })
+    res.send(requests)
+}
+
+async function getSentRequests(req,res) {
+    const {user} = req;
+    let requests = await friendService.findWhere({where:
+        {
+            user1:user.id,
+            status:'sent'
+        },
+        attributes: [['user2','userId']]
+
+    })
+    res.send(requests)
 }
 

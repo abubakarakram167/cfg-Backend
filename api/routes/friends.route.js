@@ -12,3 +12,5 @@ router.post('/', asyncHandler(friendCtrl.addFriend));
 router.get('/', asyncHandler(friendCtrl.getFriends));
 router.post('/approve', asyncHandler(friendCtrl.approveFriend));
 router.post('/delete', asyncHandler(friendCtrl.deleteFriendRequest));
+router.get('/friend-requests' , friendCtrl.getFriendRequests)
+router.get('/sent-requests' , friendCtrl.getSentRequests)

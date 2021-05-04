@@ -260,6 +260,7 @@ async function editContent(req, res) {
     requestObject.created_by = req.user.id;
     await contentDb.update(requestObject);
     if (requestObject.type === 'timeline') {
+        console.log("is_timeline");
         let postUpdateObject = {};
 
         requestObject.title != undefined ? postUpdateObject.title = requestObject.title : null
