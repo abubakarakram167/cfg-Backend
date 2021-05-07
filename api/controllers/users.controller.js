@@ -278,7 +278,7 @@ async function getOneByID(req, res){
   const {id} = req.params;
   let user = await userService.findOne({
     where:{id},
-    attributes: ['first_name' , 'last_name' , 'user_name' , 'photo_url']
+    attributes: ['first_name' , 'last_name' , 'user_name' , 'photo_url','bio']
   })
   res.send(user)
 }
