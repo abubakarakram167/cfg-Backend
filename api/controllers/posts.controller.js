@@ -57,6 +57,7 @@ async function findTimelinePosts(userId) {
         attributes: ['role']
     })
     userRole = userRole.role;
+    userFriends.push(userId)
     console.log(userRole);
     let posts = await postService.findWhere({
         where: {
