@@ -16,7 +16,7 @@ function init(sequelize) {
     model.question = sequelize.import('./schemas/question.js');
     model.status = sequelize.import('./schemas/status.js');
     model.users = sequelize.import('./schemas/users.js');
-    model.categories = sequelize.import('./schemas/categories.js'); // todo delete
+    //model.categories = sequelize.import('./schemas/categories.js'); // todo delete
     model.content_subscribers = sequelize.import('./schemas/content_subscribers.js');
     model.gift_rewards = sequelize.import('./schemas/gift_rewards.js');
     model.groups = sequelize.import('./schemas/groups.js'); // todo delete
