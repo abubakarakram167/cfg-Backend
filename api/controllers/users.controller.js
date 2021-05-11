@@ -18,6 +18,7 @@ module.exports = {
   updateStatus,
   deleteUsers,
   editUser,
+  getOneByID
 };
 
 async function insert(userData) {
@@ -230,7 +231,7 @@ async function resetPassword(req, res) {
     newUser = true;
     updateData.status = 1;
   }
-
+  updateData.terms_accepted = 1;
   await user.update(updateData);
   res.send({ message: responseMessages.passwordChangeSuccess, newUser });
 }
@@ -271,4 +272,13 @@ async function deleteUsers(req, res) {
     }
   );
   res.send({ message: responseMessages.recordDeleteSuccess });
+}
+
+async function getOneByID(req, res){
+  const {id} = req.params;
+  let user = await userService.findOne({
+    where:{id},
+    attributes: ['first_name' , 'last_name' , 'user_name' , 'photo_url','bio']
+  })
+  res.send(user)
 }

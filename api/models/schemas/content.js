@@ -100,7 +100,25 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
     tags: {
         type: DataTypes.STRING(255),
         allowNull: true,
-    }
+    },
+    assigned_group:
+    {
+        type: DataTypes.ENUM(
+            'candidate',
+            'facilitator',
+            'content-manager',
+            'support',
+            'reviewer',
+            'system-administrator',
+            'auditor',
+        ),
+        allowNull: false,
+    },
+    categories:
+    {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
 }, {
     tableName: 'content',
     timestamps: false,

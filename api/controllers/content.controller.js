@@ -9,6 +9,7 @@ const model = require('../models');
 const responseMessages = require('../helpers/response-messages');
 const dayJs = require('dayjs')
 const Sequelize = require('sequelize')
+const { QueryTypes } = require('sequelize');
 const Op = Sequelize.Op;
 
 
@@ -31,7 +32,8 @@ module.exports = {
     deleteContent,
     editContent,
     getDayTools,
-    search
+    search,
+    getAllTitles
 };
 async function insertContent(contentData) {
     const content = { ...contentData };
@@ -260,6 +262,7 @@ async function editContent(req, res) {
     requestObject.created_by = req.user.id;
     await contentDb.update(requestObject);
     if (requestObject.type === 'timeline') {
+        console.log("is_timeline");
         let postUpdateObject = {};
 
         requestObject.title != undefined ? postUpdateObject.title = requestObject.title : null
@@ -280,8 +283,12 @@ async function getOneContentByID(req, res) {
 }
 // this fucntion is for session only will return compelete session details including title and sub-tilte
 async function getSingleSessionCompleteDetails(req, res) {
-    const type = 'session';
+    const {type} = req.params;
     const { id } = req.params;
+    let allowedTypes = [
+        'tool',
+        'session'
+    ]
     if (!allowedTypes.includes(type)) {
         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
         return;
@@ -394,4 +401,21 @@ async function search(req, res) {
 
     searchResult = { users: users, posts: posts , tools:tools , events:events };
     res.send(searchResult)
+}
+async function getAllTitles(req,res){
+    const type = req.params.type;
+    const {offset , limit} = req.pagination;
+    console.log(offset ,  limit);
+    //finally preapred query that prepares dataset for timeline
+    let toolsQuery = `SELECT c.*,p.type as parent_type  FROM content c INNER JOIN content p ON p.id = c.content_header_id WHERE p.type='${type}' AND c.type='title' LIMIT ${limit} OFFSET ${offset}`;
+
+    const toolTitles = await model.sequelize.query( toolsQuery, { type: QueryTypes.SELECT });
+    for(let title of toolTitles){
+        const subTitles = await findAllContent({
+            where: { type: 'sub-title', content_header_id: title.id },
+        });
+        title.subTitles = subTitles;
+    }
+    res.send(toolTitles);
+    
 }

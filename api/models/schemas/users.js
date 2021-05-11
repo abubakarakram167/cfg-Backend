@@ -158,6 +158,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    terms_accepted: {
+        type: DataTypes.INTEGER(1),
+        allowNull: false,
+    }
 }, {
     tableName: 'users',
     timestamps: false,
