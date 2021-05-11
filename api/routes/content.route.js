@@ -11,8 +11,8 @@ router.post('/:type', asyncHandler(ContentCtrl.createOneContent));
 router.put('/:type', asyncHandler(ContentCtrl.editContent));
 router.get('/list/:type', asyncHandler(ContentCtrl.getListContentMultiple));
 router.get('/list/content/:type/:id', asyncHandler(ContentCtrl.getSingleSessionCompleteDetails));
-router.get('/dayTools', ContentCtrl.getDayTools);
-router.get('/:id', ContentCtrl.getOneContentByID);
-router.get('/search/:string', ContentCtrl.search);
-
-router.delete('/:id', ContentCtrl.deleteContent);
+router.get('/dayTools', asyncHandler(ContentCtrl.getDayTools));
+router.get('/:id', asyncHandler(ContentCtrl.getOneContentByID));
+router.get('/search/:string', asyncHandler(ContentCtrl.search));
+router.get('/getAllTitles/:type' , asyncHandler(ContentCtrl.getAllTitles))
+router.delete('/:id', asyncHandler(ContentCtrl.deleteContent));
