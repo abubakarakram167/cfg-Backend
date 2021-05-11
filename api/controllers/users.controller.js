@@ -231,7 +231,7 @@ async function resetPassword(req, res) {
     newUser = true;
     updateData.status = 1;
   }
-
+  updateData.terms_accepted = 1;
   await user.update(updateData);
   res.send({ message: responseMessages.passwordChangeSuccess, newUser });
 }
