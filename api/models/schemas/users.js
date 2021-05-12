@@ -160,7 +160,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
     },
     terms_accepted: {
         type: DataTypes.INTEGER(1),
-        allowNull: false,
+        allowNull: true,
     }
 }, {
     tableName: 'users',
