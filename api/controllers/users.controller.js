@@ -225,6 +225,8 @@ async function resetPassword(req, res) {
     salt,
     passwordResetToken: null,
     password: bcrypt.hashSync(password + salt, 10),
+    passwordResetTokenSentTime:null,
+    passwordAttemptsCount:0,
   };
   let newUser = false;
   if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
