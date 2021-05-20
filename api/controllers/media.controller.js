@@ -4,6 +4,7 @@ const mediaService = require('../dal/media.dao');
 const sharp = require('sharp')
 const thumb = require('node-video-thumb')
 const fs = require('fs')
+const { Op } = require('sequelize'); 
 
 module.exports = {
     createOneMedia,
@@ -37,9 +38,10 @@ async function findAllMedia(options) {
 
 async function createOneMedia(req, res) {
     const reqObj = req.body;
+    console.log(reqObj);
     const { user } = req;
     const mediaFiles = req.files;
-
+    const category = reqObj.category ? reqObj.category : 'general'; 
     let mediaResponse = {};
     let insertObject = [];
     mediaFiles.forEach(file => {
@@ -51,6 +53,7 @@ async function createOneMedia(req, res) {
         mediaObject.created_by = user.id;
         mediaObject.created_at = new Date();
         mediaObject.file_name = file.filename;
+        mediaObject.category = category;
         insertObject.push(mediaObject);
         if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
             sharp(file.path).resize(200, 200).toFile(path.join(__dirname, '../../static/thumbnails/' + file.filename), (err, resizeImage) => {
@@ -71,6 +74,7 @@ async function createOneMedia(req, res) {
         }
 
     })
+    console.log(insertObject);
     let media = await insertMedia(insertObject);
 
     //console.log(req.files);
@@ -86,7 +90,12 @@ async function getOneMediaByID(req, res) {
 }
 
 async function getListMediaMultiple(_req, res) {
-    let media = await findAllMedia({ attributes: ['id', 'file_name','title','description','created_by','created_at'] });
+    let media = await findAllMedia({
+        where:{category:{
+            [Op.notIn]: ['profile', 'cover']
+        }},
+        attributes: ['id', 'file_name','title','description','category','created_by','created_at'] 
+    });
     
     res.send(media);
 }
