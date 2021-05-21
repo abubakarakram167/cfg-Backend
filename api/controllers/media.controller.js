@@ -38,7 +38,7 @@ async function findAllMedia(options) {
 
 async function createOneMedia(req, res) {
     const reqObj = req.body;
-    console.log(reqObj);
+    //console.log(reqObj);
     const { user } = req;
     const mediaFiles = req.files;
     const category = reqObj.category ? reqObj.category : 'general'; 
@@ -74,7 +74,7 @@ async function createOneMedia(req, res) {
         }
 
     })
-    console.log(insertObject);
+    //console.log(insertObject);
     let media = await insertMedia(insertObject);
 
     //console.log(req.files);

@@ -17,7 +17,7 @@ const sequelize = require('./models/sequelize.connection')(databaseConfig[config
 require('./models').init(sequelize);
 const passport = require('./library/passport');
 const logger = require('./library/logger');
-
+const fs = require('fs');
 const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
 
 logger.initializeGlobalHandlers();
@@ -88,6 +88,18 @@ app.use((err, req, res, next) => {
 if (!module.parent) {
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
+        //portion to make thumbnails static inside static
+        if(!fs.existsSync(path.join(__dirname, '../static'))){
+            console.log("static folder does not exist");
+            fs.mkdirSync(path.join(__dirname, '../static'));
+        }
+
+        //portion to make thumbnails folder inside static
+        if(!fs.existsSync(path.join(__dirname, '../static/thumbnails'))){
+            console.log("static/thumbnails folder does not exist");
+            fs.mkdirSync(path.join(__dirname, '../static/thumbnails'));
+        }
+        
     });
     console.log("here");
     const socketIo = require('./helpers/socket.io').init(server);
