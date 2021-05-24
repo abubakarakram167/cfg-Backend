@@ -241,7 +241,7 @@ async function createOneContent(req, res) {
 
     }
     const socket = require('../helpers/socket.io').getIO();
-    socket.emit('post', content.id);
+    socket.emit('notification', content.id );
     res.send({ content });
 }
 
