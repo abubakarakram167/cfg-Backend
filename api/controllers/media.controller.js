@@ -80,16 +80,16 @@ async function createOneMedia(req, res) {
                 }
             });
         }
-        if (file.mimetype === 'video/mp4' || file.mimetype === 'video/mkv') {
-            const options = {
-                source: file.path,
-                target: path.join(__dirname, thumbDir + file.filename + '.png'),
-                width: 200,   // thumb's width
-                height: 200,   // thumb's height
-                seconds: 2    // seconds from start
-            }
-            await thumb(options)
-        }
+        // if (file.mimetype === 'video/mp4' || file.mimetype === 'video/mkv') {
+        //     const options = {
+        //         source: file.path,
+        //         target: path.join(__dirname, thumbDir + file.filename + '.png'),
+        //         width: 200,   // thumb's width
+        //         height: 200,   // thumb's height
+        //         seconds: 2    // seconds from start
+        //     }
+        //     await thumb(options)
+        // }
         if (fs.existsSync(path.join(__dirname , `../../static/${file.filename}`))) { 
             fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} exists before uploading, ${os.EOL}`, err => {
                 if (err) {
