@@ -65,6 +65,14 @@ async function createOneMedia(req, res) {
         mediaObject.file_name = file.filename;
         mediaObject.category = category;
         insertObject.push(mediaObject);
+        if (fs.existsSync(path.join(__dirname , `../../static/${file.filename}`))) { 
+            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} exists before sharp, ${os.EOL}`, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+            })
+        } 
         if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
             await sharp(file.path).resize(200, 200).toFile(path.join(__dirname, thumbDir + file.filename), (err, resizeImage) => {
                 if (err) {
@@ -82,7 +90,14 @@ async function createOneMedia(req, res) {
             }
             await thumb(options)
         }
-
+        if (fs.existsSync(path.join(__dirname , `../../static/${file.filename}`))) { 
+            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} exists before uploading, ${os.EOL}`, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+            })
+        } 
         var stream = fs.createReadStream(file.path);
         s3fsImpl.writeFile(file.filename, stream).then(function () {
             console.log("uploaded to s3");
