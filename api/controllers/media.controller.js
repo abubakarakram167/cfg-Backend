@@ -1,5 +1,6 @@
 /* Controller 1 */
 const path = require('path');
+const os = require('os');
 const mediaService = require('../dal/media.dao');
 const sharp = require('sharp')
 const thumb = require('node-video-thumb')
@@ -85,6 +86,13 @@ async function createOneMedia(req, res) {
         var stream = fs.createReadStream(file.path);
         s3fsImpl.writeFile(file.filename, stream).then(function () {
             console.log("uploaded to s3");
+            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
             // fs.unlink(file.path, function (err) {
             //     if (err) {
             //         console.error(err);
@@ -93,6 +101,13 @@ async function createOneMedia(req, res) {
             // res.status(200).end();
         }).catch(function (err) {
             console.log("err occured on s3", err);
+            fs.appendFile(path.join(__dirname , '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
         })
     }
 
