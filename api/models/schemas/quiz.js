@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => sequelize.define('quiz', {
         allowNull: false,
     },
     category: {
-        type: DataTypes.INTEGER(11),
-        allowNull: false,
+        type: DataTypes.STRING(255),
+        allowNull: true,
     },
     apply_to_group: {
         type: DataTypes.INTEGER(11),
