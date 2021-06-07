@@ -7,14 +7,15 @@ module.exports = {
     findWhere,
     getOneByID,
     getList,
-    deleteOne
+    deleteOne,
+    update
 };
 function getOneByID(options) {
     return model.quiz.findOne(options);
 }
 
 function add(quiz) {
-  return model.quiz.create({ ...quiz, createdAt: new Date()});
+  return model.quiz.create({ ...quiz, created_at: new Date() , updated_at: new Date()});
 }
 
 function findWhere(options) {
@@ -22,6 +23,9 @@ function findWhere(options) {
 }
 function getList() {
     return model.quiz.findAll();
+}
+function update(data, options) {
+    return model.quiz.update(data, options);
 }
 function deleteOne(options) {
     const { id } = options.params;

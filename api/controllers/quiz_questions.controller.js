@@ -43,13 +43,18 @@ module.exports = {
     
     async function getListQuizQuestionMultiple(_req, res) {
         const quiz_question = await findAllQuizQuestion();
-        console.log("thq dasd", quiz_question);
+        //console.log("thq dasd", quiz_question);
         res.send(quiz_question);
     }
     
     async function deleteQuizQuestion(req, res) {
         const quiz_question = await deleteByIDQuizQuestion(req);
-        res.send(quiz_question);
+        if(quiz_question == 1){
+            res.send({message:"Quiz-Question Link Destroyed Successfully"});
+        }else{
+            res.send({message:"Quiz-Question Link Destruction not Successfull."});
+        }
+        
     }
     
       

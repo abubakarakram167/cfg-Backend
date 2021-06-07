@@ -8,7 +8,8 @@ const router = express.Router();
 module.exports = router;
 
 router.post('/', QuestionOptionCtrl.createOneQuestionOption);
-router.get('/list', QuestionOptionCtrl.getListQuestionOptionMultiple);
-router.get('/:id', QuestionOptionCtrl.getOneQuestionOptionByID);
+router.get('/list/:questionId', QuestionOptionCtrl.getListQuestionOptionMultiple);
+router.get('/:id', QuestionOptionCtrl.getOneOptionByID);
+router.put('/:id', QuestionOptionCtrl.updateOption);
 router.delete('/:id', QuestionOptionCtrl.deleteQuestionOption);
 

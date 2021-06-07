@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('quiz', {
         allowNull: false,
     },
     status: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.ENUM('published', 'saved', 'draft'),
         allowNull: false,
     },
     created_by: {

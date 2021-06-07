@@ -47,6 +47,26 @@ module.exports = {
                 allowNull: false
             }
         );
+        await queryInterface.changeColumn(
+            'quiz',
+            'status',
+            {
+                type: Sequelize.DataTypes.ENUM('published', 'saved', 'draft'),
+                allowNull: false
+            }
+        );
+        await queryInterface.changeColumn(
+            'quiz',
+            'created_by',
+            {
+              type: Sequelize.DataTypes.INTEGER(11),
+              allowNull: true,
+              references: {
+                model: 'users',
+                key: 'id'
+              },
+            },
+          );
 
         await queryInterface.removeColumn(
             'quiz_questions',
@@ -60,6 +80,7 @@ module.exports = {
                 allowNull: false
             }
         );
+        
 
 
 
