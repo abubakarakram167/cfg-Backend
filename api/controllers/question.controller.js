@@ -2,13 +2,17 @@
 
 const questionService = require('../dal/question.dao');
 const bankService = require('../dal/question_bank.dao');
+const bankOptionService = require('../dal/bank_options.dao');
 module.exports = {
     createOneQuestion,
     getOneQuestionByID,
     getListQuestionMultiple,
     deleteQuestion,
     updateQuestion,
-    getBankQuestions
+    getBankQuestions,
+    deleteBankQuestion,
+    getOneBankQuestionByID,
+    updateBankQuestion
 };
 async function insertQuestion(questionData) {
     const question = { ...questionData };
@@ -79,7 +83,39 @@ async function deleteQuestion(req, res) {
 
 
 //Bank Portion Starts here
+
 async function getBankQuestions(req,res){
     const questions = await bankService.getList();
     res.send(questions);
+}
+
+async function deleteBankQuestion(req, res) {
+    const id = req.params.id;
+    await  bankOptionService.deleteOne({question_id:id});
+    const question = await bankService.deleteOne({id});
+    //console.log(question);
+    if (question == 1) {
+        res.send({ message: "Bank Question deleted successfully" });
+    } else {
+        res.send({ message: "Bank Question deletion failure" });
+    }
+}
+
+async function getOneBankQuestionByID(req, res){
+    const id = req.params.id;
+    const question = await bankService.getOneByID({where:{id}})
+    res.send(question);
+}
+
+async function updateBankQuestion(req, res) {
+    const id = req.params.id;
+    const updatedData = req.body;
+    
+    const quiz = await bankService.update(updatedData, { where: { id } });
+    if (quiz[0] == 1) {
+        res.send({ message: "Bank Question updated successfully" });
+    } else {
+        res.send({ message: "Bank Question updation failure" });
+    }
+
 }

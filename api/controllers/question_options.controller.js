@@ -8,7 +8,8 @@ module.exports = {
     getListQuestionOptionMultiple,
     deleteQuestionOption,
     updateOption,
-    getBankQuestionOptions
+    getBankQuestionOptions,
+    updateBankOption
 };
 async function insertQuestionOption(question_optionData) {
     const question_option = { ...question_optionData };
@@ -99,5 +100,17 @@ async function getBankQuestionOptions(req, res) {
     const qId = req.params.questionId;
     const question_option = await bank_optionService.findWhere({where:{question_id:qId}});
     res.send(question_option);
+}
+
+async function updateBankOption(req,res){
+    const id = req.params.id;
+    const updatedData = req.body;
+    const quiz = await bank_optionService.update(updatedData , {where: {id}});
+    if(quiz[0] == 1){
+        res.send({ message:"Bank Option updated successfully"});
+    }else{
+        res.send({ message:"Bank Option updation failure"});
+    }
+    
 }
 

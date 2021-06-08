@@ -18,6 +18,7 @@ function add(question) {
 }
 
 function findWhere(options) {
+    options.is_deleted = false;
     return model.question.findAll(options);
 }
 function getList() {

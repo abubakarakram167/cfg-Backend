@@ -26,6 +26,9 @@ module.exports = {
       include: [
         {
           model: model.question,
+          where:{
+            is_deleted:false
+          },
           as: "questions"
         }
       ]

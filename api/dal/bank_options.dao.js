@@ -7,7 +7,7 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-
+    update
 };
 function getOneByID(options) {
     return model.bank_options.findOne(options);
@@ -23,6 +23,9 @@ function findWhere(options) {
 function getList() {
     return model.bank_options.findAll();
 }
+function update(data, options) {
+    return model.bank_options.update(data, options);
+  }
 function deleteOne(options) {
     return model.bank_options.destroy({
         where: options,

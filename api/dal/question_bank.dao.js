@@ -7,6 +7,7 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
+    update
 
 };
 function getOneByID(options) {
@@ -22,6 +23,9 @@ function findWhere(options) {
 }
 function getList() {
     return model.question_bank.findAll();
+}
+function update(data, options) {
+    return model.question_bank.update(data, options);
 }
 function deleteOne(options) {
     return model.question_bank.destroy({

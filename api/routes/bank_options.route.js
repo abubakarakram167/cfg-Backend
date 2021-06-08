@@ -10,6 +10,6 @@ module.exports = router;
 //router.post('/', QuestionOptionCtrl.createOneQuestionOption);
 router.get('/list/:questionId', QuestionOptionCtrl.getBankQuestionOptions);
 //router.get('/:id', QuestionOptionCtrl.getOneOptionByID);
-//router.put('/:id', QuestionOptionCtrl.updateOption);
+router.put('/:id', QuestionOptionCtrl.updateBankOption);
 //router.delete('/:id', QuestionOptionCtrl.deleteQuestionOption);
 
