@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('question_options',
 				key: 'id'
 			}
 		},
-		is_answer: {
-			type: DataTypes.BOOLEAN,
+		score:{
+			type: DataTypes.INTEGER(11),
 			allowNull: false
 		},
 		sequence_order: {

@@ -7,7 +7,7 @@ module.exports = {
     getOneQuizByID,
     getListQuizMultiple,
     deleteQuiz,
-
+    updateQuiz
 };
 async function insertQuiz(quizData) {
     const quiz = { ...quizData };
@@ -49,7 +49,25 @@ async function getListQuizMultiple(_req, res) {
     res.send(quiz);
 }
 
+async function updateQuiz(req,res){
+    const id = req.params.id;
+    const updatedData = req.body;
+    const quiz = await quizService.update(updatedData , {where: {id}});
+    if(quiz[0] == 1){
+        res.send({ message:"Quiz updated successfully"});
+    }else{
+        res.send({ message:"Quiz updation failure"});
+    }
+    
+}
+
 async function deleteQuiz(req, res) {
     const quiz = await deleteByIDQuiz(req);
-    res.send(quiz);
+    console.log(quiz);
+    if(quiz == 1){
+        res.send({ message:"Quiz deleted successfully"});
+    }else{
+        res.send({ message:"Quiz deletion failure"});
+    }
+    
 }

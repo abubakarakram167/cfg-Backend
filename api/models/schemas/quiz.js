@@ -24,8 +24,16 @@ module.exports = (sequelize, DataTypes) => sequelize.define('quiz', {
         allowNull: true,
     },
     apply_to_group: {
-        type: DataTypes.INTEGER(11),
-        allowNull: true,
+        type: DataTypes.ENUM(
+            'candidate',
+            'facilitator',
+            'content-manager',
+            'support',
+            'reviewer',
+            'system-administrator',
+            'auditor',
+        ),
+        allowNull: false,
     },
     success_navigate_page: {
         type: DataTypes.STRING(255),
@@ -36,7 +44,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('quiz', {
         allowNull: false,
     },
     status: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.ENUM('published', 'saved', 'draft'),
         allowNull: false,
     },
     created_by: {
