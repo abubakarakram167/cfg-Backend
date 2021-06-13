@@ -15,6 +15,7 @@ const localLogin = new LocalStrategy({
 }, async (email, password, done) => {
     let user = await userDao.findOne({ where: { email } });
     if(user){var timeafter30 = dayjs(user.passwordAttemptTime).add(30, 'minutes');}
+    //console.log("after 30 minutes " , timeafter30 , " and now: ", new Date());
     if (user && timeafter30 > new Date() && user.passwordAttemptsCount >= 5) {
         return done(null, false, { message: responseMessages.accountLockedFor30Minutes });
     }

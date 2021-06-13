@@ -36,7 +36,7 @@ var upload = multer({ storage: storage , fileFilter: fileFilter });
 const router = express.Router();
 module.exports = router;
 
-router.post('/', upload.array('media', 4), MediaCtrl.createOneMedia);
+router.post('/',  upload.array('media', 4), MediaCtrl.createOneMedia);
 router.get('/list', MediaCtrl.getListMediaMultiple);
 router.get('/:id', MediaCtrl.getOneMediaByID);
 router.put('/:id', MediaCtrl.editMedia);
