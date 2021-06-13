@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const dayjs = require('dayjs');
 const userService = require('../dal/users.dao');
+const userNotifService = require('../dal/user_notifications.dao');
+const socketService = require('../dal/socket-ids.dao');
 const authHelper = require('../helpers/auth.helper');
 const responseMessages = require('../helpers/response-messages');
 const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
@@ -18,7 +20,10 @@ module.exports = {
   updateStatus,
   deleteUsers,
   editUser,
-  getOneByID
+  getOneByID,
+  addUserSocket,
+  removeUserSocket,
+  removeAllSockets
 };
 
 async function insert(userData) {
@@ -283,4 +288,26 @@ async function getOneByID(req, res){
     attributes: ['first_name' , 'last_name' , 'user_name' , 'photo_url','bio']
   })
   res.send(user)
+}
+
+
+async function addUserSocket(user_id,socket_id){
+  let data = {
+    user_id , socket_id
+  };
+  console.log(data);
+  let socket = await socketService.add(data)
+  return socket;
+}
+
+async function removeUserSocket(socket_id){
+  
+  let socket = await socketService.deleteOne({socket_id})
+  return socket;
+}
+
+async function removeAllSockets(){
+  
+  let socket = await socketService.emptyTable()
+  return socket;
 }

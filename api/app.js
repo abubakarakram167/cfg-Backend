@@ -86,6 +86,7 @@ app.use((err, req, res, next) => {
     next(err);
 });
 if (!module.parent) {
+    const userCtrl = require('./controllers/users.controller')
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
         //portion to make thumbnails static inside static
@@ -99,18 +100,30 @@ if (!module.parent) {
             console.log("static/thumbnails folder does not exist");
             fs.mkdirSync(path.join(__dirname, '../static/thumbnails'));
         }
+        userCtrl.removeAllSockets();
         
     });
     console.log("here");
     const socketIo = require('./helpers/socket.io').init(server);
+    
     socketIo.on('connection', socket => {
         
         console.log('Client connected' , socket.id);
         socket.on('login' , sid => {
-            console.log(sid);
+            console.log(sid , " socket-id " , socket.id);
+            userCtrl.addUserSocket(sid.userId , socket.id);
+        })
+        socket.on('logout' , sid => {
+            console.log(sid , " logout-socket-id " , socket.id);
+            //userCtrl.addUserSocket(sid.userId , socket.id);
+        })
+        socket.on('window' , sid => {
+            console.log(sid , " window-socket-id " , socket.id);
+            userCtrl.addUserSocket(sid.userId , socket.id);
         })
         socket.on('disconnect', () => {
             console.log('user disconnected' , socket.id);
+            userCtrl.removeUserSocket(socket.id);
         });
     });
     

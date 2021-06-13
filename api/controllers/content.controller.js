@@ -10,6 +10,7 @@ const responseMessages = require('../helpers/response-messages');
 const dayJs = require('dayjs')
 const Sequelize = require('sequelize')
 const { QueryTypes } = require('sequelize');
+const scheduler = require('../helpers/scheduler')
 const Op = Sequelize.Op;
 
 
@@ -183,6 +184,9 @@ async function createOneContent(req, res) {
     const { user } = req;
     const requestObject = req.body;
     const id = requestObject;
+    if(requestObject.assigned_group === undefined){
+        res.status(422).send({ message: "Assigned Group is required" })
+    }
     if (!allowedTypes.includes(type)) {
         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
         return;
@@ -198,35 +202,37 @@ async function createOneContent(req, res) {
     let tempTags = requestObject.tags
     requestObject.tags = JSON.stringify(requestObject.tags);
     console.log(requestObject);
-    const content = await insertContent(requestObject);
-    requestObject.tags = tempTags
-    // content = await content.get({ plain: true });
-    const tagsData = requestObject.tags.map((t) => {
-        const r = t;
-        if (!r.createdBy) {
-            r.createdBy = req.user.id;
-        }
-        r.updatedAt = new Date();
-        return r;
-    });
-    const tags = await model.tags.bulkCreate(tagsData,
-        {
-            fields: ['id', 'text', 'tagType', 'createdBy'],
-            updateOnDuplicate: ['updatedAt'],
-        });
-    const contentTags = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (let tag of tags) {
-        // eslint-disable-next-line no-await-in-loop
-        tag = await tag.get({ plain: true });
-        contentTags.push({
-            tagId: tag.id,
-            contentId: content.id,
-        });
-    }
-    // add tags for content
-    await model.contentTags.bulkCreate(contentTags);
-    content.tags = tags;
+    
+    // //const content = await insertContent(requestObject);
+    
+    // requestObject.tags = tempTags
+    // // content = await content.get({ plain: true });
+    // const tagsData = requestObject.tags.map((t) => {
+    //     const r = t;
+    //     if (!r.createdBy) {
+    //         r.createdBy = req.user.id;
+    //     }
+    //     r.updatedAt = new Date();
+    //     return r;
+    // });
+    // const tags = await model.tags.bulkCreate(tagsData,
+    //     {
+    //         fields: ['id', 'text', 'tagType', 'createdBy'],
+    //         updateOnDuplicate: ['updatedAt'],
+    //     });
+    // const contentTags = [];
+    // // eslint-disable-next-line no-restricted-syntax
+    // for (let tag of tags) {
+    //     // eslint-disable-next-line no-await-in-loop
+    //     tag = await tag.get({ plain: true });
+    //     contentTags.push({
+    //         tagId: tag.id,
+    //         contentId: content.id,
+    //     });
+    // }
+    // // add tags for content
+    // await model.contentTags.bulkCreate(contentTags);
+    // content.tags = tags;
     if (requestObject.type === 'timeline') {
         let postAddObject = {};
 
@@ -237,11 +243,22 @@ async function createOneContent(req, res) {
         requestObject.assigned_group != undefined ? postAddObject.assigned_group = requestObject.assigned_group : null
         postAddObject.user_id = user.id;
         console.log("post object", postAddObject);
-        let newPost = await postService.add({ ...postAddObject, timeline_id: content.id });
 
+        //let newPost = await postService.add({ ...postAddObject, timeline_id: content.id });
+       
+        let userEmails = await userService.findWhere({ 
+            where: {role:requestObject.assigned_group},
+            attributes:['email'],
+            raw: true
+        })
+        console.log(userEmails);
+        scheduler.scheduleJob(1 ,postAddObject.publish_date , () => {
+            console.log("HEllo");
+        })
     }
-    const socket = require('../helpers/socket.io').getIO();
-    socket.emit('notification', content.id );
+    // const socket = require('../helpers/socket.io').getIO();
+    // socket.emit('notification', content.id );
+    let content = "ffe"
     res.send({ content });
 }
 
@@ -272,7 +289,7 @@ async function editContent(req, res) {
         requestObject.assigned_group != undefined ? postUpdateObject.assigned_group = requestObject.assigned_group : null
 
         let updatedPost = await postService.update(postUpdateObject, { where: { timeline_id: id } });
-
+        
     }
     res.send({ message: responseMessages.recordUpdateSuccess });
 }
