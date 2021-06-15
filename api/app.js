@@ -87,6 +87,7 @@ app.use((err, req, res, next) => {
 });
 if (!module.parent) {
     const userCtrl = require('./controllers/users.controller')
+    const contentCtrl = require('./controllers/content.controller')
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
         //portion to make thumbnails static inside static
@@ -104,6 +105,7 @@ if (!module.parent) {
         
     });
     console.log("here");
+    //contentCtrl.checkPendingEmailJobs()
     const socketIo = require('./helpers/socket.io').init(server);
     
     socketIo.on('connection', socket => {

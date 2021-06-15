@@ -179,3 +179,9 @@ async function getOnePostById(req, res) {
     res.send(post);
 
 }
+
+async function checkEmailJobs(){
+
+    
+
+}

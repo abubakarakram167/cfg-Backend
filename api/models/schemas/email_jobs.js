@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('email_jobs', {
         autoIncrement: true
     },
     job_date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     post_id: {

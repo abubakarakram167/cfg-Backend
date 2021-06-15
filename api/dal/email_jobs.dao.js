@@ -11,29 +11,30 @@ module.exports = {
     emptyTable
 };
 function getOneByID(options) {
-    return model.socket_ids.findOne(options);
+    return model.email_jobs.findOne(options);
 }
 
-function add(socket) {
-    return model.socket_ids.create({ ...socket, created_at: new Date() });
+function add(job) {
+    return model.email_jobs.create({ ...job, created_at: new Date() });
 }
 
 function findWhere(options) {
-    return model.socket_ids.findAll(options);
+    options.where.job_date = "2021-06-15"
+    return model.email_jobs.findAll(options);
 }
 function getList() {
-    return model.socket_ids.findAll();
+    return model.email_jobs.findAll();
 }
 function update(data, options) {
-    return model.socket_ids.update(data, options);
+    return model.email_jobs.update(data, options);
 }
 function deleteOne(options) {
-    return model.socket_ids.destroy({
+    return model.email_jobs.destroy({
         where: options,
     });
 }
 function emptyTable() {
-    return model.socket_ids.destroy({
+    return model.email_jobs.destroy({
         where: {},
         truncate: true
     })
