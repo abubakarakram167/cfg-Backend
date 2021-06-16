@@ -385,7 +385,7 @@ async function getDayTools(req, res) {
             raw: true
         })
         if (toolsInDb.length < 2) {
-            return res.status(401).send({ message: "Not Enough tools found in database" })
+            return res.status(422).send({ message: "Not Enough tools found in database" })
         }
         var firstToolIndex = Math.floor(Math.random() * toolsInDb.length);
         var secondToolIndex = Math.floor(Math.random() * toolsInDb.length);

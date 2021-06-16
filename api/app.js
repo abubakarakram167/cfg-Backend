@@ -111,7 +111,7 @@ if (!module.parent) {
         console.log('Client connected' , socket.id);
         socket.on('login' , sid => {
             console.log(sid , " socket-id " , socket.id);
-            userCtrl.addUserSocket(sid.userId , socket.id);
+           // userCtrl.addUserSocket(sid.userId , socket.id);
         })
         socket.on('logout' , sid => {
             console.log(sid , " logout-socket-id " , socket.id);
@@ -119,7 +119,7 @@ if (!module.parent) {
         })
         socket.on('window' , sid => {
             console.log(sid , " window-socket-id " , socket.id);
-            userCtrl.addUserSocket(sid.userId , socket.id);
+           // userCtrl.addUserSocket(sid.userId , socket.id);
         })
         socket.on('disconnect', () => {
             console.log('user disconnected' , socket.id);
