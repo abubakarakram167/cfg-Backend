@@ -69,9 +69,14 @@ async function findTimelinePosts(userId , req) {
                  {assigned_group: userRole}
             ],
             deletedAt: null,
-            status: 'published'
+            status: 'published',
+            
 
         },
+        order: [
+            ['id', 'DESC'],
+            ['publish_date', 'DESC']
+        ],
         ...req.pagination
         
     })
