@@ -129,11 +129,23 @@ async function approveFriend(req, res) {
         return res.status(401).send({ message: "Bad Request" });
     }
     updateFriend({ status: 'accepted' }, { where: { user1: friendId, user2: userId } })
-        .then((result) => {
+        .then(async (result) => {
             if (result[0] == 0) {
                 res.send({ message: "No request found" });
             } else {
+                let userEmail = await userService.findOne({
+                    where: { id: friendId },
+                    attributes: ['email' , 'first_name'], 
+                    raw: true
+                });
+                let userName = user.first_name + " " + user.last_name
+                sendEmail(
+                    userEmail.email,
+                    "Approval of Friend Request",
+                    ` <p>Hi , <strong>${userEmail.first_name}</strong> , Your request to be a part of <strong>${userName}'s</strong> CFG family has been approved.<br>Open the CFG app now to start communication.</p>`
+                )
                 res.send({ message: "request approved successfully" });
+                
             }
 
         })
