@@ -1,54 +1,64 @@
 /* jshint indent: 1 */
 
-module.exports = (sequelize, DataTypes) =>  sequelize.define('groups', {
+module.exports = (sequelize, DataTypes) => sequelize.define('groups', {
 	id: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true
-	  },
-	  created_by: {
+	},
+	created_by: {
 		type: DataTypes.INTEGER(11),
 		allowNull: false,
 		references: {
-		  model: 'users',
-		  key: 'id'
+			model: 'users',
+			key: 'id'
 		}
-	  },
-	  name: {
+	},
+	name: {
 		type: DataTypes.STRING(255),
 		allowNull: false,
-	  },
-	  description: {
+	},
+	description: {
 		type: DataTypes.STRING(255),
 		allowNull: true,
-	  },
-	  featured_image_url: {
+	},
+	type:
+	{
+		type: DataTypes.ENUM(
+			'private',
+			'public',
+			'family-only',
+		),
+		defaultValue: 'private',
+		allowNull: true,
+	},
+	featured_image_url: {
 		type: DataTypes.STRING(255),
 		allowNull: true,
-	  },
-	  cover_photo_url: {
+	},
+	cover_photo_url: {
 		type: DataTypes.STRING(255),
 		allowNull: true,
-	  },
-	  member_count: {
+	},
+	member_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
-	  },
-	  createdAt: {
+	},
+	createdAt: {
 		field: 'created_at',
 		type: 'TIMESTAMP',
 		allowNull: true
-	  },
-	  updatedAt: {
+	},
+	updatedAt: {
 		field: 'updated_at',
 		type: 'TIMESTAMP',
 		allowNull: true
-	  }
-	}, {
-		tableName: 'groups',
-		timestamps: false
-	});
-	module.exports.initRelations = () => {
-		delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
+	}
+}, {
+	tableName: 'groups',
+	timestamps: false
+});
+module.exports.initRelations = () => {
+	delete module.exports.initRelations; // Destroy itself to prevent repeated calls.
 };

@@ -362,10 +362,14 @@ async function getListContentMultiple(req, res) {
         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
         return;
     }
-    const content = await findAllContent({
+    let options = {
         where: { type },
         ...req.pagination,
-    });
+    }
+    if(req.body.attributes !== undefined){
+        options.attributes = req.body.attributes
+    }
+    const content = await findAllContent(options);
     res.send({ data: content.rows, count: content.count });
 }
 
@@ -441,6 +445,8 @@ async function search(req, res) {
     searchResult = { users: users, posts: posts, tools: tools, events: events };
     res.send(searchResult)
 }
+
+
 async function getAllTitles(req, res) {
     const type = req.params.type;
     const { offset, limit } = req.pagination;
@@ -458,6 +464,11 @@ async function getAllTitles(req, res) {
     res.send(toolTitles);
 
 }
+
+async function getSessionsByGroup(req, res){
+    
+}
+
 
 async function initiatePostEmails(postId) {
     const model = require('../models');

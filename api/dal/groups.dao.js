@@ -8,7 +8,7 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-
+    update
 };
 function getOneByID(options) {
     return model.groups.findOne(options);
@@ -24,6 +24,10 @@ function findWhere(options) {
 function getList() {
     return model.groups.findAll();
 }
+function update(data, options) {
+    return model.groups.update(data, options);
+}
+
 function deleteOne(options) {
     const { id } = options.params;
     return model.groups.destroy({
