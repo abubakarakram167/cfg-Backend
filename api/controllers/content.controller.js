@@ -5,11 +5,16 @@ const dayToolService = require('../dal/dayTools.dao')
 const postService = require('../dal/user_posts.dao')
 const userService = require('../dal/users.dao')
 const friendCtrl = require('./friends.controller')
+const dayjs = require('dayjs');
 const model = require('../models');
 const responseMessages = require('../helpers/response-messages');
 const dayJs = require('dayjs')
 const Sequelize = require('sequelize')
 const { QueryTypes } = require('sequelize');
+const scheduler = require('../helpers/scheduler')
+const { sendPostEmails } = require('../helpers/mail.helper');
+const emailJobService = require('../dal/email_jobs.dao')
+const helpers = require('./helperFunctions')
 const Op = Sequelize.Op;
 
 
@@ -33,7 +38,8 @@ module.exports = {
     editContent,
     getDayTools,
     search,
-    getAllTitles
+    getAllTitles,
+    checkPendingEmailJobs
 };
 async function insertContent(contentData) {
     const content = { ...contentData };
@@ -136,16 +142,16 @@ async function searchContent(searchString, userId) {
                 [Op.like]: `%${searchString}%`
             },
             start_date: {
-                [Op.lte]: tool_day 
+                [Op.lte]: tool_day
             },
             end_date: {
-                [Op.gt]: tool_day 
+                [Op.gt]: tool_day
             },
             assigned_group: {
                 [Op.or]: [null, userRole]
             },
             status: 'published',
-            type:'tool'
+            type: 'tool'
         },
         attributes: ['id', 'title', 'detail']
     })
@@ -156,23 +162,23 @@ async function searchContent(searchString, userId) {
                 [Op.like]: `%${searchString}%`
             },
             start_date: {
-                [Op.lte]: tool_day 
+                [Op.lte]: tool_day
             },
             end_date: {
-                [Op.gt]: tool_day 
+                [Op.gt]: tool_day
             },
             assigned_group: {
                 [Op.or]: [null, userRole]
             },
             status: 'published',
-            type:'event'
+            type: 'event'
         },
         attributes: ['id', 'title', 'detail']
     })
 
-    
 
-    return {tools , events};
+
+    return { tools, events };
 }
 
 
@@ -183,6 +189,9 @@ async function createOneContent(req, res) {
     const { user } = req;
     const requestObject = req.body;
     const id = requestObject;
+    if (requestObject.assigned_group === undefined) {
+        res.status(422).send({ message: "Assigned Group is required" })
+    }
     if (!allowedTypes.includes(type)) {
         res.status(422).send({ message: responseMessages.propertiesRequiredAllowed.replace('?', allowedTypes) });
         return;
@@ -190,15 +199,17 @@ async function createOneContent(req, res) {
     delete requestObject.id;
     requestObject.type = type;
     requestObject.created_by = req.user.id;
-    console.log(requestObject.tags);
+    //console.log(requestObject.tags);
     if (!requestObject.tags) {
         requestObject.tags = []
         console.log("No tags")
     }
     let tempTags = requestObject.tags
     requestObject.tags = JSON.stringify(requestObject.tags);
-    console.log(requestObject);
+    //console.log(requestObject);
+
     const content = await insertContent(requestObject);
+
     requestObject.tags = tempTags
     // content = await content.get({ plain: true });
     const tagsData = requestObject.tags.map((t) => {
@@ -237,11 +248,31 @@ async function createOneContent(req, res) {
         requestObject.assigned_group != undefined ? postAddObject.assigned_group = requestObject.assigned_group : null
         postAddObject.user_id = user.id;
         console.log("post object", postAddObject);
+
         let newPost = await postService.add({ ...postAddObject, timeline_id: content.id });
 
+        if (dayjs(new Date()).isSame(postAddObject.publish_date, 'day')) {
+            console.log("date found ");
+            initiatePostEmails(newPost.id , req.user.first_name)
+            await helpers.emitPostIdToUsers(newPost.id , "admin")
+            
+        } else {
+            await emailJobService.add({
+                job_date: postAddObject.publish_date,
+                post_id: newPost.id,
+                status: "pending",
+                created_at: new Date(),
+            })
+        }
+
+        // console.log(userEmails);
+        // scheduler.scheduleJob(1 ,postAddObject.publish_date , () => {
+        //     console.log("HEllo");
+        // })
     }
-    const socket = require('../helpers/socket.io').getIO();
-    socket.emit('notification', content.id );
+    // const socket = require('../helpers/socket.io').getIO();
+    // socket.emit('notification', content.id );
+    //let content = "ffe"
     res.send({ content });
 }
 
@@ -277,13 +308,18 @@ async function editContent(req, res) {
     res.send({ message: responseMessages.recordUpdateSuccess });
 }
 
+
+
 async function getOneContentByID(req, res) {
     const content = await getByIDContent({ where: { id: req.params.id } });
     res.send(content);
 }
+
+
+
 // this fucntion is for session only will return compelete session details including title and sub-tilte
 async function getSingleSessionCompleteDetails(req, res) {
-    const {type} = req.params;
+    const { type } = req.params;
     const { id } = req.params;
     let allowedTypes = [
         'tool',
@@ -317,6 +353,9 @@ async function getSingleSessionCompleteDetails(req, res) {
     session.titles = OurTitles;
     res.send({ data: session, count: session.count });
 }
+
+
+
 async function getListContentMultiple(req, res) {
     const { type } = req.params;
     if (!allowedTypes.includes(type)) {
@@ -368,7 +407,7 @@ async function getDayTools(req, res) {
             raw: true
         })
         if (toolsInDb.length < 2) {
-            return res.status(401).send({ message: "Not Enough tools found in database" })
+            return res.status(422).send({ message: "Not Enough tools found in database" })
         }
         var firstToolIndex = Math.floor(Math.random() * toolsInDb.length);
         var secondToolIndex = Math.floor(Math.random() * toolsInDb.length);
@@ -397,25 +436,53 @@ async function search(req, res) {
     let users = await searchUsers(searchString);
     let posts = await searchPosts(searchString, user.id);
     let content = await searchContent(searchString, user.id);
-    const {tools , events} = content;
+    const { tools, events } = content;
 
-    searchResult = { users: users, posts: posts , tools:tools , events:events };
+    searchResult = { users: users, posts: posts, tools: tools, events: events };
     res.send(searchResult)
 }
-async function getAllTitles(req,res){
+async function getAllTitles(req, res) {
     const type = req.params.type;
-    const {offset , limit} = req.pagination;
-    console.log(offset ,  limit);
+    const { offset, limit } = req.pagination;
+    console.log(offset, limit);
     //finally preapred query that prepares dataset for timeline
     let toolsQuery = `SELECT c.*,p.type as parent_type  FROM content c INNER JOIN content p ON p.id = c.content_header_id WHERE p.type='${type}' AND c.type='title' LIMIT ${limit} OFFSET ${offset}`;
 
-    const toolTitles = await model.sequelize.query( toolsQuery, { type: QueryTypes.SELECT });
-    for(let title of toolTitles){
+    const toolTitles = await model.sequelize.query(toolsQuery, { type: QueryTypes.SELECT });
+    for (let title of toolTitles) {
         const subTitles = await findAllContent({
             where: { type: 'sub-title', content_header_id: title.id },
         });
         title.subTitles = subTitles;
     }
     res.send(toolTitles);
-    
+
 }
+
+async function initiatePostEmails(postId) {
+    const model = require('../models');
+    let post = await model.sequelize.query(`SELECT assigned_group,first_name FROM user_posts JOIN users ON users.id = user_posts.user_id WHERE user_posts.id = ${postId}`, { type: QueryTypes.SELECT , raw:true})
+    let {assigned_group , first_name :authorName} = post[0]
+    
+    let userEmails = await userService.findWhere({
+        where: { role: assigned_group },
+        attributes: ['first_name', 'email'],
+        raw: true
+    })
+    
+    sendPostEmails(userEmails,authorName)
+
+}
+
+async function checkPendingEmailJobs(){
+    let today = dayjs(new Date()).format('YYYY-MM-DD')
+    
+    let pendingJobs =  await emailJobService.findWhere({where:{status: 'pending' , job_date:today }  , raw:true})
+    for(job of pendingJobs){
+        await initiatePostEmails(job.post_id)
+        await helpers.emitPostIdToUsers(job.post_id , "admin")
+        await emailJobService.update({status:'done'},{where:{id:job.id}})
+    }
+    console.log("pending jobs from content controller ",pendingJobs);
+}
+
