@@ -48,7 +48,7 @@ function transformArrayToBracket(array) {
     return bracketString;
 }
 
-async function findTimelinePosts(userId) {
+async function findTimelinePosts(userId , req) {
 
     let userFriends = await friendCtrl.getUserFriendsById(userId);
     let today = new Date();
@@ -70,9 +70,16 @@ async function findTimelinePosts(userId) {
                  {assigned_group: userRole}
             ],
             deletedAt: null,
-            status: 'published'
+            status: 'published',
+            
 
-        }
+        },
+        order: [
+            ['id', 'DESC'],
+            ['publish_date', 'DESC']
+        ],
+        ...req.pagination
+        
     })
     // let userFriendsSQL = transformArrayToBracket(userFriends);
     // //this part selects timeline posts assigned to specific user role
@@ -123,7 +130,7 @@ async function getTimelinePosts(req, res) {
     const { user } = req;
 
 
-    let posts = await findTimelinePosts(user.id);
+    let posts = await findTimelinePosts(user.id , req);
 
     res.send(posts)
 }
