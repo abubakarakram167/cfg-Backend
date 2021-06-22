@@ -161,7 +161,16 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
     terms_accepted: {
         type: DataTypes.INTEGER(1),
         allowNull: true,
-    }
+    },
+    cfg_session_id:
+    {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        references: {
+            model: 'content',
+            key: 'id',
+        }
+    },
 }, {
     tableName: 'users',
     timestamps: false,

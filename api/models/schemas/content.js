@@ -119,6 +119,15 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
         type: DataTypes.STRING(255),
         allowNull: true,
     },
+    group_id:
+    {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        references: {
+            model: 'groups',
+            key: 'id',
+        }
+    }
 }, {
     tableName: 'content',
     timestamps: false,
