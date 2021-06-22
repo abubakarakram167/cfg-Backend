@@ -23,7 +23,9 @@ module.exports = {
   getOneByID,
   addUserSocket,
   removeUserSocket,
-  removeAllSockets
+  removeAllSockets,
+  removeAllUserSockets,
+  addWindowSocket
 };
 
 async function insert(userData) {
@@ -39,7 +41,7 @@ async function insert(userData) {
   const userRaw = await userDb.get({ plain: true });
   delete userRaw.password;
   delete userRaw.salt;
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken , "createPassword");
+  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "createPassword");
   sendWelcomeEmail(user.email, resetLink);
   return userRaw;
 }
@@ -84,7 +86,7 @@ async function editUser(req, res) {
 }
 
 async function register(req, res) {
-  const  password  = "Jmb@123#inact"
+  const password = "Jmb@123#inact"
   const requestObject = req.body;
   if (!authHelper.validatePassword(password)) {
     res.status(422).json({ message: responseMessages.invalidPasswordFormat });
@@ -193,11 +195,11 @@ async function forgotPassword(req, res) {
         passwordResetTokenSentTime: new Date(),
       })
       .then(() => {
-        console.log(authHelper.getResetPasswordLink(token , "reset"))
+        console.log(authHelper.getResetPasswordLink(token, "reset"))
         sendEmail(
           email,
           responseMessages.passwordResetRequested,
-          `click the link to reset password <a href="${authHelper.getResetPasswordLink(token , "reset")}">Reset Password</a>`
+          `click the link to reset password <a href="${authHelper.getResetPasswordLink(token, "reset")}">Reset Password</a>`
         );
       });
   }
@@ -230,8 +232,8 @@ async function resetPassword(req, res) {
     salt,
     passwordResetToken: null,
     password: bcrypt.hashSync(password + salt, 10),
-    passwordResetTokenSentTime:null,
-    passwordAttemptsCount:0,
+    passwordResetTokenSentTime: null,
+    passwordAttemptsCount: 0,
   };
   let newUser = false;
   if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
@@ -281,33 +283,50 @@ async function deleteUsers(req, res) {
   res.send({ message: responseMessages.recordDeleteSuccess });
 }
 
-async function getOneByID(req, res){
-  const {id} = req.params;
+async function getOneByID(req, res) {
+  const { id } = req.params;
   let user = await userService.findOne({
-    where:{id},
-    attributes: ['first_name' , 'last_name' , 'user_name' , 'photo_url','bio']
+    where: { id },
+    attributes: ['first_name', 'last_name', 'user_name', 'photo_url', 'bio']
   })
   res.send(user)
 }
 
 
-async function addUserSocket(user_id,socket_id){
+async function addUserSocket(user_id, socket_id) {
   let data = {
-    user_id , socket_id
+    user_id, socket_id
   };
   console.log(data);
   let socket = await socketService.add(data)
   return socket;
 }
 
-async function removeUserSocket(socket_id){
+async function addWindowSocket(user_id, socket_id) {
   
-  let socket = await socketService.deleteOne({socket_id})
+  let data = {
+    user_id, socket_id , created_at: new Date()
+  };
+  //console.log(data);
+  let socket = await socketService.findOrCreate({where:data})
+  return socket;
+
+}
+
+async function removeUserSocket(socket_id) {
+
+  let socket = await socketService.deleteOne({ socket_id })
   return socket;
 }
 
-async function removeAllSockets(){
-  
+async function removeAllUserSockets(user_id) {
+
+  let socket = await socketService.deleteOne({ user_id })
+  return socket;
+}
+
+async function removeAllSockets() {
+
   let socket = await socketService.emptyTable()
   return socket;
 }

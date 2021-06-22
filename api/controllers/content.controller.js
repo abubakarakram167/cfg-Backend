@@ -14,6 +14,7 @@ const { QueryTypes } = require('sequelize');
 const scheduler = require('../helpers/scheduler')
 const { sendPostEmails } = require('../helpers/mail.helper');
 const emailJobService = require('../dal/email_jobs.dao')
+const helpers = require('./helperFunctions')
 const Op = Sequelize.Op;
 
 
@@ -253,13 +254,14 @@ async function createOneContent(req, res) {
         if (dayjs(new Date()).isSame(postAddObject.publish_date, 'day')) {
             console.log("date found ");
             initiatePostEmails(newPost.id , req.user.first_name)
+            await helpers.emitPostIdToUsers(newPost.id , "admin")
             
         } else {
             await emailJobService.add({
                 job_date: postAddObject.publish_date,
                 post_id: newPost.id,
                 status: "pending",
-                created_at: date
+                created_at: new Date(),
             })
         }
 
@@ -306,10 +308,15 @@ async function editContent(req, res) {
     res.send({ message: responseMessages.recordUpdateSuccess });
 }
 
+
+
 async function getOneContentByID(req, res) {
     const content = await getByIDContent({ where: { id: req.params.id } });
     res.send(content);
 }
+
+
+
 // this fucntion is for session only will return compelete session details including title and sub-tilte
 async function getSingleSessionCompleteDetails(req, res) {
     const { type } = req.params;
@@ -346,6 +353,9 @@ async function getSingleSessionCompleteDetails(req, res) {
     session.titles = OurTitles;
     res.send({ data: session, count: session.count });
 }
+
+
+
 async function getListContentMultiple(req, res) {
     const { type } = req.params;
     if (!allowedTypes.includes(type)) {
@@ -470,8 +480,9 @@ async function checkPendingEmailJobs(){
     let pendingJobs =  await emailJobService.findWhere({where:{status: 'pending' , job_date:today }  , raw:true})
     for(job of pendingJobs){
         await initiatePostEmails(job.post_id)
+        await helpers.emitPostIdToUsers(job.post_id , "admin")
         await emailJobService.update({status:'done'},{where:{id:job.id}})
     }
-    console.log(pendingJobs);
+    console.log("pending jobs from content controller ",pendingJobs);
 }
 

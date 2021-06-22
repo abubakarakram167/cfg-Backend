@@ -19,7 +19,7 @@ function add(job) {
 }
 
 function findWhere(options) {
-    options.where.job_date = "2021-06-15"
+    //options.where.job_date = "2021-06-15"
     return model.email_jobs.findAll(options);
 }
 function getList() {

@@ -8,7 +8,8 @@ module.exports = {
     getList,
     deleteOne,
     update,
-    emptyTable
+    emptyTable,
+    findOrCreate
 };
 function getOneByID(options) {
     return model.socket_ids.findOne(options);
@@ -31,6 +32,9 @@ function deleteOne(options) {
     return model.socket_ids.destroy({
         where: options,
     });
+}
+function findOrCreate(options) {
+    return model.socket_ids.findOrCreate(options)
 }
 function emptyTable() {
     return model.socket_ids.destroy({

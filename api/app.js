@@ -1,5 +1,5 @@
 /* eslint no-console:0, no-param-reassign:0 */
-const path=require('path');
+const path = require('path');
 const express = require('express');
 const app = express();
 const compress = require('compression');
@@ -18,10 +18,11 @@ require('./models').init(sequelize);
 const passport = require('./library/passport');
 const logger = require('./library/logger');
 const fs = require('fs');
+const schedule = require('node-schedule');
 const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
 
 logger.initializeGlobalHandlers();
- 
+
 const { authFactory } = require('./middleware/auth-handler');
 
 
@@ -63,7 +64,7 @@ app.use(authFactory);
 // API router
 
 app.use('/api/', routes);
-app.use('/static',express.static(path.join(__dirname, '../static')));
+app.use('/static', express.static(path.join(__dirname, '../static')));
 
 app.use((err, req, res, next) => {
     // customize Joi validation errors
@@ -91,45 +92,64 @@ if (!module.parent) {
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
         //portion to make thumbnails static inside static
-        if(!fs.existsSync(path.join(__dirname, '../static'))){
+        if (!fs.existsSync(path.join(__dirname, '../static'))) {
             console.log("static folder does not exist");
             fs.mkdirSync(path.join(__dirname, '../static'));
         }
 
         //portion to make thumbnails folder inside static
-        if(!fs.existsSync(path.join(__dirname, '../static/thumbnails'))){
+        if (!fs.existsSync(path.join(__dirname, '../static/thumbnails'))) {
             console.log("static/thumbnails folder does not exist");
             fs.mkdirSync(path.join(__dirname, '../static/thumbnails'));
         }
         userCtrl.removeAllSockets();
-        
+
     });
     console.log("here");
-    //contentCtrl.checkPendingEmailJobs()
-    const socketIo = require('./helpers/socket.io').init(server);
-    
-    socketIo.on('connection', socket => {
-        
-        console.log('Client connected' , socket.id);
-        socket.on('login' , sid => {
-            console.log(sid , " socket-id " , socket.id);
-           // userCtrl.addUserSocket(sid.userId , socket.id);
-        })
-        socket.on('logout' , sid => {
-            console.log(sid , " logout-socket-id " , socket.id);
-            //userCtrl.addUserSocket(sid.userId , socket.id);
-        })
-        socket.on('window' , sid => {
-            console.log(sid , " window-socket-id " , socket.id);
-           // userCtrl.addUserSocket(sid.userId , socket.id);
-        })
-        socket.on('disconnect', () => {
-            console.log('user disconnected' , socket.id);
-            userCtrl.removeUserSocket(socket.id);
-        });
+    const rule = new schedule.RecurrenceRule();
+    rule.hour = 0;
+    rule.minute = 0;
+    //rule.second = 20;
+    const job = schedule.scheduleJob('1', rule, function () {
+        console.log("scheduler triggered");
+        contentCtrl.checkPendingEmailJobs()
     });
     
-    
+    const socketIo = require('./helpers/socket.io').init(server);
+
+    socketIo.on('connection', socket => {
+
+        console.log('Client connected', socket.id);
+
+        socket.on('login', sid => {
+            console.log(sid, " socket-id ", socket.id);
+            if (sid.userId) {
+                userCtrl.addUserSocket(sid.userId, socket.id);
+            }
+        })
+
+        socket.on('logout', sid => {
+            console.log(sid, " logout-socket-id ", socket.id);
+            if (sid.userId) {
+                userCtrl.removeAllUserSockets(sid.userId, socket.id);
+            }
+        })
+
+        socket.on('window', sid => {
+            console.log(sid, " window-socket-id ", socket.id);
+            if (sid.userId) {
+                userCtrl.addWindowSocket(sid.userId, socket.id);
+            }
+        })
+
+        socket.on('disconnect', () => {
+            console.log('user disconnected', socket.id);
+            userCtrl.removeUserSocket(socket.id);
+        });
+
+    });
+
+
 }
 console.log('Endpoints: \n', listEndpoints(app));
 
