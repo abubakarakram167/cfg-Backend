@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('user_groups', {
     },
     group_id: {
         type: DataTypes.INTEGER(11),
-        allowNull: true,
+        allowNull: false,
+        references: {
+            model: 'groups',
+            key: 'id',
+        }
     },
     user_id: {
         type: DataTypes.INTEGER(11),

@@ -39,6 +39,17 @@ const exportObj = {
             `Welcome to CFG <br/> click link to set the password: <a href="${link}">Set Password</a>`,
         );
     },
+
+    sendPostEmails: async (emails, authorName) => {
+        for(let email of emails){
+            await exportObj.sendEmail(
+                email.email,
+                'New Post Notification',
+                `<b>Hi  <strong>${email.first_name}</strong> </b> <br> ${authorName} has just posted something new in the cfg app for you. Check it out Now!`,
+            );
+        }
+        
+    },
 };
 
 module.exports = exportObj;

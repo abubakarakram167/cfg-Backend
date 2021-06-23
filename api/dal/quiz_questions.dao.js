@@ -14,7 +14,7 @@ module.exports = {
   }
   
   function add(quiz_question) {
-      return model.quiz_questions.create({ ...quiz_question, createdAt: new Date() });
+      return model.quiz_questions.create({ ...quiz_question, created_at: new Date() , updated_at: new Date(), is_deleted:false });
   }
   
   function findWhere(options) {
@@ -26,6 +26,9 @@ module.exports = {
       include: [
         {
           model: model.question,
+          where:{
+            is_deleted:false
+          },
           as: "questions"
         }
       ]

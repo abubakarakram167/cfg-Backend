@@ -31,6 +31,8 @@ function init(sequelize) {
     model.session_categories = sequelize.import('./schemas/session_categories.js');
     model.session_groups = sequelize.import('./schemas/session_groups.js');
     model.user_groups = sequelize.import('./schemas/user_groups.js');
+    model.question_bank = sequelize.import('./schemas/question_bank.js');
+    model.bank_options = sequelize.import('./schemas/bank_options.js');
 
     model.tags = sequelize.import('./schemas/tags.js');
     model.contentTags = sequelize.import('./schemas/content_tags.js');
@@ -39,6 +41,9 @@ function init(sequelize) {
     model.feelings = sequelize.import('./schemas/feelings.js')
     model.comments = sequelize.import('./schemas/comments.js')
     model.day_tools = sequelize.import('./schemas/day_tools.js')
+    model.socket_ids = sequelize.import('./schemas/socket_ids.js')
+    model.user_notifications = sequelize.import('./schemas/user_notifications.js')
+    model.email_jobs = sequelize.import('./schemas/email_jobs.js')
 
     model.quiz.belongsToMany(model.question, {
       through: "quiz_questions",

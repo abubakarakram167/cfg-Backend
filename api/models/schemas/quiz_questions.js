@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('quiz_questions', {
 			type: DataTypes.DATE,
 			allowNull: false
 		},
-		deleted: {
+		is_deleted: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false
 		}

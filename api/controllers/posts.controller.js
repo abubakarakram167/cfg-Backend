@@ -9,6 +9,7 @@ const responseMessages = require('../helpers/response-messages');
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op;
 const dayJs = require('dayjs')
+const helpers = require('./helperFunctions')
 
 module.exports = {
     createOnePost,
@@ -22,9 +23,9 @@ module.exports = {
 async function insertPost(postData) {
     const post = { ...postData };
     const postDb = await postService.add(post);
-    //const postRaw = await postDb.get({ plain: true });
+    const postRaw = await postDb.get({ plain: true });
 
-    return postDb;
+    return postRaw;
 }
 async function getPostById(postId) {
     const postDb = await postService.getOneByID({ where: { id: postId, deletedAt: null } });
@@ -47,7 +48,7 @@ function transformArrayToBracket(array) {
     return bracketString;
 }
 
-async function findTimelinePosts(userId) {
+async function findTimelinePosts(userId , req) {
 
     let userFriends = await friendCtrl.getUserFriendsById(userId);
     let today = new Date();
@@ -69,9 +70,16 @@ async function findTimelinePosts(userId) {
                  {assigned_group: userRole}
             ],
             deletedAt: null,
-            status: 'published'
+            status: 'published',
+            
 
-        }
+        },
+        order: [
+            ['id', 'DESC'],
+            ['publish_date', 'DESC']
+        ],
+        ...req.pagination
+        
     })
     // let userFriendsSQL = transformArrayToBracket(userFriends);
     // //this part selects timeline posts assigned to specific user role
@@ -113,7 +121,8 @@ async function createOnePost(req, res) {
 
     console.log(requestObject);
     const post = await insertPost(requestObject);
-
+    helpers.emitPostIdToUsers(post.id , "user")
+    helpers.sendEmailsToUserFriends(post.id , req.user.first_name)
     res.send({ post });
 }
 
@@ -121,7 +130,7 @@ async function getTimelinePosts(req, res) {
     const { user } = req;
 
 
-    let posts = await findTimelinePosts(user.id);
+    let posts = await findTimelinePosts(user.id , req);
 
     res.send(posts)
 }
@@ -177,5 +186,11 @@ async function getOnePostById(req, res) {
     }
     let post = await getPostById(postId);
     res.send(post);
+
+}
+
+async function checkEmailJobs(){
+
+    
 
 }

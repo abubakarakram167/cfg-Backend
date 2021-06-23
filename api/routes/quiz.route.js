@@ -10,6 +10,7 @@ module.exports = router;
 router.post('/', QuizCtrl.createOneQuiz);
 router.get('/list', QuizCtrl.getListQuizMultiple);
 router.get('/:id', QuizCtrl.getOneQuizByID);
+router.put('/:id', QuizCtrl.updateQuiz);
 router.delete('/:id', QuizCtrl.deleteQuiz);
 
       

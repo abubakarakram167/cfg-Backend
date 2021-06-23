@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) =>  sequelize.define('media', {
 			type: DataTypes.BOOLEAN,
 			allowNull: false
 		},
+		category: {
+			type: DataTypes.STRING(255),
+			allowNull: true
+		},
 		created_by: {
 			type: DataTypes.INTEGER(11),
 			allowNull: true,
