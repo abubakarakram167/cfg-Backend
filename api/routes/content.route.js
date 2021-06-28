@@ -15,4 +15,5 @@ router.get('/dayTools', asyncHandler(ContentCtrl.getDayTools));
 router.get('/:id', asyncHandler(ContentCtrl.getOneContentByID));
 router.get('/search/:string', asyncHandler(ContentCtrl.search));
 router.get('/getAllTitles/:type' , asyncHandler(ContentCtrl.getAllTitles))
+router.get('/getSessionsBygroup/:groupId' , asyncHandler(ContentCtrl.getSessionsByGroup))
 router.delete('/:id', asyncHandler(ContentCtrl.deleteContent));
