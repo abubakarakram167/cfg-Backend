@@ -39,7 +39,8 @@ module.exports = {
     getDayTools,
     search,
     getAllTitles,
-    checkPendingEmailJobs
+    checkPendingEmailJobs,
+    getSessionsByGroup
 };
 async function insertContent(contentData) {
     const content = { ...contentData };
@@ -466,7 +467,25 @@ async function getAllTitles(req, res) {
 }
 
 async function getSessionsByGroup(req, res){
-    
+    let group_id = req.params.groupId;
+    let today = new Date();
+    let tool_day = dayJs(today).format("YYYY-MM-DD")
+    let sessions = await contentService.findWhere({
+        where: {
+            group_id,
+            start_date: {
+                [Op.lte]: tool_day
+            },
+            end_date: {
+                [Op.gt]: tool_day
+            },
+            status: 'published',
+            type: 'session'
+        },
+        attributes: ['id', 'title']
+    })
+    res.send(sessions)
+
 }
 
 
