@@ -56,7 +56,10 @@ async function getGroupsList(req, res){
    
     var options = {where:{}}
     req.params.type === undefined ?  null : options.where.type = req.params.type 
-    req.params.searchString === undefined ?  null : options.where.name = {[Op.like]: `%${req.params.searchString}%`} 
+    if(req.params.searchString !== undefined && req.params.searchString !== " "){
+        options.where.name = {[Op.like]: `%${req.params.searchString}%`}
+    }
+     
     let groups = await groupService.findWhere(options)
     
     res.send(groups)
