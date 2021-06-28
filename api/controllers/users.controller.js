@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const dayjs = require('dayjs');
 const userService = require('../dal/users.dao');
 const userNotifService = require('../dal/user_notifications.dao');
+const userGroupService = require('../dal/user_groups.dao');
 const socketService = require('../dal/socket-ids.dao');
 const authHelper = require('../helpers/auth.helper');
 const responseMessages = require('../helpers/response-messages');
@@ -25,7 +26,8 @@ module.exports = {
   removeUserSocket,
   removeAllSockets,
   removeAllUserSockets,
-  addWindowSocket
+  addWindowSocket,
+  getUserGroup
 };
 
 async function insert(userData) {
@@ -292,6 +294,16 @@ async function getOneByID(req, res) {
   res.send(user)
 }
 
+async function getUserGroup(req, res) {
+  const { user } = req;
+  let userGroup = await userGroupService.getOneByID({
+    where: { user_id:user.id },
+    attributes: ['group_id']
+  })
+  res.send(userGroup)
+
+}
+
 
 async function addUserSocket(user_id, socket_id) {
   let data = {
@@ -303,12 +315,12 @@ async function addUserSocket(user_id, socket_id) {
 }
 
 async function addWindowSocket(user_id, socket_id) {
-  
+
   let data = {
-    user_id, socket_id , created_at: new Date()
+    user_id, socket_id, created_at: new Date()
   };
   //console.log(data);
-  let socket = await socketService.findOrCreate({where:data})
+  let socket = await socketService.findOrCreate({ where: data })
   return socket;
 
 }
