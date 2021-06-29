@@ -27,7 +27,8 @@ module.exports = {
   removeAllSockets,
   removeAllUserSockets,
   addWindowSocket,
-  getUserGroup
+  getUserGroup,
+  getUserGroupById
 };
 
 async function insert(userData) {
@@ -296,6 +297,7 @@ async function getOneByID(req, res) {
 
 async function getUserGroup(req, res) {
   const { user } = req;
+  
   let userGroup = await userGroupService.getOneByID({
     where: { user_id:user.id },
     attributes: ['group_id']
@@ -304,6 +306,16 @@ async function getUserGroup(req, res) {
 
 }
 
+async function getUserGroupById(req, res) {
+  const { user_id } = req.body;
+  
+  let userGroup = await userGroupService.getOneByID({
+    where: { user_id },
+    attributes: ['group_id']
+  })
+  res.send(userGroup)
+
+}
 
 async function addUserSocket(user_id, socket_id) {
   let data = {
