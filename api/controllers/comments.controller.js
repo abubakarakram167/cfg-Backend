@@ -91,7 +91,7 @@ async function getPostComments(req, res) {
     for (let comment of comments) {
         // eslint-disable-next-line no-await-in-loop
         let commentReplies = await getCommentReplies(comment.id);
-        console.log(commentReplies);
+        //console.log(commentReplies);
         comment.replies = commentReplies;
     }
 

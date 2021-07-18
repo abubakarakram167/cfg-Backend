@@ -10,7 +10,7 @@ const userRoutes = require('./users.route');
 const tagsRoutes = require('./tags.route');
 // const content_subscribersRoutes = require('./content_subscribers.route');
 const gift_rewardsRoutes = require('./gift_rewards.route');
-// const groupsRoutes = require('./groups.route');
+ const groupsRoutes = require('./groups.route');
 const mediaRoutes = require('./media.route');
 const question_optionsRoutes = require('./question_options.route');
 const sessionsRoutes = require('./sessions.route');
@@ -44,7 +44,7 @@ router.use('/friends', friendsRoutes)
 // router.use('/categories', categoriesRoutes);
 // router.use('/content_subscribers',content_subscribersRoutes);
 // router.use('/gift_rewards', gift_rewardsRoutes);
-// router.use('/groups', groupsRoutes);
+router.use('/groups', groupsRoutes);
 router.use('/media', mediaRoutes);
 
 router.use('/sessions', sessionsRoutes);

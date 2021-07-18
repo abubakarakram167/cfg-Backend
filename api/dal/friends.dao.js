@@ -8,7 +8,8 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-    update
+    update,
+    findFriends
 
 };
 function getOneByID(options) {
@@ -21,6 +22,20 @@ function add(group) {
 
 function findWhere(options) {
     return model.friends.findAll(options);
+}
+function findFriends(userId , attributes){
+    return model.friends.findAll({
+        where: {id: quizId},
+        include: [
+          {
+            model: model.users,
+            where:{
+              deleted_at:null
+            },
+            as: "users"
+          }
+        ]
+      })
 }
 function getList() {
     return model.friends.findAll();

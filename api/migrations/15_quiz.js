@@ -1,9 +1,8 @@
-/* jshint indent: 1 */
-
 module.exports = {
     up: (queryInterface, Sequelize) => queryInterface.createTable('quiz', {
         id: {
             type: Sequelize.DataTypes.INTEGER(11),
+
             allowNull: false,
             primaryKey: true,
             autoIncrement: true,
