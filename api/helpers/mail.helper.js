@@ -31,12 +31,29 @@ const exportObj = {
         // eslint-disable-next-line no-console
         console.log('Message sent: %s', info.messageId);
     },
-    sendWelcomeEmail: async (email, passwordRestLink) => {
+    sendWelcomeEmail: async (user, passwordRestLink) => {
         const link = `${passwordRestLink}.9CD599A3523898E6A12E13EC787DA50A`;
         await exportObj.sendEmail(
-            email,
+            user.email,
             'Welcome to CFG',
-            `Welcome to CFG <br/> click link to set the password: <a href="${link}">Set Password</a>`,
+            `Dear ${user.first_name},
+
+            <br><br>
+
+            We are so pleased that you have chosen to join the CFG APP family!
+            
+            <br><br>
+            
+            You will now have access to all the tools that you will need to help you unearth and build your inner Greatness; tracking your progress along the way. 
+            <br>
+            Completing registration is easy! Create a strong password with at least 8 characters, including capital letters, numbers and special characters and you’re all set. 
+            <br><br>
+            Click the link to create password: <a href="${link}">Create Password</a>
+            <br><br>
+            
+            Blessings,
+            <br><br>
+            The JMMB Joan Duncan Foundation`
         );
     },
 };

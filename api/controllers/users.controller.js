@@ -35,7 +35,7 @@ async function insert(userData) {
   delete userRaw.password;
   delete userRaw.salt;
   const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken , "createPassword");
-  sendWelcomeEmail(user.email, resetLink);
+  sendWelcomeEmail(user, resetLink);
   return userRaw;
 }
 
