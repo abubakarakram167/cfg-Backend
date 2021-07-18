@@ -44,8 +44,10 @@ async function insert(userData) {
   const userRaw = await userDb.get({ plain: true });
   delete userRaw.password;
   delete userRaw.salt;
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "createPassword");
-  sendWelcomeEmail(user.email, resetLink);
+
+  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken , "createPassword");
+  sendWelcomeEmail(user, resetLink);
+
   return userRaw;
 }
 
