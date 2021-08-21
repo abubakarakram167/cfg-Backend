@@ -97,6 +97,7 @@ async function login(req, res) {
   delete user.salt;
   const token = authHelper.generateToken(user);
   authHelper.setTokenCookie(res, authHelper.generateToken(user));
+  // authHelper.setCloudFrontSignedCookie(res);
   res.json({ user, token });
 }
 
