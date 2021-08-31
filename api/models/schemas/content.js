@@ -127,7 +127,20 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
             model: 'groups',
             key: 'id',
         }
+    },
+    facilitator: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
+    },
+    duration: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
     }
+
 }, {
     tableName: 'content',
     timestamps: false,

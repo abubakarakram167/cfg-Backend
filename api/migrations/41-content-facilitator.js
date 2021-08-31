@@ -13,6 +13,14 @@ module.exports = {
             }
           },
       );
+      await queryInterface.addColumn(
+        'content',
+        'duration',
+        {
+          type: Sequelize.DataTypes.INTEGER(11),
+          allowNull: true
+        },
+    );
       
       
   },
@@ -22,7 +30,10 @@ module.exports = {
           'content',
           'facilitator',
       );
-      
+      await queryInterface.removeColumn(
+        'content',
+        'duration',
+    );
      
   },
 };
