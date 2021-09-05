@@ -129,6 +129,36 @@ async function createOneMedia(req, res) {
                 //done!
             })
         })
+
+        let thumbStream = fs.createReadStream(path.join(__dirname, thumbDir + file.filename))
+
+        s3fsImpl.writeFile(`/thumbnails/${file.filename}`, thumbStream).then(function () {
+            console.log("uploaded to s3 thumb");
+            fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
+            // fs.unlink(file.path, function (err) {
+            //     if (err) {
+            //         console.error(err);
+            //     }
+            // });
+            // res.status(200).end();
+        }).catch(function (err) {
+            console.log("err occured on s3  thumb", err);
+            fs.appendFile(path.join(__dirname, '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
+        })
+
+
     }
 
     //console.log(insertObject);
