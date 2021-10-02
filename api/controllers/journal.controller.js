@@ -45,10 +45,10 @@ async function addJournal(req, res) {
     console.log("into add journal function", reqObj);
     insertJournal(reqObj)
         .then(result => {
-            res.send({ message: "Journal added successfully" });
+            res.send({ result,message: "Journal added successfully" });
         })
         .catch(err => {
-            res.send({ message: "an error occurred", error: err });
+            res.send({ err,message: "an error occurred", error: err });
         })
 
 
@@ -94,7 +94,7 @@ async function updateJournal(req, res) {
             id: journalId,
         },
     });
-    res.send({ message: responseMessages.recordUpdateSuccess });
+    res.send({ journalDb,message: responseMessages.recordUpdateSuccess });
 
 
 
