@@ -28,6 +28,10 @@ module.exports = {
                 key: 'id'
             }
         },
+        detail: {
+            type: Sequelize.DataTypes.TEXT,
+            allowNull: true,
+        },
         start_date: {
             type: Sequelize.DataTypes.DATE,
             allowNull: true,

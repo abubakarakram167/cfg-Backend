@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define('journal', {
             key: 'id'
         }
     },
+    detail: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
     start_date: {
         type: DataTypes.DATE,
         allowNull: true,
