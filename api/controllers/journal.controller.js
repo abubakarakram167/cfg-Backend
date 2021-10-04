@@ -80,7 +80,7 @@ async function getJournals(req, res) {
 
 async function updateJournal(req, res) {
     let reqObj = req.body;
-    let allowedKeys = ["user_id", "subject", "content_id", "start_date", "end_date", "track_my_goal", "log_date", "points", "status", "type", "parent"];
+    let allowedKeys = ["user_id", "subject","detail", "content_id", "start_date", "end_date", "track_my_goal", "log_date", "points", "status", "type", "parent"];
     let journalId = Number(req.params.id)
 
     for (const property in reqObj) {
