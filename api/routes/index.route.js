@@ -27,6 +27,7 @@ const friendsRoutes = require('./friends.route');
 const commentsRoutes = require('./comments.route');
 const bankQuestionsRoutes = require('./question_bank.route');
 const bankOptionsRoutes = require('./bank_options.route');
+const journalRoutes = require('./journal.route');
 const router = express.Router();
 
 /** GET /health-check - Check service health */
@@ -59,6 +60,7 @@ router.use('/quiz_questions', quiz_questionsRoutes);
 router.use('/questions_bank' , bankQuestionsRoutes)
 router.use('/bank_options' , bankOptionsRoutes)
 router.use('/comments', commentsRoutes)
+router.use('/journals', journalRoutes)
 // router.use('/session_categories',session_categoriesRoutes);
 // router.use('/session_groups',session_groupsRoutes);
 // router.use('/user_groups', user_groupsRoutes);
