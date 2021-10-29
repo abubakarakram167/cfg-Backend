@@ -8,4 +8,3 @@ module.exports = router;
 router.post('/', asyncHandler(inviteCtrl.addInvite));
 router.get('/', asyncHandler(inviteCtrl.getInvites));
 router.put('/:id', asyncHandler(inviteCtrl.updateInvite));
-router.delete('/:id', asyncHandler(inviteCtrl.deleteInvite));
