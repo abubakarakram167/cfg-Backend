@@ -38,6 +38,7 @@ module.exports = {
         },
         status: {
             type: Sequelize.DataTypes.ENUM(
+                'pending',
                 'sent',
                 'accepted',
                 'rejected'

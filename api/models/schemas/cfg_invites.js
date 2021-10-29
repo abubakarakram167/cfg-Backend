@@ -37,6 +37,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('cfg_invites', {
     },
     status: {
         type: DataTypes.ENUM(
+            'pending',
             'sent',
             'accepted',
             'rejected'
