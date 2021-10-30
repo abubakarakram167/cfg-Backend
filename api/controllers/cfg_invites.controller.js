@@ -81,7 +81,7 @@ async function getInvites(req, res) {
   if (cfg_id === "" || cfg_id === undefined) {
     return res.status(403).send({ message: "Mini CFG id is required." });
   }
-
+  
   const where = { cfg_id };
   if (user_id !== "" && user_id != undefined) {
     where["user_id"] = user_id;
@@ -169,14 +169,16 @@ async function activateInvites(cfg_id) {
             where: {
               id: invite.id,
             },
-        });
+        }); 
+        
         let user = await userService.findOne({where:{id:invite.user_id} , raw: true})
         let obj = {cfg_id, user_id:user.id , invite_id:invite.id}
         var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(obj), `mini@cfg#983&${user.first_name}`).toString();
+        let link  = process.env.NODE_ENV === "development" ? `http://localhost:3001/mini/${ciphertext}` :`https://mycfg.org/mini/${ciphertext}`
         sendEmail(
           user.email,
             "Invite for Mini CFG",
-            `<h1>Hey ${user.first_name} ${user.last_name}! </h1><br><h2>You have been invited to Join the conversation " <strong>${content.title}</strong> "</h2><br>Click the link to view the invite <a href="https://mycfg.org/admin/mini/${ciphertext}">View Invite</a>`
+            `<h1>Hey ${user.first_name} ${user.last_name}! </h1><br><h2>You have been invited to Join the conversation " <strong>${content.title}</strong> "</h2><br>Click the link to view the invite <a href="${link}">View Invite</a>`
           );
     }
 }
