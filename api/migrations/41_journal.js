@@ -94,7 +94,7 @@ module.exports = {
             }
         },
     }, {
-        tableName: 'content',
+        tableName: 'journal',
     }).then(() => {
     }),
     down: (queryInterface) => queryInterface.dropTable('journal'),
