@@ -15,7 +15,8 @@ module.exports = {
   addInvite,
   getInvites,
   updateInvite,
-  activateInvites
+  activateInvites,
+  deleteInvite
 };
 async function insertInvite(invite) {
   const inviteDb = await inviteService.add(invite);
