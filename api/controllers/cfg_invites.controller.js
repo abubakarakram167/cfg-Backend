@@ -139,19 +139,7 @@ async function updateInvite(req, res) {
 async function deleteInvite(req, res) {
   const { user } = req;
   let inviteId = Number(req.params.id);
-  let invite = await inviteService.getOneByID({
-    where: { id: inviteId },
-    raw: true,
-  });
-  let content = await contentService.getOneByID({
-    where: { id: invite.cfg_id },
-    raw: true,
-  });
-  if (user.id != content.facilitator) {
-    return res
-      .status(403)
-      .send({ message: "You are not authorized to do that." });
-  }
+  
   await inviteService.deleteOne(inviteId);
   res.send({ message: "Record deleted successfully" });
 }
