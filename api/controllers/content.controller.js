@@ -5,6 +5,7 @@ const dayToolService = require('../dal/dayTools.dao')
 const postService = require('../dal/user_posts.dao')
 const userService = require('../dal/users.dao')
 const friendCtrl = require('./friends.controller')
+const inviteCtrl = require('./cfg_invites.controller')
 const dayjs = require('dayjs');
 const model = require('../models');
 const responseMessages = require('../helpers/response-messages');
@@ -289,10 +290,18 @@ async function editContent(req, res) {
             id,
         },
     });
+    const contentRaw = await contentDb.get({ plain: true });
     delete requestObject.id;
-    requestObject.type = type;
+    
+    
     requestObject.created_by = req.user.id;
+    let prevStatus = contentRaw.status;
     await contentDb.update(requestObject);
+    
+    if (requestObject.status === 'published' && contentRaw.type == "mini" && prevStatus == 'draft') {
+        console.log("invites activated");
+        inviteCtrl.activateInvites(contentRaw.id)
+    }
     if (requestObject.type === 'timeline') {
         console.log("is_timeline");
         let postUpdateObject = {};

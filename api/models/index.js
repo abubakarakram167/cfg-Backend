@@ -45,7 +45,8 @@ function init(sequelize) {
     model.user_notifications = sequelize.import('./schemas/user_notifications.js')
     model.email_jobs = sequelize.import('./schemas/email_jobs.js')
     model.journal = sequelize.import('./schemas/journal.js')
-
+    model.cfg_invites = sequelize.import('./schemas/cfg_invites.js')
+    
     model.quiz.belongsToMany(model.question, {
       through: "quiz_questions",
       as: "questions",

@@ -57,7 +57,7 @@ async function addJournal(req, res) {
 
 async function getJournals(req, res) {
     const { limit, offset } = req.pagination;
-    const { id, subject, status, parent, user_id, content_id, type } = req.query;
+    const { id, subject, status, parent, user_id, content_id, type , track_my_goal } = req.query;
     const object = {
         subject,
         content_id,
@@ -66,10 +66,20 @@ async function getJournals(req, res) {
         status,
         type, id
     };
+    const objectEqual = {
+        track_my_goal
+    };
+
+
+
     const where = {};
     // eslint-disable-next-line no-restricted-syntax
     for (const field of Object.keys(object)) {
         if (object[field]) where[field] = { [Op.like]: `%${object[field]}%` };
+    }
+
+    for (const field of Object.keys(objectEqual)) {
+        if (object[field]) where[field] = track_my_goal;
     }
     const journals = await journalService.findWhere({ where, offset, limit });
 
