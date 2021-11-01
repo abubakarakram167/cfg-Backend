@@ -63,11 +63,11 @@ async function getJournals(req, res) {
         content_id,
         parent,
         user_id,
-        status,
-        type, id
+        status,id
     };
     const objectEqual = {
-        track_my_goal
+        track_my_goal,
+        type
     };
 
 
