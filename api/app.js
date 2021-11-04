@@ -89,6 +89,7 @@ app.use((err, req, res, next) => {
 if (!module.parent) {
     const userCtrl = require('./controllers/users.controller')
     const contentCtrl = require('./controllers/content.controller')
+    const journalCtrl = require('./controllers/journal.controller')
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
         //portion to make thumbnails static inside static
@@ -103,6 +104,7 @@ if (!module.parent) {
             fs.mkdirSync(path.join(__dirname, '../static/thumbnails'));
         }
         userCtrl.removeAllSockets();
+        
 
     });
     console.log("here");
@@ -113,6 +115,7 @@ if (!module.parent) {
     const job = schedule.scheduleJob('1', rule, function () {
         console.log("scheduler triggered");
         contentCtrl.checkPendingEmailJobs()
+        journalCtrl.outdateJournal()
     });
     
     const socketIo = require('./helpers/socket.io').init(server);
