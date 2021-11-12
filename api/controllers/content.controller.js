@@ -210,6 +210,10 @@ async function createOneContent(req, res) {
     requestObject.tags = JSON.stringify(requestObject.tags);
     //console.log(requestObject);
 
+    if(requestObject.type === "mini" && (requestObject.meeting_start_time == "" || requestObject.meeting_start_time == undefined)) {
+        return res.status(403).send({message:"Bad Request. Missing meeting start time."});
+    }
+
     const content = await insertContent(requestObject);
 
     requestObject.tags = tempTags
@@ -300,7 +304,10 @@ async function editContent(req, res) {
     
     if (requestObject.status === 'published' && contentRaw.type == "mini" && prevStatus == 'draft') {
         console.log("invites activated");
-        inviteCtrl.activateInvites(contentRaw.id)
+        let invites = await inviteCtrl.activateInvites(contentRaw.id)
+        if (invites === -1){
+            res.send({ message: "CFG updated but failed to activate invites due to zoom error" });
+        }
     }
     if (requestObject.type === 'timeline') {
         console.log("is_timeline");
