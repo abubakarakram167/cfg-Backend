@@ -139,7 +139,26 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
     duration: {
         type: DataTypes.INTEGER(11),
         allowNull: true,
+    },
+
+    meeting_start_time:
+    {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+    },
+
+    start_link:
+    {
+        type: Sequelize.DataTypes.STRING(255),
+        allowNull: true
+    },
+
+    join_link:
+    {
+        type: Sequelize.DataTypes.STRING(255),
+        allowNull: true
     }
+
 
 }, {
     tableName: 'content',
