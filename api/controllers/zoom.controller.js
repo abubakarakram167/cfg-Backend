@@ -59,17 +59,23 @@ async function createMeeting(mt_start_time) {
 		}
 
 	};
-
-	axios(config)
-		.then(function (response) {
-			console.log(JSON.stringify(response.data));
-			response.data.done = true;
-			return response.data;
-		})
-		.catch(function (error) {
-			console.log(error);
-			return error;
-		});
+	try {
+		let meet = await axios(config);
+		meet.data.done = true;
+		return meet.data;
+	} catch (error) {
+		return error;
+	}
+	
+		// .then(function (response) {
+		// 	console.log(JSON.stringify(response.data));
+		// 	response.data.done = true;
+		// 	return response.data;
+		// })
+		// .catch(function (error) {
+		// 	console.log(error);
+		// 	return error;
+		// });
 
 
 

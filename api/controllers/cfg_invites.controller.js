@@ -162,7 +162,8 @@ async function activateInvites(cfg_id) {
         raw: true,
     });
     let meeting = await zoomCtrl.createMeeting(content.meeting_start_time);
-    if( !meeting.hasOwnProperty('done') ||   !meeting.done){
+    console.log("meeting is ",meeting);
+    if(  !meeting.done){
       return -1;
     }
     for(invite of invites)  {
