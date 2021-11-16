@@ -39,9 +39,9 @@ const token = jwt.sign(payload, config.APISecret);
 async function createMeeting(mt_start_time) {
 
 	//store the email address of the user in the email variable
-	email = req.body.email;
-	//check if the email was stored in the console
-	console.log(email);
+	// email = req.body.email;
+	// //check if the email was stored in the console
+	// console.log(email);
 	
 	let start_time = dayjs(mt_start_time).toDate()
 
