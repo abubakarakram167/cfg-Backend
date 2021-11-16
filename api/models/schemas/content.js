@@ -143,19 +143,19 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
 
     meeting_start_time:
     {
-        type: Sequelize.DataTypes.DATE,
+        type: DataTypes.DATE,
         allowNull: true,
     },
 
     start_link:
     {
-        type: Sequelize.DataTypes.STRING(255),
+        type: DataTypes.STRING(255),
         allowNull: true
     },
 
     join_link:
     {
-        type: Sequelize.DataTypes.STRING(255),
+        type: DataTypes.STRING(255),
         allowNull: true
     }
 
