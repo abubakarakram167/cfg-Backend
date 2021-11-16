@@ -3,6 +3,7 @@
 const inviteService = require("../dal/cfg_invites.dao");
 const contentService = require("../dal/content.dao");
 const userService = require('../dal/users.dao');
+const zoomCtrl = require('./zoom.controller')
 const model = require("../models");
 const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
 const { QueryTypes } = require("sequelize");
@@ -136,6 +137,8 @@ async function updateInvite(req, res) {
   return inviteDb;
 }
 
+
+
 async function deleteInvite(req, res) {
   const { user } = req;
   let inviteId = Number(req.params.id);
@@ -143,6 +146,11 @@ async function deleteInvite(req, res) {
   await inviteService.deleteOne(inviteId);
   res.send({ message: "Record deleted successfully" });
 }
+
+
+
+
+
 
 async function activateInvites(cfg_id) {
     let invites = await inviteService.findWhere({
@@ -152,7 +160,12 @@ async function activateInvites(cfg_id) {
     let content = await contentService.getOneByID({
         where: { id: cfg_id },
         raw: true,
-      });
+    });
+    let meeting = await zoomCtrl.createMeeting(content.meeting_start_time);
+    //console.log("meeting is ",meeting);
+    if(  !meeting.done){
+      return -1;
+    }
     for(invite of invites)  {
         const inviteDb = await inviteService.update({status:"sent"}, {
             where: {
