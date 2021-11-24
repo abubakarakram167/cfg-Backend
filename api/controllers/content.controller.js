@@ -296,7 +296,10 @@ async function editContent(req, res) {
     });
     const contentRaw = await contentDb.get({ plain: true });
     delete requestObject.id;
-    
+
+    if (requestObject.status === 'published' && contentRaw.type == "mini" && (!requestObject.facilitator || requestObject.facilitator == null) ) {
+        return res.status(403).send({ message: "facilitator is required to publish mini cfg" });
+    }
     
     requestObject.created_by = req.user.id;
     let prevStatus = contentRaw.status;
@@ -306,7 +309,7 @@ async function editContent(req, res) {
         console.log("invites activated");
         let invites = await inviteCtrl.activateInvites(contentRaw.id)
         if (invites === -1){
-            res.send({ message: "CFG updated but failed to activate invites due to zoom error" });
+            return res.send({ message: "CFG updated but failed to activate invites due to zoom error" });
         }
     }
     if (requestObject.type === 'timeline') {
