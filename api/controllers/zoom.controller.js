@@ -39,9 +39,9 @@ const token = jwt.sign(payload, config.APISecret);
 async function createMeeting(mt_start_time) {
 
 	//store the email address of the user in the email variable
-	email = req.body.email;
-	//check if the email was stored in the console
-	console.log(email);
+	// email = req.body.email;
+	// //check if the email was stored in the console
+	// console.log(email);
 	
 	let start_time = dayjs(mt_start_time).toDate()
 
@@ -59,17 +59,23 @@ async function createMeeting(mt_start_time) {
 		}
 
 	};
-
-	axios(config)
-		.then(function (response) {
-			console.log(JSON.stringify(response.data));
-			response.data.done = true;
-			return response.data;
-		})
-		.catch(function (error) {
-			console.log(error);
-			return error;
-		});
+	try {
+		let meet = await axios(config);
+		meet.data.done = true;
+		return meet.data;
+	} catch (error) {
+		return error;
+	}
+	
+		// .then(function (response) {
+		// 	console.log(JSON.stringify(response.data));
+		// 	response.data.done = true;
+		// 	return response.data;
+		// })
+		// .catch(function (error) {
+		// 	console.log(error);
+		// 	return error;
+		// });
 
 
 

@@ -83,7 +83,7 @@ async function getInvites(req, res) {
   if (cfg_id === "" || cfg_id === undefined) {
     return res.status(403).send({ message: "Mini CFG id is required." });
   }
-  
+
   const where = { cfg_id };
   if (user_id !== "" && user_id != undefined) {
     where["user_id"] = user_id;
@@ -115,10 +115,10 @@ async function updateInvite(req, res) {
     where: { id: invite.cfg_id },
     raw: true,
   });
-  if(!allowedStatus.includes(reqObj.status)){
+  if (!allowedStatus.includes(reqObj.status)) {
     return res
-        .status(403)
-        .send({ message: "Invalid Status." });
+      .status(403)
+      .send({ message: "Invalid Status." });
   }
   if (user.id != invite.user_id) {
     return res
@@ -126,15 +126,26 @@ async function updateInvite(req, res) {
       .send({ message: "This invites does not belong to you." });
   }
 
-  
+
   const inviteDb = await inviteService.update(reqObj, {
     where: {
       id: inviteId,
     },
   });
-  res.send({ inviteDb, message: responseMessages.recordUpdateSuccess });
 
-  return inviteDb;
+  if(reqObj.status == "accepted"){
+    let user = await userService.findOne({ where: { id: invite.user_id }, raw: true })
+    sendEmail(
+      user.email,
+      "Link to join Mini CFG",
+      `<h1>Hey ${user.first_name} ${user.last_name}! </h1><br><h2>Thanks for accepting the invite of  " <strong>${content.title}</strong> "</h2><br>Click the link to join the meeting  <a href="${content.join_link}">Join Meeting</a>`
+    );
+  }
+
+
+  return res.send({ inviteDb, message: responseMessages.recordUpdateSuccess });
+
+ 
 }
 
 
@@ -142,7 +153,7 @@ async function updateInvite(req, res) {
 async function deleteInvite(req, res) {
   const { user } = req;
   let inviteId = Number(req.params.id);
-  
+
   await inviteService.deleteOne(inviteId);
   res.send({ message: "Record deleted successfully" });
 }
@@ -153,33 +164,45 @@ async function deleteInvite(req, res) {
 
 
 async function activateInvites(cfg_id) {
-    let invites = await inviteService.findWhere({
-        where: { cfg_id: cfg_id , status:"pending"},
-        raw: true,
+  let invites = await inviteService.findWhere({
+    where: { cfg_id: cfg_id, status: "pending" },
+    raw: true,
+  });
+  let content = await contentService.getOneByID({
+    where: { id: cfg_id },
+    raw: true,
+  });
+  let meeting = await zoomCtrl.createMeeting(content.meeting_start_time);
+  //console.log("meeting is ",meeting);
+  if (!meeting.done) {
+    return -1;
+  }
+  let updateMeeting = await contentService.update({start_link:meeting.start_url , join_link:meeting.join_url}, {where:{id:cfg_id}})
+  
+  let facilitator = await userService.findOne({ where: { id: content.facilitator }, raw: true })
+  //sending email to facilitator for starting an meeting
+  sendEmail(
+    facilitator.email,
+    "Link to Start Mini CFG",
+    `<h1>Hey ${facilitator.first_name} ${facilitator.last_name}! </h1><br><h2>You have been made facilitator of the conversation " <strong>${content.title}</strong> "</h2><br>Click the link to start the meeting  <a href="${meeting.start_url}">Start Meeting</a>`
+  );
+
+  for (invite of invites) {
+
+
+    let user = await userService.findOne({ where: { id: invite.user_id }, raw: true })
+    let obj = { cfg_id, user_id: user.id, invite_id: invite.id }
+    var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(obj), `mini@cfg#983&${user.first_name}`).toString();
+    let link = process.env.NODE_ENV === "development" ? `http://localhost:3001/mini/${ciphertext}` : `https://mycfg.org/mini/${ciphertext}`
+    sendEmail(
+      user.email,
+      "Invite for Mini CFG",
+      `<h1>Hey ${user.first_name} ${user.last_name}! </h1><br><h2>You have been invited to Join the conversation " <strong>${content.title}</strong> "</h2><br>Click the link to view the invite <a href="${link}">View Invite</a>`
+    );
+    const inviteDb = await inviteService.update({ status: "sent" }, {
+      where: {
+        id: invite.id,
+      },
     });
-    let content = await contentService.getOneByID({
-        where: { id: cfg_id },
-        raw: true,
-    });
-    let meeting = await zoomCtrl.createMeeting(content.meeting_start_time);
-    if(!meeting.done){
-      return -1;
-    }
-    for(invite of invites)  {
-        const inviteDb = await inviteService.update({status:"sent"}, {
-            where: {
-              id: invite.id,
-            },
-        }); 
-        
-        let user = await userService.findOne({where:{id:invite.user_id} , raw: true})
-        let obj = {cfg_id, user_id:user.id , invite_id:invite.id}
-        var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(obj), `mini@cfg#983&${user.first_name}`).toString();
-        let link  = process.env.NODE_ENV === "development" ? `http://localhost:3001/mini/${ciphertext}` :`https://mycfg.org/mini/${ciphertext}`
-        sendEmail(
-          user.email,
-            "Invite for Mini CFG",
-            `<h1>Hey ${user.first_name} ${user.last_name}! </h1><br><h2>You have been invited to Join the conversation " <strong>${content.title}</strong> "</h2><br>Click the link to view the invite <a href="${link}">View Invite</a>`
-          );
-    }
+  }
 }
