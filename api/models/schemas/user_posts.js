@@ -72,6 +72,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('user_posts', {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,
 	},
+	loved_by:
+	{
+		type: DataTypes.TEXT,
+		allowNull: true,
+	},
 	comment_count: {
 		type: DataTypes.INTEGER(11),
 		allowNull: true,

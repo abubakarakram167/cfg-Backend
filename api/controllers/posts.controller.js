@@ -16,7 +16,8 @@ module.exports = {
     getTimelinePosts,
     deletepost,
     getOnePostById,
-    updatePost
+    updatePost,
+    givelove
 };
 
 //Task Processor functions
@@ -48,7 +49,7 @@ function transformArrayToBracket(array) {
     return bracketString;
 }
 
-async function findTimelinePosts(userId , req) {
+async function findTimelinePosts(userId, req) {
 
     let userFriends = await friendCtrl.getUserFriendsById(userId);
     let today = new Date();
@@ -66,18 +67,20 @@ async function findTimelinePosts(userId , req) {
                 [Op.or]: [null, { [Op.lte]: tool_day }]
             },
             [Op.or]: [
-                 {[Op.and]:[{assigned_group: null} , { user_id: {[Op.in]: userFriends} } ]  },
-                 {assigned_group: ['candidate',
-                 'facilitator',
-                 'content-manager',
-                 'support',
-                 'reviewer',
-                 'system-administrator',
-                 'auditor']}
+                { [Op.and]: [{ assigned_group: null }, { user_id: { [Op.in]: userFriends } }] },
+                {
+                    assigned_group: ['candidate',
+                        'facilitator',
+                        'content-manager',
+                        'support',
+                        'reviewer',
+                        'system-administrator',
+                        'auditor']
+                }
             ],
             deletedAt: null,
             status: 'published',
-            
+
 
         },
         order: [
@@ -85,7 +88,7 @@ async function findTimelinePosts(userId , req) {
             ['publish_date', 'DESC']
         ],
         ...req.pagination
-        
+
     })
     // let userFriendsSQL = transformArrayToBracket(userFriends);
     // //this part selects timeline posts assigned to specific user role
@@ -127,8 +130,8 @@ async function createOnePost(req, res) {
 
     console.log(requestObject);
     const post = await insertPost(requestObject);
-    helpers.emitPostIdToUsers(post.id , "user")
-    helpers.sendEmailsToUserFriends(post.id , req.user.first_name)
+    helpers.emitPostIdToUsers(post.id, "user")
+    helpers.sendEmailsToUserFriends(post.id, req.user.first_name)
     res.send({ post });
 }
 
@@ -136,7 +139,7 @@ async function getTimelinePosts(req, res) {
     const { user } = req;
 
 
-    let posts = await findTimelinePosts(user.id , req);
+    let posts = await findTimelinePosts(user.id, req);
 
     res.send(posts)
 }
@@ -153,12 +156,12 @@ async function updatePost(req, res) {
         }
     })
     let updateResp = await postService.update(reqObj, { where: { id } })
-    if(updateResp[0] > 0){
-        res.send({message: "Post Updated Successfully"})
-    }else{
-        res.send({message: "Post Update Error"})
+    if (updateResp[0] > 0) {
+        res.send({ message: "Post Updated Successfully" })
+    } else {
+        res.send({ message: "Post Update Error" })
     }
-    
+
 }
 
 
@@ -195,8 +198,43 @@ async function getOnePostById(req, res) {
 
 }
 
-async function checkEmailJobs(){
+async function checkEmailJobs() {
 
+
+
+}
+
+async function givelove(req, res) {
+    const id = req.params.id;
+    let { user } = req;
+    let post = await getPostById(id);
+    let post_loved_by = "";
+    var love_count = post.love_count;
+    console.log(post);
+    if (post.loved_by === null) {
+        post_loved_by = [user.id]
+        post_loved_by = JSON.stringify(post_loved_by)
+        love_count++;
+    } else {
+        let prev_loves = JSON.parse(post.loved_by);
+        if (prev_loves.includes(user.id)) {
+            var index = prev_loves.indexOf(user.id);
+            if (index !== -1) {
+                prev_loves.splice(index, 1);
+            }
+            love_count--;
+        } else {
+            prev_loves.push(user.id);
+            love_count++;
+        }
+        post_loved_by = JSON.stringify(prev_loves)
+    }
+
+    let updateResp = await postService.update({love_count , loved_by:post_loved_by}, { where: { id } })
+    if(updateResp[0] == 1){
+        res.send({love_count})
+    }else{
+        res.status(400).send({message:"an error occured" , updateResp})
+    }
     
-
 }
