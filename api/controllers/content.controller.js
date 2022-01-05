@@ -535,3 +535,6 @@ async function checkPendingEmailJobs(){
     console.log("pending jobs from content controller ",pendingJobs);
 }
 
+
+
+
