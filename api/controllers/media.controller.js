@@ -1,6 +1,7 @@
 /* Controller 1 */
 const path = require('path');
 const os = require('os');
+const _ = require('lodash')
 const mediaService = require('../dal/media.dao');
 const sharp = require('sharp')
 const thumb = require('node-video-thumb')
@@ -20,7 +21,8 @@ module.exports = {
     getOneMediaByID,
     getListMediaMultiple,
     deleteMedia,
-    editMedia
+    editMedia,
+    getCloudFrontUrl
 };
 async function insertMedia(mediaData) {
     const media = mediaData;
@@ -56,6 +58,7 @@ async function createOneMedia(req, res) {
     let insertObject = [];
     for (let file of mediaFiles) {
         let mediaObject = {};
+        file.filename = _.replace(file.filename, ' ', '_');
         mediaObject.title = file.originalname;
         mediaObject.mime_type = file.mimetype.split('/')[1];
         mediaObject.url = file.path;
@@ -65,14 +68,14 @@ async function createOneMedia(req, res) {
         mediaObject.file_name = file.filename;
         mediaObject.category = category;
         insertObject.push(mediaObject);
-        if (fs.existsSync(path.join(__dirname , `../../static/${file.filename}`))) { 
-            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} exists before sharp, ${os.EOL}`, err => {
+        if (fs.existsSync(path.join(__dirname, `../../static/${file.filename}`))) {
+            fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} exists before sharp, ${os.EOL}`, err => {
                 if (err) {
                     console.error(err)
                     return
                 }
             })
-        } 
+        }
         if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
             await sharp(file.path).resize(200, 200).toFile(path.join(__dirname, thumbDir + file.filename), (err, resizeImage) => {
                 if (err) {
@@ -90,18 +93,20 @@ async function createOneMedia(req, res) {
         //     }
         //     await thumb(options)
         // }
-        if (fs.existsSync(path.join(__dirname , `../../static/${file.filename}`))) { 
-            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} exists before uploading, ${os.EOL}`, err => {
+        if (fs.existsSync(path.join(__dirname, `../../static/${file.filename}`))) {
+            fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} exists before uploading, ${os.EOL}`, err => {
                 if (err) {
                     console.error(err)
                     return
                 }
             })
-        } 
+        }
         var stream = fs.createReadStream(file.path);
+        
+        
         s3fsImpl.writeFile(file.filename, stream).then(function () {
             console.log("uploaded to s3");
-            fs.appendFile(path.join(__dirname , '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
+            fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
                 if (err) {
                     console.error(err)
                     return
@@ -116,7 +121,7 @@ async function createOneMedia(req, res) {
             // res.status(200).end();
         }).catch(function (err) {
             console.log("err occured on s3", err);
-            fs.appendFile(path.join(__dirname , '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
+            fs.appendFile(path.join(__dirname, '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
                 if (err) {
                     console.error(err)
                     return
@@ -124,6 +129,36 @@ async function createOneMedia(req, res) {
                 //done!
             })
         })
+
+        let thumbStream = fs.createReadStream(path.join(__dirname, thumbDir + file.filename))
+
+        s3fsImpl.writeFile(`/thumbnails/${file.filename}`, thumbStream).then(function () {
+            console.log("uploaded to s3 thumb");
+            fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
+            // fs.unlink(file.path, function (err) {
+            //     if (err) {
+            //         console.error(err);
+            //     }
+            // });
+            // res.status(200).end();
+        }).catch(function (err) {
+            console.log("err occured on s3  thumb", err);
+            fs.appendFile(path.join(__dirname, '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+                //done!
+            })
+        })
+
+
     }
 
     //console.log(insertObject);
@@ -249,5 +284,29 @@ async function editMedia(req, res) {
         return res.send({ message: "Record Successfully Updated" });
     }
     res.send({ message: "Record Update Error" });
+}
+
+async function getCloudFrontUrl(req, res) {
+    const { url } = req.params;
+    console.log("url is" , url);
+    var cfUtil = require('aws-cloudfront-sign');
+
+    // Sample private key. This would need to be replaced with the private key from
+    // your CloudFront key pair.
+    var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+    // Sample key pair ID. This would need to be replaced by the Access Key ID from
+    // your CloudFront key pair.
+    var cfKeypairId = 'K30S0N0WWH7I01';
+    var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
+
+    var signedUrl = cfUtil.getSignedUrl(cfURL, {
+        keypairId: cfKeypairId,
+        expireTime: Date.now() + (50 * 60 * 1000),
+        privateKeyString: cfPk
+    });
+
+    console.log(signedUrl);
+    res.send(signedUrl);
+
 }
 

@@ -127,7 +127,39 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
             model: 'groups',
             key: 'id',
         }
+    },
+    facilitator: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
+    },
+    duration: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+    },
+
+    meeting_start_time:
+    {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+
+    start_link:
+    {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+
+    join_link:
+    {
+        type: DataTypes.STRING(255),
+        allowNull: true
     }
+
+
 }, {
     tableName: 'content',
     timestamps: false,

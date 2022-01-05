@@ -9,6 +9,7 @@ module.exports = {
     getList,
     deleteOne,
     findAnCountWhere,
+    update
 };
 function getOneByID(options) {
     return model.content.findOne(options);
@@ -34,6 +35,9 @@ function findAnCountWhere(args) {
 }
 function getList() {
     return model.content.findAll();
+}
+function update(data, options) {
+    return model.content.update(data, options);
 }
 function deleteOne(options) {
     const { id } = options.params;

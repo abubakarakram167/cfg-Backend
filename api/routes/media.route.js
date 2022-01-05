@@ -41,4 +41,5 @@ router.get('/list', MediaCtrl.getListMediaMultiple);
 router.get('/:id', MediaCtrl.getOneMediaByID);
 router.put('/:id', MediaCtrl.editMedia);
 router.delete('/:id', MediaCtrl.deleteMedia);
+router.get('/cf/:url', MediaCtrl.getCloudFrontUrl);
 
