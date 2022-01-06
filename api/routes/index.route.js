@@ -65,7 +65,7 @@ router.use('/bank_options' , bankOptionsRoutes)
 router.use('/comments', commentsRoutes)
 router.use('/journals', journalRoutes)
 router.use('/invites', inviteRoutes)
-router.use('/test', testRoutes)
+//router.use('/test', testRoutes)
 // router.use('/session_categories',session_categoriesRoutes);
 // router.use('/session_groups',session_groupsRoutes);
 // router.use('/user_groups', user_groupsRoutes);
