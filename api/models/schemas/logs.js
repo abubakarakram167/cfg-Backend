@@ -31,6 +31,14 @@ module.exports = (sequelize, DataTypes) => sequelize.define('logs', {
         type: DataTypes.STRING(255),
         allowNull: false,
     },
+    resp_time: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
 }, {
     tableName: 'logs',
     timestamps: false,

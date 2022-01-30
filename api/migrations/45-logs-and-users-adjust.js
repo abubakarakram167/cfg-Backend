@@ -33,12 +33,19 @@ module.exports = {
                 type: Sequelize.DataTypes.STRING(255),
                 allowNull: false,
             },
-    
+            resp_time: {
+                type: Sequelize.DataTypes.STRING(255),
+                allowNull: false,
+            },
+            created_at: {
+                type: Sequelize.DataTypes.DATE,
+                allowNull: true,
+            },
             
         }, {
             tableName: 'logs',
         })
-        
+
         await queryInterface.addColumn(
             'users',
             'default_home_page_view',

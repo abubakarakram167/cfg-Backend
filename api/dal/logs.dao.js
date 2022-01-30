@@ -14,7 +14,7 @@ module.exports = {
     }
     
     function add(log) {
-        return model.logs.create({ ...log, createdAt: new Date() });
+        return model.logs.create({ ...log, created_at: new Date() });
     }
     
     function findWhere(options) {
