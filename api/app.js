@@ -19,7 +19,8 @@ const passport = require('./library/passport');
 const logger = require('./library/logger');
 const fs = require('fs');
 const schedule = require('node-schedule');
-const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
+const logHelper = require('./helpers/logger')
+const loggerFormat = ':id "[:date[web]]" ":method :url" :req[x-forwarded-for] ":user-agent" :status :response-time';
 
 logger.initializeGlobalHandlers();
 
@@ -52,11 +53,19 @@ app.use(morgan(loggerFormat, {
     },
     stream: process.stderr,
 }));
+
 app.use(morgan(loggerFormat, {
     skip(req, res) {
         return res.statusCode >= 400;
     },
     stream: process.stdout,
+}));
+
+app.use(morgan(loggerFormat, {
+    skip(req, res) {
+        return res.statusCode >= config.logCode;
+    },
+    stream: {write: logHelper},
 }));
 
 app.use(authFactory);
@@ -91,6 +100,7 @@ if (!module.parent) {
     const contentCtrl = require('./controllers/content.controller')
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
+        console.log(config.port);
         //portion to make thumbnails static inside static
         if (!fs.existsSync(path.join(__dirname, '../static'))) {
             console.log("static folder does not exist");

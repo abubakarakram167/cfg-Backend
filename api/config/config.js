@@ -18,6 +18,7 @@ const config = {
   serviceLogTag: env.get('SERVICE_LOG_TAG'),
   appBaseUrl: env.get('APP_BASE_URL', 'http://localhost:3001'),
   corsWhiteList: env.get('CORS_WHITELIST', 'http://localhost:3001'),
+  logCode: env.get('logCode' , 400)
 };
 
 module.exports = config;

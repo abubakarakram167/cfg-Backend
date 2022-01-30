@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const config = require("../config/config");
 
-const accessTokenExpireTime = 50 * 60 * 1000; // 50 minutes
+const accessTokenExpireTime =  50 * 60 * 1000; // 50 minutes
 
 module.exports = {
   generateToken,
