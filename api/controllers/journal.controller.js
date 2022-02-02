@@ -12,7 +12,8 @@ module.exports = {
     addJournal,
     getJournals,
     updateJournal,
-    deleteJournal
+    deleteJournal,
+    outdateJournal
 };
 async function insertJournal(journal) {
 
@@ -45,10 +46,10 @@ async function addJournal(req, res) {
     console.log("into add journal function", reqObj);
     insertJournal(reqObj)
         .then(result => {
-            res.send({ result,message: "Journal added successfully" });
+            res.send({ result, message: "Journal added successfully" });
         })
         .catch(err => {
-            res.send({ err,message: "an error occurred", error: err });
+            res.send({ err, message: "an error occurred", error: err });
         })
 
 
@@ -57,15 +58,15 @@ async function addJournal(req, res) {
 
 async function getJournals(req, res) {
     const { limit, offset } = req.pagination;
-    let { id, subject, status, parent, user_id, content_id, type , track_my_goal } = req.query;
+    let { id, subject, status, parent, user_id, content_id, type, track_my_goal } = req.query;
     const object = {
         subject,
         content_id,
         parent,
-        
-        
+
+
     };
-    if(track_my_goal) track_my_goal = Boolean(track_my_goal)
+    if (track_my_goal) track_my_goal = Boolean(track_my_goal)
     const objectEqual = {
         track_my_goal,
         type,
@@ -73,7 +74,7 @@ async function getJournals(req, res) {
         status,
         id
     };
-    
+
 
 
     const where = {};
@@ -83,8 +84,8 @@ async function getJournals(req, res) {
     }
 
     for (const field of Object.keys(objectEqual)) {
-        
-        if (objectEqual[field])  where[field] = objectEqual[field];
+
+        if (objectEqual[field]) where[field] = objectEqual[field];
     }
 
     const journals = await journalService.findWhere({ where, offset, limit });
@@ -96,7 +97,7 @@ async function getJournals(req, res) {
 
 async function updateJournal(req, res) {
     let reqObj = req.body;
-    let allowedKeys = ["user_id", "subject","detail", "content_id", "start_date", "end_date", "track_my_goal", "log_date", "points", "status", "type", "parent"];
+    let allowedKeys = ["user_id", "subject", "detail", "content_id", "start_date", "end_date", "track_my_goal", "log_date", "points", "status", "type", "parent"];
     let journalId = Number(req.params.id)
 
     for (const property in reqObj) {
@@ -110,7 +111,7 @@ async function updateJournal(req, res) {
             id: journalId,
         },
     });
-    res.send({ journalDb,message: responseMessages.recordUpdateSuccess });
+    res.send({ journalDb, message: responseMessages.recordUpdateSuccess });
 
 
 
@@ -121,7 +122,18 @@ async function updateJournal(req, res) {
 async function deleteJournal(req, res) {
     let journalId = Number(req.params.id)
     await journalService.deleteOne(journalId)
-    res.send({ message: "Record deleted successfully"})
+    res.send({ message: "Record deleted successfully" })
+
+}
+
+async function outdateJournal() {
+
+    let today = new Date()
+    let outdatedJournals = await journalService.update({ status: "overdue" }, {
+        where: { end_date: { [Op.lt]: today } }
+    });
+    console.log(outdatedJournals);
+
 
 }
 

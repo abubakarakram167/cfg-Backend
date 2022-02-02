@@ -100,10 +100,14 @@ if (!module.parent) {
     //including required controllers
     const userCtrl = require('./controllers/users.controller')
     const contentCtrl = require('./controllers/content.controller')
+
     const logCtrl = require('./controllers/logs.controller')
 
 
     //server object creation
+
+    const journalCtrl = require('./controllers/journal.controller')
+
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
         
@@ -122,6 +126,7 @@ if (!module.parent) {
 
         //removing sockets on app restart
         userCtrl.removeAllSockets();
+        
 
     });
 
@@ -134,6 +139,7 @@ if (!module.parent) {
     const job = schedule.scheduleJob('1', rule, function () {
         
         contentCtrl.checkPendingEmailJobs()
+        journalCtrl.outdateJournal()
     });
     
 
