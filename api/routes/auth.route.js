@@ -10,3 +10,4 @@ router.post('/connect/social', asyncHandler(userCtrl.loginSocial));
 router.post('/forgot-password', asyncHandler(userCtrl.forgotPassword));
 router.post('/reset-password', asyncHandler(userCtrl.resetPassword));
 router.post('/register', asyncHandler(userCtrl.register));
+

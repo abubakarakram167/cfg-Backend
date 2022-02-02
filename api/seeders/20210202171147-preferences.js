@@ -49,6 +49,14 @@ module.exports = {
                 option_name: 'enable_moderation_on_user_timeline_post',
                 option_value: 'no',
             },
+            {
+                option_name: 'zoom_key',
+                option_value: '',
+            },
+            {
+                option_name: 'zoom_secret',
+                option_value: '',
+            },
             ])
           }
         

@@ -171,6 +171,15 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
             key: 'id',
         }
     },
+    default_home_page_view:
+    {
+        type: DataTypes.ENUM(
+            'timeline',
+            'icon',
+
+        ),
+        allowNull: true,
+    }
 }, {
     tableName: 'users',
     timestamps: false,
