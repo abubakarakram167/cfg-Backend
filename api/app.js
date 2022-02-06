@@ -19,7 +19,8 @@ const passport = require('./library/passport');
 const logger = require('./library/logger');
 const fs = require('fs');
 const schedule = require('node-schedule');
-const loggerFormat = ':id [:date[web]]" :method :url" :status :response-time';
+const logHelper = require('./helpers/logger')
+const loggerFormat = ':id $"[:date[web]]" $":method" $":url" $:req[x-forwarded-for] $":user-agent" $:status $:response-time';
 
 logger.initializeGlobalHandlers();
 
@@ -52,11 +53,19 @@ app.use(morgan(loggerFormat, {
     },
     stream: process.stderr,
 }));
+
 app.use(morgan(loggerFormat, {
     skip(req, res) {
         return res.statusCode >= 400;
     },
     stream: process.stdout,
+}));
+
+app.use(morgan(loggerFormat, {
+    skip(req, res) {
+        return res.statusCode < config.logCode;
+    },
+    stream: {write: logHelper},
 }));
 
 app.use(authFactory);
@@ -87,11 +96,22 @@ app.use((err, req, res, next) => {
     next(err);
 });
 if (!module.parent) {
+
+    //including required controllers
     const userCtrl = require('./controllers/users.controller')
     const contentCtrl = require('./controllers/content.controller')
+
+    const logCtrl = require('./controllers/logs.controller')
+
+
+    //server object creation
+
     const journalCtrl = require('./controllers/journal.controller')
+
     let server = app.listen(config.port, () => {
         console.info(`server started on port ${config.port} (${config.env})`);
+        
+
         //portion to make thumbnails static inside static
         if (!fs.existsSync(path.join(__dirname, '../static'))) {
             console.log("static folder does not exist");
@@ -103,21 +123,36 @@ if (!module.parent) {
             console.log("static/thumbnails folder does not exist");
             fs.mkdirSync(path.join(__dirname, '../static/thumbnails'));
         }
+
+        //removing sockets on app restart
         userCtrl.removeAllSockets();
         
 
     });
-    console.log("here");
+
+
+    //pending Email background Job
     const rule = new schedule.RecurrenceRule();
     rule.hour = 0;
     rule.minute = 0;
     //rule.second = 20;
     const job = schedule.scheduleJob('1', rule, function () {
-        console.log("scheduler triggered");
+        
         contentCtrl.checkPendingEmailJobs()
         journalCtrl.outdateJournal()
     });
     
+
+    const logRule = new schedule.RecurrenceRule();
+    logRule.second = 10;
+    const logJob = schedule.scheduleJob('1', logRule, function () {
+        console.log("scheduler triggered");
+        logCtrl.deleteLogs()
+    });
+
+
+
+    //socket io section starts
     const socketIo = require('./helpers/socket.io').init(server);
 
     socketIo.on('connection', socket => {
@@ -151,6 +186,7 @@ if (!module.parent) {
         });
 
     });
+    //socket io section ends
 
 
 }
