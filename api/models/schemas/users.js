@@ -152,6 +152,10 @@ module.exports = (sequelize, DataTypes) => sequelize.define('users', {
     createdBy: {
         type: DataTypes.INTEGER(11),
         allowNull: true,
+        references: {
+            model: 'users',
+            key: 'id',
+        },
         field: 'created_by',
     },
     updated_at: {
