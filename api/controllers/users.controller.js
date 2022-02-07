@@ -31,12 +31,15 @@ module.exports = {
   getUserGroupById
 };
 
-async function insert(userData) {
+async function insert(userData,userId) {
   const user = { ...userData };
   user.passwordResetToken = authHelper.generateResetToken(64);
-  user.passwordResetTokenSentTime = new Date();
+  //user.passwordResetTokenSentTime = new Date();
   user.salt = authHelper.generateRandomSalt();
   user.password = bcrypt.hashSync(user.password + user.salt, 10);
+  user.created_at = new Date()
+  user.created_by = userId;
+  
   //console.log(user);
   //username done
   user.user_name = user.email.split('@')[0];
@@ -53,11 +56,19 @@ async function insert(userData) {
 
 async function addUser(req, res) {
   const requestObject = req.body;
+  const {user} = req;
+  console.log(user);
   requestObject.createdBy = req.user.id;
   requestObject.password = 'addedByUser';
-  await insert(requestObject);
+
+  await insert(requestObject , req.user.id);
   res.send({ message: responseMessages.recordAddSuccess });
 }
+
+
+
+
+
 async function editUser(req, res) {
   const { password, ...user } = req.body;
   if (password && !authHelper.validatePassword(password)) {
@@ -67,6 +78,7 @@ async function editUser(req, res) {
   if (password) {
     user.salt = authHelper.generateRandomSalt();
     user.password = bcrypt.hashSync(password + user.salt, 10);
+   
   }
   const userRef = await userService.findOne({ where: { id: user.id } });
   if (!userRef) {
@@ -86,9 +98,15 @@ async function editUser(req, res) {
     disabled: 2,
   };
   user.status != undefined ? user.status = statusObj[user.status.toLowerCase()] || 3 : null;
+  user.updated_at = new Date()
   await userRef.update(user);
   res.send({ message: responseMessages.recordUpdateSuccess });
 }
+
+
+
+
+
 
 async function register(req, res) {
   const password = "Jmb@123#inact"
@@ -98,10 +116,13 @@ async function register(req, res) {
     return;
   }
   requestObject.passwordResetToken = authHelper.generateResetToken(64);
-  requestObject.passwordResetTokenSentTime = new Date();
+  //requestObject.passwordResetTokenSentTime = new Date();
   await insert(requestObject);
   res.send({ message: responseMessages.recordAddSuccess });
 }
+
+
+
 
 async function login(req, res) {
   const { user } = req;
@@ -112,6 +133,11 @@ async function login(req, res) {
   // authHelper.setCloudFrontSignedCookie(res);
   res.json({ user, token });
 }
+
+
+
+
+
 
 async function loginSocial(req, res) {
   const { email, source, socialId, firstName } = req.body;
@@ -159,6 +185,10 @@ async function loginSocial(req, res) {
   res.json({ user, token });
 }
 
+
+
+
+
 async function listUsers(req, res) {
   const { limit, offset } = req.pagination;
   const { user_name, first_name, email, role, status } = req.query;
@@ -190,6 +220,10 @@ async function listUsers(req, res) {
   res.json({ userResponse });
 }
 
+
+
+
+
 async function forgotPassword(req, res) {
   const { email } = req.body;
   const user = await userService.findOne({ where: { email } });
@@ -211,6 +245,10 @@ async function forgotPassword(req, res) {
   }
   res.send({ message: responseMessages.passwordResetRequestSent });
 }
+
+
+
+
 
 async function resetPassword(req, res) {
   const { token, password } = req.body;
@@ -240,6 +278,7 @@ async function resetPassword(req, res) {
     password: bcrypt.hashSync(password + salt, 10),
     passwordResetTokenSentTime: null,
     passwordAttemptsCount: 0,
+    password_changed_at:new Date(),
   };
   let newUser = false;
   if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
