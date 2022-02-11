@@ -420,7 +420,7 @@ async function getDayTools(req, res) {
         tools = returnTools;
     } else {
         //tool has to be created and returned
-        console.log("into this part");
+        
 
         let toolsInDb = await contentService.findWhere({
             where: {
@@ -430,7 +430,7 @@ async function getDayTools(req, res) {
             attributes: ['id', 'title', 'featured_image_url'],
             raw: true
         })
-        console.log(toolsInDb);
+        
         if (toolsInDb.length < 2) {
             return res.status(422).send({ message: "Not Enough Tools found in database" })
         }
