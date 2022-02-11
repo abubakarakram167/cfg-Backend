@@ -4,32 +4,50 @@ const config = require('../config/config');
 
 const exportObj = {
     sendEmail: async (emailTo, subject, message, messageHtml = message) => {
-        // create reusable transporter object using the default SMTP transport
-        const transporter = nodemailer.createTransport({
-            host: smtp.host,
-            port: smtp.port,
-            auth: {
-                user: smtp.user, // generated ethereal user
-                pass: smtp.pass, // generated ethereal password
-            },
-            secure: false,
-            // port: 25,
-            tls: {
-                rejectUnauthorized: false,
-            },
-        });
+        // // create reusable transporter object using the default SMTP transport
+        // const transporter = nodemailer.createTransport({
+        //     host: smtp.host,
+        //     port: smtp.port,
+        //     auth: {
+        //         user: smtp.user, // generated ethereal user
+        //         pass: smtp.pass, // generated ethereal password
+        //     },
+        //     secure: false,
+        //     // port: 25,
+        //     tls: {
+        //         rejectUnauthorized: false,
+        //     },
+        // });
 
-        // send mail with defined transport object
-        const info = await transporter.sendMail({
-            from: `"CFG Admin" <${smtp.user}>`, // sender address
-            to: emailTo, // list of receivers
-            subject, // Subject line
-            text: message, // plain text body
-            html: messageHtml, // html body
-        });
+        // // send mail with defined transport object
+        // const info = await transporter.sendMail({
+        //     from: `"CFG Admin" <${smtp.user}>`, // sender address
+        //     to: emailTo, // list of receivers
+        //     subject, // Subject line
+        //     text: message, // plain text body
+        //     html: messageHtml, // html body
+        // });
+
+        const sgMail = require('@sendgrid/mail')
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+        const msg = {
+            to: emailTo, // Change to your recipient
+            from: 'CFG@mycfg.org', // Change to your verified sender
+            subject: subject,
+            // text: message,
+            html: message,
+        }
+        sgMail
+            .send(msg)
+            .then(() => {
+                console.log('Email sent')
+            })
+            .catch((error) => {
+                console.error(error.response.body.errors)
+            })
 
         // eslint-disable-next-line no-console
-        console.log('Message sent: %s', info.messageId);
+        //console.log('Message sent: %s', info.messageId);
     },
     sendWelcomeEmail: async (user, passwordRestLink) => {
         const link = `${passwordRestLink}.9CD599A3523898E6A12E13EC787DA50A`;
@@ -58,14 +76,14 @@ const exportObj = {
     },
 
     sendPostEmails: async (emails, authorName) => {
-        for(let email of emails){
+        for (let email of emails) {
             await exportObj.sendEmail(
                 email.email,
                 'New Post Notification',
                 `<b>Hi  <strong>${email.first_name}</strong> </b> <br> ${authorName} has just posted something new in the cfg app for you. Check it out Now!`,
             );
         }
-        
+
     },
 };
 
