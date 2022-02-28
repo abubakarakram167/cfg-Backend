@@ -2,6 +2,8 @@
 
 const messageservice = require('../dal/messages.dao');
 const userService = require('../dal/users.dao');
+const socketService = require('../dal/socket-ids.dao');
+const notiService = require('../dal/user_notifications.dao')
 const model = require('../models');
 const { QueryTypes } = require('sequelize');
 const friendCtrl = require('./friends.controller')
@@ -26,83 +28,15 @@ async function insertMessage(msg) {
 
     return msgRaw;
 }
-async function getmessageById(messageId) {
-    const messageDb = await messageservice.getOneByID({ where: { id: messageId, deletedAt: null } });
-    const messageRaw = await messageDb.get({ plain: true });
-
-    return messageRaw;
-}
-
-async function findAllMessages(options) {
-    const messageDb = await messageservice.findAnCountWhere(options);
-    return messageDb;
-}
-
-function transformArrayToBracket(array) {
-    let bracketString = "("
-    array.forEach((element, index) => {
-        index == 0 ? bracketString += element : bracketString += `,${element}`
-    });
-    bracketString += ")";
-    return bracketString;
-}
-
-async function findTimelinemessages(userId, req) {
-
-    let userFriends = await friendCtrl.getUserFriendsById(userId);
-    let today = new Date();
-    let tool_day = dayJs(today).format("YYYY-MM-DD")
-    let userRole = await userService.findOne({
-        where: { id: userId },
-        attributes: ['role']
-    })
-    userRole = userRole.role;
-    userFriends.push(userId)
-    console.log(userRole);
-    let messages = await messageservice.findWhere({
-        where: {
-            publish_date: {
-                [Op.or]: [null, { [Op.lte]: tool_day }]
-            },
-            [Op.or]: [
-                { [Op.and]: [{ assigned_group: null }, { user_id: { [Op.in]: userFriends } }] },
-                {
-                    assigned_group: ['candidate',
-                        'facilitator',
-                        'content-manager',
-                        'support',
-                        'reviewer',
-                        'system-administrator',
-                        'auditor']
-                }
-            ],
-            deletedAt: null,
-            status: 'published',
 
 
-        },
-        order: [
-            ['id', 'DESC'],
-            ['publish_date', 'DESC']
-        ],
-        ...req.pagination
-
-    })
-   
-
-    return messages;
-}
-
-async function deletemessageByID(messageId, userId) {
-    let deletedAt = new Date();
-    let messageDb ; 
-    if (user.role == 'content-manager' || user.role == 'system-administrator') {
-        messageDb = await messageservice.update({ deletedAt }, { where: { id: messageId } });
+async function notifyUserofMessage(user , recv_id){
+    let userSockets = await socketService.findWhere({where:{user_id:recv_id}});
+    if(userSockets.length < 1){
+        let userNotification = notiService.add({user:id})
     }else{
-        messageDb = await messageservice.update({ deletedAt }, { where: { id: messageId, user_id: userId } });
+
     }
-    
-    return messageDb;
 }
 
 
@@ -114,8 +48,8 @@ async function deletemessageByID(messageId, userId) {
 async function createMessage(req, res) {
 
     const reqObject = req.body;
-
-    let RequiredKeys = ["sent_by","recieved_by","text" ,"type"];
+    const { user} = req;
+    let RequiredKeys = ["recieved_by","text" ,"type"];
 
     for (e of RequiredKeys) {
         if (!reqObject.hasOwnProperty(e)) {
@@ -127,7 +61,7 @@ async function createMessage(req, res) {
 
     
 
-    let allowedKeys = ["sent_by","recieved_by","text" ,"type" , "html" , "media_id"];
+    let allowedKeys = ["recieved_by","text" ,"type" , "html" , "media_id"];
 
     for (const property in reqObject) {
         if (!allowedKeys.includes(property)) {
@@ -137,14 +71,15 @@ async function createMessage(req, res) {
     }
 
     reqObject.status = 'sent';
+    reqObject.sent_by = user.id
 
 
     console.log(reqObject);
-    const message = await insertmessage(reqObject);
+    const message = await insertMessage(reqObject);
     res.send({ message });
 }
 
-async function getTimelinemessages(req, res) {
+async function getUserMessages(req, res) {
     const { user } = req;
 
 
@@ -154,7 +89,7 @@ async function getTimelinemessages(req, res) {
 }
 
 
-async function updatemessage(req, res) {
+async function deleteMessage(req, res) {
     let reqObj = req.body;
     const id = Number(req.params.id)
     let allowedKeys = ['group_id', 'title', 'content', 'assigned_group', 'status', 'feeling', 'media', 'love_count', 'comment_count', 'share_count', 'publish_date'];
@@ -175,7 +110,7 @@ async function updatemessage(req, res) {
 
 
 
-async function deletemessage(req, res) {
+async function getUserChats(req, res) {
     const { user } = req;
     const messageId = req.params.messageId;
     //  messageservice.getOneByID({where:{
