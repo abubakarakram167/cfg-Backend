@@ -90,27 +90,20 @@ async function findTimelinePosts(userId, req) {
         ...req.pagination
 
     })
-    // let userFriendsSQL = transformArrayToBracket(userFriends);
-    // //this part selects timeline posts assigned to specific user role
-    // let userRoleQuery = ` AND assigned_group = (SELECT role from users WHERE id=${userId}) `;  
-
-    // //below query gets timeline posts added by admin
-    // //let adminSideQuery = "SELECT * FROM (SELECT 'admin_post' as post_type , content.created_by , content.detail as content , 'dumm1' as feeling ,'dumm2' as media, love_count,comment_count,  share_count , created_at , updated_at from content WHERE start_date <= CURDATE() AND end_date  > CURDATE() AND type = 'timeline'"
-
-    // //below query gets timeline posts added by other candidate friends
-    // let userSideQuery = "SELECT 'user_post' as post_type , user_id as created_by , content ,feeling ,media, love_count,comment_count, share_count , created_at , updated_at from user_posts WHERE deleted_at IS NULL AND user_id IN " + userFriendsSQL + userRoleQuery + " ORDER BY created_at"
-
-    // //finally preapred query that prepares dataset for timeline
-    // let timelineQuery =    userSideQuery;
-
-    //const posts = await model.sequelize.query( timelineQuery, { type: QueryTypes.SELECT });
+   
 
     return posts;
 }
 
 async function deletePostByID(postId, userId) {
     let deletedAt = new Date();
-    const postDb = await postService.update({ deletedAt }, { where: { id: postId, user_id: userId } });
+    let postDb ; 
+    if (user.role == 'content-manager' || user.role == 'system-administrator') {
+        postDb = await postService.update({ deletedAt }, { where: { id: postId } });
+    }else{
+        postDb = await postService.update({ deletedAt }, { where: { id: postId, user_id: userId } });
+    }
+    
     return postDb;
 }
 
@@ -173,7 +166,7 @@ async function deletepost(req, res) {
     //     user_id:user.id,
     //     id:postId
     // }})
-    deletePostByID(postId, user.id)
+    deletePostByID(postId, user)
         .then(result => {
 
             if (result[0] === 0) {

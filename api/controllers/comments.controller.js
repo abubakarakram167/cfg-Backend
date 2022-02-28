@@ -32,23 +32,28 @@ async function updateFriend(data, options) {
 
 async function getPostCommentsById(postId) {
 
-    const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null , deleted_at:null }, raw: true });
+    const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null, deleted_at: null }, raw: true });
 
     return postComments;
 }
 
 async function getCommentReplies(commentId) {
 
-    const commentReplies = await commentService.findWhere({ where: { parent_id: commentId, deleted_at:null } });
+    const commentReplies = await commentService.findWhere({ where: { parent_id: commentId, deleted_at: null } });
 
     return commentReplies;
 }
 
-async function deleteCommentByID(commId , userId) {
-    let deleted_at =  new Date();
-     const commDb = await commentService.update({deleted_at} , {where:{id:commId , created_by:userId}} );
-    //const commDb =  await commentService.findWhere({where:{id:commId , created_by:userId}})
-    console.log("logger" ,commDb);
+async function deleteCommentByID(commId, user) {
+    let deleted_at = new Date();
+    let commDb;
+    if (user.role == 'content-manager' || user.role == 'system-administrator') {
+        commDb = await commentService.update({ deleted_at }, { where: { id: commId } });
+    } else {
+        commDb = await commentService.update({ deleted_at }, { where: { id: commId, created_by: user.id } });
+    }
+
+    console.log("logger", commDb);
     return commDb;
 }
 
@@ -97,28 +102,26 @@ async function getPostComments(req, res) {
 
     res.send(comments);
 
-
-
 }
 
 
 async function deleteComment(req, res) {
     const { user } = req;
     let commId = req.params.commId;
-    let userId = user.id;
 
-    deleteCommentByID(commId,userId)
-    .then(result => {
-        
-        if(result[0] === 0){
-            res.status(401).send({message:"Comment Not Found"})
-        }else{
-            res.send({message:"Comment Deleted Successfully"})
-        }
-    })
-    .catch(err => {
-        res.send({error:err})
-    })
+
+    deleteCommentByID(commId, user)
+        .then(result => {
+
+            if (result[0] === 0) {
+                res.status(401).send({ message: "Comment Not Found" })
+            } else {
+                res.send({ message: "Comment Deleted Successfully" })
+            }
+        })
+        .catch(err => {
+            res.send({ error: err })
+        })
 
 }
 
