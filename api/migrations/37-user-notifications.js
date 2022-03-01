@@ -54,6 +54,10 @@ module.exports = {
         key: 'id'
       }
     },
+    status: {
+      type: Sequelize.DataTypes.ENUM('pending', 'read'),
+      allowNull: false,
+    },
     created_at: {
       type: Sequelize.DataTypes.DATE,
       allowNull: false,

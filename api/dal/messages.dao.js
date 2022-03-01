@@ -8,7 +8,7 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-
+    update
 };
 function getOneByID(options) {
     return model.messages.findOne(options);
@@ -29,4 +29,7 @@ function deleteOne(options) {
     return model.messages.destroy({
         where: { id },
     });
+}
+function update(data, options) {
+    return model.messages.update(data, options);
 }
