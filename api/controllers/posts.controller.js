@@ -2,6 +2,7 @@
 
 const postService = require('../dal/user_posts.dao');
 const userService = require('../dal/users.dao');
+const commentService = require('../dal/comments.dao');
 const model = require('../models');
 const { QueryTypes } = require('sequelize');
 const friendCtrl = require('./friends.controller')
@@ -34,6 +35,15 @@ async function getPostById(postId) {
 
     return postRaw;
 }
+
+async function getPostCommentsById(postId) {
+
+    const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null, deleted_at: null }, raw: true });
+
+    return postComments;
+}
+
+
 
 async function findAllpost(options) {
     const postDb = await postService.findAnCountWhere(options);
@@ -87,9 +97,15 @@ async function findTimelinePosts(userId, req) {
             ['id', 'DESC'],
             ['publish_date', 'DESC']
         ],
+        raw:true,
         ...req.pagination
 
     })
+
+    for (post of posts){
+        let comments = await commentService.findAndCount({ where: { post_id: post.id, parent_id: null, deleted_at: null }, raw: true })
+        post.comment_count = comments.count;
+    }
    
 
     return posts;
