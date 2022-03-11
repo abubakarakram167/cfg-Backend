@@ -53,7 +53,6 @@ async function deleteCommentByID(commId, user) {
         commDb = await commentService.update({ deleted_at }, { where: { id: commId, created_by: user.id } });
     }
 
-    console.log("logger", commDb);
     return commDb;
 }
 
@@ -98,9 +97,10 @@ async function getPostComments(req, res) {
         let commentReplies = await getCommentReplies(comment.id);
         //console.log(commentReplies);
         comment.replies = commentReplies;
+        comment.length = commentReplies.length;
     }
-
-    res.send(comments);
+    let comLength = comments.length
+    res.send({comments , count : comLength});
 
 }
 

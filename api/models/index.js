@@ -16,7 +16,6 @@ function init(sequelize) {
     model.question = sequelize.import('./schemas/question.js');
     model.status = sequelize.import('./schemas/status.js');
     model.users = sequelize.import('./schemas/users.js');
-    //model.categories = sequelize.import('./schemas/categories.js'); // todo delete
     model.content_subscribers = sequelize.import('./schemas/content_subscribers.js');
     model.gift_rewards = sequelize.import('./schemas/gift_rewards.js');
     model.groups = sequelize.import('./schemas/groups.js'); // todo delete
@@ -33,7 +32,6 @@ function init(sequelize) {
     model.user_groups = sequelize.import('./schemas/user_groups.js');
     model.question_bank = sequelize.import('./schemas/question_bank.js');
     model.bank_options = sequelize.import('./schemas/bank_options.js');
-
     model.tags = sequelize.import('./schemas/tags.js');
     model.contentTags = sequelize.import('./schemas/content_tags.js');
     model.user_posts = sequelize.import('./schemas/user_posts.js');
@@ -47,6 +45,8 @@ function init(sequelize) {
     model.journal = sequelize.import('./schemas/journal.js')
     model.cfg_invites = sequelize.import('./schemas/cfg_invites.js')
     model.logs = sequelize.import('./schemas/logs.js')
+    model.messages = sequelize.import('./schemas/messages.js')
+
     
     model.quiz.belongsToMany(model.question, {
       through: "quiz_questions",

@@ -8,8 +8,8 @@ module.exports = {
     getOneByID,
     getList,
     deleteOne,
-    update
-
+    update,
+    findAndCount
 };
 function getOneByID(options) {
     return model.comments.findOne(options);
@@ -22,6 +22,14 @@ function add(comment) {
 function findWhere(options) {
     return model.comments.findAll(options);
 }
+
+function findAndCount(options) {
+
+    return model.comments.findAndCountAll(options);
+
+}
+
+
 function getList() {
     return model.comments.findAll();
 }
