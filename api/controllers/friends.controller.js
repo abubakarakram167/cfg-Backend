@@ -38,22 +38,19 @@ async function updateFriend(data, options) {
 
 async function getUserFriendsById(userId) {
     //gets friends where request initiated by user
-    let userAddedFriends = `SELECT user2 as friend from friends WHERE user1=${userId} AND status='accepted' `;
+    let userAddedFriends = `SELECT user2 as friend,u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user2 WHERE user1=${userId} AND friends.status='accepted' `;
 
     //gets friends where request initiated by others
-    let userAddedByFriends = `SELECT user1 as friend from friends WHERE user2=${userId} AND status='accepted' `;
+    let userAddedByFriends = `SELECT user1 as friend,u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user1 WHERE user2=${userId} AND friends.status='accepted' `;
 
 
     //finally preapred query that prepares dataset for user's friends
     let friendsQuery = userAddedFriends + " UNION " + userAddedByFriends;
 
     const friends = await model.sequelize.query(friendsQuery, { type: QueryTypes.SELECT });
-    let friendsArray = [];
-    friends.forEach(friend => {
-        friendsArray.push(friend.friend)
-    })
+    
 
-    return friendsArray;
+    return friends;
 }
 
 async function checkFriendStatus(userId, friendId) {
@@ -189,29 +186,18 @@ async function getFriends(req, res) {
 
 async function getFriendRequests(req, res) {
     const { user } = req;
-    let requests = await friendService.findWhere({
-        where:
-        {
-            user2: user.id,
-            status: 'sent'
-        },
-        attributes: [['user1', 'userId']]
-
-    })
+    let userId = Number(user.id);
+    let friendsQuery = `SELECT user1 as userId , u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user1 WHERE user2=${userId} AND friends.status='sent' `;
+    const requests = await model.sequelize.query(friendsQuery, { type: QueryTypes.SELECT });
+    
     res.send(requests)
 }
 
 async function getSentRequests(req, res) {
     const { user } = req;
-    let requests = await friendService.findWhere({
-        where:
-        {
-            user1: user.id,
-            status: 'sent'
-        },
-        attributes: [['user2', 'userId']]
-
-    })
+    let userId = Number(user.id);
+    let friendsQuery = `SELECT user2 as userId , u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user2 WHERE user1=${userId} AND friends.status='sent' `;
+    const requests = await model.sequelize.query(friendsQuery, { type: QueryTypes.SELECT });
     res.send(requests)
 }
 
