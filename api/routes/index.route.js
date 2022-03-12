@@ -29,6 +29,7 @@ const bankQuestionsRoutes = require('./question_bank.route');
 const bankOptionsRoutes = require('./bank_options.route');
 const journalRoutes = require('./journal.route');
 const inviteRoutes = require('./cfg_invites.route');
+const messageRoutes = require('./messages.route');
 const testRoutes = require('./test.route');
 
 const router = express.Router();
@@ -65,6 +66,7 @@ router.use('/bank_options' , bankOptionsRoutes)
 router.use('/comments', commentsRoutes)
 router.use('/journals', journalRoutes)
 router.use('/invites', inviteRoutes)
+router.use('/messages', messageRoutes)
 router.use('/test', testRoutes)
 // router.use('/session_categories',session_categoriesRoutes);
 // router.use('/session_groups',session_groupsRoutes);
