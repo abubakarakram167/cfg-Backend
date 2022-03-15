@@ -32,14 +32,22 @@ async function updateFriend(data, options) {
 
 async function getPostCommentsById(postId) {
 
-    const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null, deleted_at: null }, raw: true });
+    // const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null, deleted_at: null }, raw: true });
+
+    let commentsQuery = `SELECT c.*,u.first_name , u.last_name , u.photo_url from comments c JOIN users u on u.id = c.created_by  WHERE post_id=${postId} AND isNull(parent_id) AND isNull(c.deleted_at)`;
+    
+    const postComments = await model.sequelize.query(commentsQuery, { type: QueryTypes.SELECT });
 
     return postComments;
 }
 
 async function getCommentReplies(commentId) {
 
-    const commentReplies = await commentService.findWhere({ where: { parent_id: commentId, deleted_at: null } });
+    // const commentReplies = await commentService.findWhere({ where: { parent_id: commentId, deleted_at: null } });
+
+    let commentsQuery = `SELECT c.*,u.first_name , u.last_name , u.photo_url from comments c JOIN users u on u.id = c.created_by  WHERE parent_id=${commentId} AND isNull(c.deleted_at)`;
+    
+    const commentReplies = await model.sequelize.query(commentsQuery, { type: QueryTypes.SELECT });
 
     return commentReplies;
 }

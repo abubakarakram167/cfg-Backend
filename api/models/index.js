@@ -47,18 +47,28 @@ function init(sequelize) {
     model.logs = sequelize.import('./schemas/logs.js')
     model.messages = sequelize.import('./schemas/messages.js')
 
-    
+
     model.quiz.belongsToMany(model.question, {
-      through: "quiz_questions",
-      as: "questions",
-      foreignKey: "quiz_id",
+        through: "quiz_questions",
+        as: "questions",
+        foreignKey: "quiz_id",
     });
-    
+
     model.question.belongsToMany(model.quiz, {
-      through: "quiz_questions",
-      as: "quizes",
-      foreignKey: "question_id",
+        through: "quiz_questions",
+        as: "quizes",
+        foreignKey: "question_id",
     });
+
+    model.users.hasMany(model.user_posts);
+    model.user_posts.belongsTo(model.users , {foreignKey: 'user_id'});
+    // model.user_posts.belongsToOne(model.users, {
+    //     through: "user_posts",
+    //     as: "users",
+    //     foreignKey: "created_by",
+    // });
+
+
 
     fs.readdirSync(schemaPath).forEach((file) => {
         if (file.match(/(.+)\.js(on)?$/)) {
