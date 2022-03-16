@@ -30,7 +30,28 @@ async function insertPost(postData) {
     return postRaw;
 }
 async function getPostById(postId) {
-    const postDb = await postService.getOneByID({ where: { id: postId, deletedAt: null } });
+    const postDb = await postService.getOneByID({
+        where: { id: postId, deletedAt: null }, attributes: [
+            'id',
+            'user_id',
+            'timeline_id',
+            'group_id',
+            'title',
+            'content',
+            'assigned_group',
+            'status',
+            'feeling',
+            'media',
+            'love_count',
+            'comment_count',
+            'share_count',
+            'publish_date',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'loved_by'
+        ],
+    });
     const postRaw = await postDb.get({ plain: true });
 
     return postRaw;
@@ -71,7 +92,7 @@ async function findTimelinePosts(userId, req) {
     userRole = userRole.role;
     userFriends.push(userId)
     console.log(userRole);
-    let posts = await postService.findWhere({
+    let posts = await postService.findAnCountWhere({
         where: {
             publish_date: {
                 [Op.or]: [null, { [Op.lte]: tool_day }]
@@ -118,15 +139,22 @@ async function findTimelinePosts(userId, req) {
             'loved_by'
         ],
         raw: true,
-        include: [{ model: model.users, attributes: ['first_name', 'last_name' , 'photo_url'] }],
+        include: [{ model: model.users, attributes: ['first_name', 'last_name', 'photo_url'] }],
         ...req.pagination
 
     })
 
-    for (post of posts) {
+    for (post of posts.rows) {
         let comments = await commentService.findAndCount({ where: { post_id: post.id, parent_id: null, deleted_at: null }, raw: true })
         post.comment_count = comments.count;
+        post.first_name = post["user.first_name"];
+        post.last_name = post["user.last_name"];
+        post.photo_url = post["user.photo_url"];
+        delete post["user.first_name"];
+        delete post["user.last_name"];
+        delete post["user.photo_url"];
     }
+
 
 
     return posts;
@@ -188,11 +216,34 @@ async function updatePost(req, res) {
             Reflect.deleteProperty(reqObj, key);
         }
     })
-    let updateResp = await postService.update(reqObj, { where: { id } })
+    let updateResp = await postService.update(reqObj, {
+        where: { id }
+    })
+
     if (updateResp[0] > 0) {
-        res.send({ message: "Post Updated Successfully" })
+        let post = await postService.getOneByID({
+            where: { id }, attributes: [
+                'id',
+                'user_id',
+                'timeline_id',
+                'group_id',
+                'title',
+                'content',
+                'assigned_group',
+                'status',
+                'feeling',
+                'media',
+                'love_count',
+                'share_count',
+                'publish_date',
+                'created_at',
+                'updated_at',
+                'loved_by'
+            ]
+        });
+        res.send({ message: "Post Updated Successfully", post })
     } else {
-        res.send({ message: "Post Update Error" })
+        res.status(400).send({ message: "Post Update Error" })
     }
 
 }
@@ -221,6 +272,8 @@ async function deletepost(req, res) {
         })
 
 }
+
+
 
 async function getOnePostById(req, res) {
     let postId = req.params.postId;
