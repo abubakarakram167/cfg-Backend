@@ -32,7 +32,7 @@ const exportObj = {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY)
         const msg = {
             to: emailTo, // Change to your recipient
-            from: 'CFG@mycfg.org', // Change to your verified sender
+            from: 'JMMB Conversations For Greatness No-Reply <noreply@mycfg.org>', // Change to your verified sender
             subject: subject,
             // text: message,
             html: message,
