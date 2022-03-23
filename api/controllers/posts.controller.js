@@ -2,6 +2,7 @@
 
 const postService = require('../dal/user_posts.dao');
 const userService = require('../dal/users.dao');
+const commentService = require('../dal/comments.dao');
 const model = require('../models');
 const { QueryTypes } = require('sequelize');
 const friendCtrl = require('./friends.controller')
@@ -29,11 +30,41 @@ async function insertPost(postData) {
     return postRaw;
 }
 async function getPostById(postId) {
-    const postDb = await postService.getOneByID({ where: { id: postId, deletedAt: null } });
+    const postDb = await postService.getOneByID({
+        where: { id: postId, deletedAt: null }, attributes: [
+            'id',
+            'user_id',
+            'timeline_id',
+            'group_id',
+            'title',
+            'content',
+            'assigned_group',
+            'status',
+            'feeling',
+            'media',
+            'love_count',
+            'comment_count',
+            'share_count',
+            'publish_date',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'loved_by'
+        ],
+    });
     const postRaw = await postDb.get({ plain: true });
 
     return postRaw;
 }
+
+async function getPostCommentsById(postId) {
+
+    const postComments = await commentService.findWhere({ where: { post_id: postId, parent_id: null, deleted_at: null }, raw: true });
+
+    return postComments;
+}
+
+
 
 async function findAllpost(options) {
     const postDb = await postService.findAnCountWhere(options);
@@ -61,7 +92,7 @@ async function findTimelinePosts(userId, req) {
     userRole = userRole.role;
     userFriends.push(userId)
     console.log(userRole);
-    let posts = await postService.findWhere({
+    let posts = await postService.findAnCountWhere({
         where: {
             publish_date: {
                 [Op.or]: [null, { [Op.lte]: tool_day }]
@@ -87,30 +118,60 @@ async function findTimelinePosts(userId, req) {
             ['id', 'DESC'],
             ['publish_date', 'DESC']
         ],
+        attributes: [
+            'id',
+            'user_id',
+            'timeline_id',
+            'group_id',
+            'title',
+            'content',
+            'assigned_group',
+            'status',
+            'feeling',
+            'media',
+            'love_count',
+            'comment_count',
+            'share_count',
+            'publish_date',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'loved_by'
+        ],
+        raw: true,
+        include: [{ model: model.users, attributes: ['first_name', 'last_name', 'photo_url'] }],
         ...req.pagination
 
     })
-    // let userFriendsSQL = transformArrayToBracket(userFriends);
-    // //this part selects timeline posts assigned to specific user role
-    // let userRoleQuery = ` AND assigned_group = (SELECT role from users WHERE id=${userId}) `;  
 
-    // //below query gets timeline posts added by admin
-    // //let adminSideQuery = "SELECT * FROM (SELECT 'admin_post' as post_type , content.created_by , content.detail as content , 'dumm1' as feeling ,'dumm2' as media, love_count,comment_count,  share_count , created_at , updated_at from content WHERE start_date <= CURDATE() AND end_date  > CURDATE() AND type = 'timeline'"
+    for (post of posts.rows) {
+        let comments = await commentService.findAndCount({ where: { post_id: post.id, parent_id: null, deleted_at: null }, raw: true })
+        post.comment_count = comments.count;
+        post.first_name = post["user.first_name"];
+        post.last_name = post["user.last_name"];
+        post.photo_url = post["user.photo_url"];
+        delete post["user.first_name"];
+        delete post["user.last_name"];
+        delete post["user.photo_url"];
+    }
 
-    // //below query gets timeline posts added by other candidate friends
-    // let userSideQuery = "SELECT 'user_post' as post_type , user_id as created_by , content ,feeling ,media, love_count,comment_count, share_count , created_at , updated_at from user_posts WHERE deleted_at IS NULL AND user_id IN " + userFriendsSQL + userRoleQuery + " ORDER BY created_at"
 
-    // //finally preapred query that prepares dataset for timeline
-    // let timelineQuery =    userSideQuery;
-
-    //const posts = await model.sequelize.query( timelineQuery, { type: QueryTypes.SELECT });
 
     return posts;
 }
 
-async function deletePostByID(postId, userId) {
+async function deletePostByID(postId, user) {
     let deletedAt = new Date();
-    const postDb = await postService.update({ deletedAt }, { where: { id: postId, user_id: userId } });
+    let postDb;
+    let userId = user.id;
+
+    if (user.role == 'content-manager' || user.role == 'system-administrator') {
+        postDb = await postService.update({ deletedAt }, { where: { id: postId } });
+    } else {
+        postDb = await postService.update({ deletedAt }, { where: { id: postId, user_id: userId } });
+    }
+
+
     return postDb;
 }
 
@@ -155,11 +216,34 @@ async function updatePost(req, res) {
             Reflect.deleteProperty(reqObj, key);
         }
     })
-    let updateResp = await postService.update(reqObj, { where: { id } })
+    let updateResp = await postService.update(reqObj, {
+        where: { id }
+    })
+
     if (updateResp[0] > 0) {
-        res.send({ message: "Post Updated Successfully" })
+        let post = await postService.getOneByID({
+            where: { id }, attributes: [
+                'id',
+                'user_id',
+                'timeline_id',
+                'group_id',
+                'title',
+                'content',
+                'assigned_group',
+                'status',
+                'feeling',
+                'media',
+                'love_count',
+                'share_count',
+                'publish_date',
+                'created_at',
+                'updated_at',
+                'loved_by'
+            ]
+        });
+        res.send({ message: "Post Updated Successfully", post })
     } else {
-        res.send({ message: "Post Update Error" })
+        res.status(400).send({ message: "Post Update Error" })
     }
 
 }
@@ -173,7 +257,8 @@ async function deletepost(req, res) {
     //     user_id:user.id,
     //     id:postId
     // }})
-    deletePostByID(postId, user.id)
+
+    deletePostByID(postId, user)
         .then(result => {
 
             if (result[0] === 0) {
@@ -187,6 +272,8 @@ async function deletepost(req, res) {
         })
 
 }
+
+
 
 async function getOnePostById(req, res) {
     let postId = req.params.postId;
@@ -230,11 +317,11 @@ async function givelove(req, res) {
         post_loved_by = JSON.stringify(prev_loves)
     }
 
-    let updateResp = await postService.update({love_count , loved_by:post_loved_by}, { where: { id } })
-    if(updateResp[0] == 1){
-        res.send({love_count})
-    }else{
-        res.status(400).send({message:"an error occured" , updateResp})
+    let updateResp = await postService.update({ love_count, loved_by: post_loved_by }, { where: { id } })
+    if (updateResp[0] == 1) {
+        res.send({ love_count })
+    } else {
+        res.status(400).send({ message: "an error occured", updateResp })
     }
-    
+
 }
