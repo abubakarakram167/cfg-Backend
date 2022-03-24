@@ -8,6 +8,7 @@ module.exports = router;
 
 router.post('/', asyncHandler(messageCtrl.createMessage));
 router.get('/', asyncHandler(messageCtrl.getUserChats));
+router.get('/cfgfamily', asyncHandler(messageCtrl.getUserFamily));
 router.get('/:userId', asyncHandler(messageCtrl.getUserMessages));
 // router.get('/', asyncHandler(commentCtrl.addComment));
 router.delete('/:msgId', asyncHandler(messageCtrl.deleteMessage));

@@ -22,7 +22,8 @@ module.exports = {
     getListMediaMultiple,
     deleteMedia,
     editMedia,
-    getCloudFrontUrl
+    getCloudFrontUrl,
+    createSignedUrl
 };
 async function insertMedia(mediaData) {
     const media = mediaData;
@@ -42,6 +43,27 @@ async function getByIDMedia(mediaData) {
 async function findAllMedia(options) {
     const mediaDb = await mediaService.getList(options);
     return mediaDb;
+}
+
+async function createSignedUrl(url){
+
+    var cfUtil = require('aws-cloudfront-sign');
+
+    // Sample private key. This would need to be replaced with the private key from
+    // your CloudFront key pair.
+    var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+    // Sample key pair ID. This would need to be replaced by the Access Key ID from
+    // your CloudFront key pair.
+    var cfKeypairId = 'K30S0N0WWH7I01';
+    var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
+
+    var signedUrl = cfUtil.getSignedUrl(cfURL, {
+        keypairId: cfKeypairId,
+        expireTime: Date.now() + (50 * 60 * 1000),
+        privateKeyString: cfPk
+    });
+    return signedUrl;
+
 }
 
 
@@ -288,23 +310,9 @@ async function editMedia(req, res) {
 
 async function getCloudFrontUrl(req, res) {
     const { url } = req.params;
-    console.log("url is" , url);
-    var cfUtil = require('aws-cloudfront-sign');
-
-    // Sample private key. This would need to be replaced with the private key from
-    // your CloudFront key pair.
-    var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
-    // Sample key pair ID. This would need to be replaced by the Access Key ID from
-    // your CloudFront key pair.
-    var cfKeypairId = 'K30S0N0WWH7I01';
-    var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
-
-    var signedUrl = cfUtil.getSignedUrl(cfURL, {
-        keypairId: cfKeypairId,
-        expireTime: Date.now() + (50 * 60 * 1000),
-        privateKeyString: cfPk
-    });
-
+    
+    
+    let signedUrl = await createSignedUrl(url);
     console.log(signedUrl);
     res.send(signedUrl);
 

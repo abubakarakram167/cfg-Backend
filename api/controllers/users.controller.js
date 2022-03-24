@@ -363,15 +363,14 @@ async function addUserSocket(user_id, socket_id) {
   let data = {
     user_id, socket_id
   };
-  console.log(data);
-  let socket = await socketService.add(data)
+  let socket = await socketService.findOrCreate({where:data})
   return socket;
 }
 
 async function addWindowSocket(user_id, socket_id) {
 
   let data = {
-    user_id, socket_id, created_at: new Date()
+    user_id, socket_id
   };
   //console.log(data);
   let socket = await socketService.findOrCreate({ where: data })

@@ -7,17 +7,20 @@ const notiService = require('../dal/user_notifications.dao')
 const model = require('../models');
 const { QueryTypes } = require('sequelize');
 const friendCtrl = require('./friends.controller')
+const mediaCtrl = require('./media.controller')
 const responseMessages = require('../helpers/response-messages');
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op;
 const dayJs = require('dayjs')
 const helpers = require('./helperFunctions')
 
+
 module.exports = {
     createMessage,
     getUserMessages,
     deleteMessage,
-    getUserChats
+    getUserChats,
+    getUserFamily
 };
 
 //Task Processor functions
@@ -39,12 +42,13 @@ async function deleteMessageByID(msgId, user) {
 
 
 
-async function notifyUserofMessage(user, recv_id, msg_id) {
-    let userSockets = await socketService.findWhere({ where: { user_id: recv_id } });
+async function notifyUserofMessage(user, recv_id, message) {
+    let userSockets = await socketService.findWhere({ where: { user_id: recv_id },group: ['socket_id'] });
+    console.log(userSockets);
     let userNotification = await notiService.add({
         user_id: recv_id,
         text: `You have unread messages from ${user.first_name} ${user.last_name}`,
-        message_id: msg_id,
+        message_id: message.id,
         status: "pending"
     })
 
@@ -54,7 +58,8 @@ async function notifyUserofMessage(user, recv_id, msg_id) {
         let { id, first_name, last_name } = user
         let userSend = { id, first_name, last_name }
         for (usSocket of userSockets) {
-            socket.to(usSocket.socket_id).emit('message', { msg_id, userSend });
+            console.log("socket ran now");
+            socket.to(usSocket.socket_id).emit('message', { message, userSend });
         }
 
     }
@@ -100,7 +105,7 @@ async function createMessage(req, res) {
 
     console.log(reqObject);
     const message = await insertMessage(reqObject);
-    notifyUserofMessage(user, reqObject.recieved_by, message.id);
+    notifyUserofMessage(user, reqObject.recieved_by, message );
     res.send({ message });
 }
 
@@ -164,43 +169,38 @@ async function getOnemessageById(req, res) {
 
 }
 
-async function checkEmailJobs() {
+async function getUserFamily(req, res){
+
+    const { user } = req;
+    let userFriends = await friendCtrl.getUserFriendsById(user.id);
+    if(userFriends.length > 0){
+        for(friend of userFriends){
+            let url = friend.photoUrl;
+            let friendId = friend.friend;
+            let isOnline = false;
 
 
+            let sockets = await socketService.findWhere({where: {
+                user_id:friendId
+            }})
+            if(sockets.length > 0){
+                isOnline = true;
+            } 
 
-}
+            friend.isOnline = isOnline
 
-async function givelove(req, res) {
-    const id = req.params.id;
-    let { user } = req;
-    let message = await getmessageById(id);
-    let message_loved_by = "";
-    var love_count = message.love_count;
-    console.log(message);
-    if (message.loved_by === null) {
-        message_loved_by = [user.id]
-        message_loved_by = JSON.stringify(message_loved_by)
-        love_count++;
-    } else {
-        let prev_loves = JSON.parse(message.loved_by);
-        if (prev_loves.includes(user.id)) {
-            var index = prev_loves.indexOf(user.id);
-            if (index !== -1) {
-                prev_loves.splice(index, 1);
-            }
-            love_count--;
-        } else {
-            prev_loves.push(user.id);
-            love_count++;
+            let signedUrl = await mediaCtrl.createSignedUrl(url);
+
+            friend.photoUrl = signedUrl;
+
+
         }
-        message_loved_by = JSON.stringify(prev_loves)
+        return res.send(userFriends);
+        
+    }else{
+        return res.send(userFriends);
     }
 
-    let updateResp = await messageservice.update({ love_count, loved_by: message_loved_by }, { where: { id } })
-    if (updateResp[0] == 1) {
-        res.send({ love_count })
-    } else {
-        res.status(400).send({ message: "an error occured", updateResp })
-    }
+    
 
 }
