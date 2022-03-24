@@ -38,10 +38,10 @@ async function updateFriend(data, options) {
 
 async function getUserFriendsById(userId) {
     //gets friends where request initiated by user
-    let userAddedFriends = `SELECT user2 as friend,u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user2 WHERE user1=${userId} AND friends.status='accepted' `;
+    let userAddedFriends = `SELECT user2 as friend,u.photo_url as photoUrl,u.first_name,u.last_name from friends JOIN users u on u.id = friends.user2 WHERE user1=${userId} AND friends.status='accepted' `;
 
     //gets friends where request initiated by others
-    let userAddedByFriends = `SELECT user1 as friend,u.photo_url as photoUrl from friends JOIN users u on u.id = friends.user1 WHERE user2=${userId} AND friends.status='accepted' `;
+    let userAddedByFriends = `SELECT user1 as friend,u.photo_url as photoUrl,u.first_name,u.last_name from friends JOIN users u on u.id = friends.user1 WHERE user2=${userId} AND friends.status='accepted' `;
 
 
     //finally preapred query that prepares dataset for user's friends
