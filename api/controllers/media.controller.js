@@ -35,9 +35,13 @@ async function insertMedia(mediaData) {
 async function getByIDMedia(mediaData) {
     const media = { ...mediaData };
     const mediaDb = await mediaService.getOneByID(media);
-    const mediaRaw = await mediaDb.get({ plain: true });
+    if(mediaDb != null){
+        const mediaRaw = await mediaDb.get({ plain: true });
+        return mediaRaw;
+    }
+    return null;
 
-    return mediaRaw;
+    
 }
 
 async function findAllMedia(options) {
@@ -193,6 +197,9 @@ async function createOneMedia(req, res) {
 async function getOneMediaByID(req, res) {
     const id = req.params.id;
     const media = await getByIDMedia({ where: { id } });
+    if(media == null){
+        return res.status(404).send({message:"Media Not Found"});
+    }
     // let file_path = path.join(__dirname, '../../static', media.file_name)
     // console.log(media.file_name)
     s3fsImpl.createReadStream(media.file_name, { encoding: 'base64' }).pipe(res);
