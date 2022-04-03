@@ -122,6 +122,7 @@ async function getUserMessages(req, res) {
 
     let messages = await model.sequelize.query(`select sent_by,recieved_by,text,created_at,html,media_id,status,type from messages m where (m.sent_by = ${user.id} AND m.recieved_by = ${userId}) OR (m.sent_by = ${userId} AND m.recieved_by = ${user.id}) ORDER BY created_at ASC;`, { type: QueryTypes.SELECT, raw: true })
 
+
     res.send(messages)
 
 }
