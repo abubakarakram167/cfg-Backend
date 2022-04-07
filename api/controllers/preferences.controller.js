@@ -59,7 +59,9 @@ module.exports = {
     }
     
     async function getOnePreferenceByID(req, res) {
-        const preference = await getByIDPreference(req.params.id);
+        let id = Number(req.params.id);
+        if(isNaN(id)) { return res.send({message:"Invalid preference id."}); } 
+        const preference = await getByIDPreference(id);
         res.send(preference);
     }
     
