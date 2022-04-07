@@ -6,8 +6,8 @@ module.exports = {
           getOnePreferenceByID,
           getListPreferenceMultiple,
           deletePreference,
-          editPreferenceById
-      
+          editPreferenceById,
+          getOnePreferenceByName
       };
       async function insertPreference(preferenceData) {
         const preference = { ...preferenceData };
@@ -65,6 +65,17 @@ module.exports = {
         res.send(preference);
     }
     
+    async function getOnePreferenceByName(req, res) {
+        let name = String(req.params.name);
+        const preference = await preferenceService.findWhere({ where:{option_name:name} , raw:true});
+        if(preference.length > 0){
+            return res.send(preference[0])
+        }else{
+            return res.send({message:"Pref not found."})
+        } 
+        
+    }
+
     async function getListPreferenceMultiple(_req, res) {
         const preference = await findAllPreference();
         res.send(preference);
