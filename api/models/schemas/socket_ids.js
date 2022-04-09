@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('socket_ids', {
     },
     created_at: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     }
 }, {
     tableName: 'socket_ids',
