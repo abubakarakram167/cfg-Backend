@@ -2,7 +2,7 @@
 require('apminsight')({
     licenseKey : "us_08a5b92df825cb3c6e1aceefbd9cb0e6",
     appName : "cfg-social-app",
-    port : "443"})
+    port : "3690"})
 const path = require('path');
 const express = require('express');
 const app = express();
