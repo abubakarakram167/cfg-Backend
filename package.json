@@ -9,6 +9,7 @@
   "main": "api/app.js",
   "dependencies": {
     "@sendgrid/mail": "^7.6.1",
+    "apminsight": "^2.3.0",
     "aws-cloudfront-sign": "^2.2.0",
     "aws-sdk": "^2.965.0",
     "axios": "^0.24.0",
