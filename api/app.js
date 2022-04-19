@@ -204,4 +204,4 @@ console.log('Endpoints: \n', listEndpoints(app));
 // }).then((data) => { console.log(data[0]); });
 
 module.exports = app;
-require('apminsight')()
+//require('apminsight')()
