@@ -26,7 +26,7 @@ logger.initializeGlobalHandlers();
 
 const { authFactory } = require('./middleware/auth-handler');
 
-var whitelist = ['https://dev.mycfg.org', , undefined];
+var whitelist = ['https://dev.mycfg.org', 'http://localhost:3001' , undefined];
 
 const corsOptions = {
 

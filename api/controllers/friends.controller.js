@@ -103,7 +103,7 @@ async function addFriend(req, res) {
                 raw: true
             });
             let userName = user.first_name + " " + user.last_name
-            console.log("user mail ", userEmail ," the user is " , userName);
+            // console.log("user mail ", userEmail ," the user is " , userName);
             sendEmail(
                 userEmail.email,
                 "New Friend Request",

@@ -204,7 +204,7 @@ async function createOneContent(req, res) {
     //console.log(requestObject.tags);
     if (!requestObject.tags) {
         requestObject.tags = []
-        console.log("No tags")
+        // console.log("No tags")
     }
     let tempTags = requestObject.tags
     requestObject.tags = JSON.stringify(requestObject.tags);
@@ -253,12 +253,12 @@ async function createOneContent(req, res) {
         requestObject.status != undefined ? postAddObject.status = requestObject.status : null
         requestObject.assigned_group != undefined ? postAddObject.assigned_group = requestObject.assigned_group : null
         postAddObject.user_id = user.id;
-        console.log("post object", postAddObject);
+        // console.log("post object", postAddObject);
 
         let newPost = await postService.add({ ...postAddObject, timeline_id: content.id });
 
         if (dayjs(new Date()).isSame(postAddObject.publish_date, 'day')) {
-            console.log("date found ");
+            // console.log("date found ");
             initiatePostEmails(newPost.id , req.user.first_name)
             await helpers.emitPostIdToUsers(newPost.id , "admin")
             
@@ -306,14 +306,14 @@ async function editContent(req, res) {
     await contentDb.update(requestObject);
     
     if (requestObject.status === 'published' && contentRaw.type == "mini" && prevStatus == 'draft') {
-        console.log("invites activated");
+        // console.log("invites activated");
         let invites = await inviteCtrl.activateInvites(contentRaw.id)
         if (invites === -1){
             return res.send({ message: "CFG updated but failed to activate invites due to zoom error" });
         }
     }
     if (requestObject.type === 'timeline') {
-        console.log("is_timeline");
+        // console.log("is_timeline");
         let postUpdateObject = {};
 
         requestObject.title != undefined ? postUpdateObject.title = requestObject.title : null
@@ -360,7 +360,7 @@ async function getSingleSessionCompleteDetails(req, res) {
     let OurTitles = JSON.stringify(titles);
     OurTitles = JSON.parse(OurTitles)
 
-    console.log(OurTitles.rows);
+    // console.log(OurTitles.rows);
 
     for (let title of OurTitles.rows) {
         // eslint-disable-next-line no-await-in-loop
@@ -457,7 +457,7 @@ async function search(req, res) {
     const { user } = req;
     let searchResult = {};
     let searchString = req.params.string;
-    console.log(searchString);
+    // console.log(searchString);
     let users = await searchUsers(searchString);
     let posts = await searchPosts(searchString, user.id);
     let content = await searchContent(searchString, user.id);
@@ -471,7 +471,7 @@ async function search(req, res) {
 async function getAllTitles(req, res) {
     const type = req.params.type;
     const { offset, limit } = req.pagination;
-    console.log(offset, limit);
+    // console.log(offset, limit);
     //finally preapred query that prepares dataset for timeline
     let toolsQuery = `SELECT c.*,p.type as parent_type  FROM content c INNER JOIN content p ON p.id = c.content_header_id WHERE p.type='${type}' AND c.type='title' LIMIT ${limit} OFFSET ${offset}`;
 
@@ -533,7 +533,7 @@ async function checkPendingEmailJobs(){
         await helpers.emitPostIdToUsers(job.post_id , "admin")
         await emailJobService.update({status:'done'},{where:{id:job.id}})
     }
-    console.log("pending jobs from content controller ",pendingJobs);
+    // console.log("pending jobs from content controller ",pendingJobs);
 }
 
 

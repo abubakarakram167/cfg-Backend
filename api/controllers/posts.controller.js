@@ -80,69 +80,111 @@ function transformArrayToBracket(array) {
     return bracketString;
 }
 
-async function findTimelinePosts(userId, req) {
+async function findTimelinePosts(user, req) {
 
-    let userFriends = await friendCtrl.getUserFriendsById(userId);
+    let userFriends = await friendCtrl.getUserFriendsById(user.id);
     let today = new Date();
     let tool_day = dayJs(today).format("YYYY-MM-DD")
     let userRole = await userService.findOne({
-        where: { id: userId },
+        where: { id: user.id },
         attributes: ['role']
     })
     userRole = userRole.role;
-    userFriends.push(userId)
-    console.log(userRole);
-    let posts = await postService.findAnCountWhere({
-        where: {
-            publish_date: {
-                [Op.or]: [null, { [Op.lte]: tool_day }]
+    userFriends.push(user.id)
+    // console.log(userRole);
+    let posts;
+    if (user.role == 'content-manager' || user.role == 'system-administrator') {
+        posts = await postService.findAnCountWhere({
+            where: {
+                
+                deletedAt: null,
+                status: 'published',
+
+
             },
-            [Op.or]: [
-                { [Op.and]: [{ assigned_group: null }, { user_id: { [Op.in]: userFriends } }] },
-                {
-                    assigned_group: ['candidate',
-                        'facilitator',
-                        'content-manager',
-                        'support',
-                        'reviewer',
-                        'system-administrator',
-                        'auditor']
-                }
+            order: [
+                ['id', 'DESC'],
+                ['publish_date', 'DESC']
             ],
-            deletedAt: null,
-            status: 'published',
+            attributes: [
+                'id',
+                'user_id',
+                'timeline_id',
+                'group_id',
+                'title',
+                'content',
+                'assigned_group',
+                'status',
+                'feeling',
+                'media',
+                'love_count',
+                'comment_count',
+                'share_count',
+                'publish_date',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'loved_by'
+            ],
+            raw: true,
+            include: [{ model: model.users, attributes: ['first_name', 'last_name', 'photo_url'] }],
+            ...req.pagination
+
+        })
+    } else {
+        posts = await postService.findAnCountWhere({
+            where: {
+                publish_date: {
+                    [Op.or]: [null, { [Op.lte]: tool_day }]
+                },
+                [Op.or]: [
+                    { [Op.and]: [{ assigned_group: null }, { user_id: { [Op.in]: userFriends } }] },
+                    {
+                        assigned_group: ['candidate',
+                            'facilitator',
+                            'content-manager',
+                            'support',
+                            'reviewer',
+                            'system-administrator',
+                            'auditor']
+                    }
+                ],
+                deletedAt: null,
+                status: 'published',
 
 
-        },
-        order: [
-            ['id', 'DESC'],
-            ['publish_date', 'DESC']
-        ],
-        attributes: [
-            'id',
-            'user_id',
-            'timeline_id',
-            'group_id',
-            'title',
-            'content',
-            'assigned_group',
-            'status',
-            'feeling',
-            'media',
-            'love_count',
-            'comment_count',
-            'share_count',
-            'publish_date',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-            'loved_by'
-        ],
-        raw: true,
-        include: [{ model: model.users, attributes: ['first_name', 'last_name', 'photo_url'] }],
-        ...req.pagination
+            },
+            order: [
+                ['id', 'DESC'],
+                ['publish_date', 'DESC']
+            ],
+            attributes: [
+                'id',
+                'user_id',
+                'timeline_id',
+                'group_id',
+                'title',
+                'content',
+                'assigned_group',
+                'status',
+                'feeling',
+                'media',
+                'love_count',
+                'comment_count',
+                'share_count',
+                'publish_date',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'loved_by'
+            ],
+            raw: true,
+            include: [{ model: model.users, attributes: ['first_name', 'last_name', 'photo_url'] }],
+            ...req.pagination
 
-    })
+        })
+    }
+
 
     for (post of posts.rows) {
         let comments = await commentService.findAndCount({ where: { post_id: post.id, parent_id: null, deleted_at: null }, raw: true })
@@ -189,7 +231,7 @@ async function createOnePost(req, res) {
     requestObject.user_id = req.user.id;
 
 
-    console.log(requestObject);
+    // console.log(requestObject);
     const post = await insertPost(requestObject);
     helpers.emitPostIdToUsers(post.id, "user")
     helpers.sendEmailsToUserFriends(post.id, req.user.first_name)
@@ -200,7 +242,7 @@ async function getTimelinePosts(req, res) {
     const { user } = req;
 
 
-    let posts = await findTimelinePosts(user.id, req);
+    let posts = await findTimelinePosts(user, req);
 
     res.send(posts)
 }
@@ -297,7 +339,7 @@ async function givelove(req, res) {
     let post = await getPostById(id);
     let post_loved_by = "";
     var love_count = post.love_count;
-    console.log(post);
+    // console.log(post);
     if (post.loved_by === null) {
         post_loved_by = [user.id]
         post_loved_by = JSON.stringify(post_loved_by)
