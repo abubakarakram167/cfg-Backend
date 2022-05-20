@@ -43,7 +43,7 @@ async function addJournal(req, res) {
 
     reqObj.created_by = userId;
     reqObj.created_at = new Date();
-    console.log("into add journal function", reqObj);
+    // console.log("into add journal function", reqObj);
     insertJournal(reqObj)
         .then(result => {
             res.send({ result, message: "Journal added successfully" });
@@ -132,7 +132,7 @@ async function outdateJournal() {
     let outdatedJournals = await journalService.update({ status: "overdue" }, {
         where: { end_date: { [Op.lt]: today } }
     });
-    console.log(outdatedJournals);
+    // console.log(outdatedJournals);
 
 
 }
