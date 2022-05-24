@@ -8,7 +8,7 @@ const config = {
     password: env.get('PASSWORD'),
     database: env.get('DATABASE'),
     host: env.get('HOST'),
-    port: env.get('PORT', 3306, Number),
+    port: env.get('PORT', 3307, Number),
     dialect: env.get('DIALECT', 'mysql'),
     logging: env.get('LOGGING', false, Boolean),
   },

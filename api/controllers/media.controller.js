@@ -105,7 +105,7 @@ async function createOneMedia(req, res) {
         if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
             await sharp(file.path).resize(200, 200).toFile(path.join(__dirname, thumbDir + file.filename), (err, resizeImage) => {
                 if (err) {
-                    console.log(err);
+                    // console.log(err);
                 }
             });
         }
@@ -131,7 +131,7 @@ async function createOneMedia(req, res) {
         
         
         s3fsImpl.writeFile(file.filename, stream).then(function () {
-            console.log("uploaded to s3");
+            // console.log("uploaded to s3");
             fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
                 if (err) {
                     console.error(err)
@@ -146,7 +146,7 @@ async function createOneMedia(req, res) {
             // });
             // res.status(200).end();
         }).catch(function (err) {
-            console.log("err occured on s3", err);
+            // console.log("err occured on s3", err);
             fs.appendFile(path.join(__dirname, '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
                 if (err) {
                     console.error(err)
@@ -159,7 +159,7 @@ async function createOneMedia(req, res) {
         let thumbStream = fs.createReadStream(path.join(__dirname, thumbDir + file.filename))
 
         s3fsImpl.writeFile(`/thumbnails/${file.filename}`, thumbStream).then(function () {
-            console.log("uploaded to s3 thumb");
+            // console.log("uploaded to s3 thumb");
             fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
                 if (err) {
                     console.error(err)
@@ -174,7 +174,7 @@ async function createOneMedia(req, res) {
             // });
             // res.status(200).end();
         }).catch(function (err) {
-            console.log("err occured on s3  thumb", err);
+            // console.log("err occured on s3  thumb", err);
             fs.appendFile(path.join(__dirname, '../../static'), `${file.filename}.pdf failed, ${os.EOL} , ${err} `, err => {
                 if (err) {
                     console.error(err)
@@ -291,7 +291,7 @@ async function deleteMedia(req, res) {
     } else {
         res.send({ message: "Error Deleting Media" });
     }
-    console.log(media);
+    // console.log(media);
 
 }
 
@@ -320,7 +320,7 @@ async function getCloudFrontUrl(req, res) {
     
     
     let signedUrl = await createSignedUrl(url);
-    console.log(signedUrl);
+    // console.log(signedUrl);
     res.send(signedUrl);
 
 }

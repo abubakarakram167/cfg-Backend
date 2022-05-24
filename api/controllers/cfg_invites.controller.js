@@ -37,7 +37,7 @@ async function addInvite(req, res) {
       delete reqObj[property];
     }
   }
-  console.log(reqObj.cfg_id);
+  // console.log(reqObj.cfg_id);
   let content = await contentService.getOneByID({
     where: { id: reqObj.cfg_id },
     raw: true,
@@ -67,7 +67,7 @@ async function addInvite(req, res) {
   reqObj.created_by = userId;
   reqObj.status = "pending";
   reqObj.created_at = new Date();
-  console.log("into add invite function", reqObj);
+  // console.log("into add invite function", reqObj);
   insertInvite(reqObj)
     .then((invite) => {
       res.send({ invite, message: "invite added successfully" });
@@ -100,7 +100,7 @@ async function updateInvite(req, res) {
   let allowedKeys = ["status"];
   let allowedStatus = ["accepted", "rejected"];
   let inviteId = Number(req.params.id);
-  console.log("invite id is", inviteId);
+  // console.log("invite id is", inviteId);
 
   for (const property in reqObj) {
     if (!allowedKeys.includes(property)) {

@@ -44,7 +44,7 @@ async function deleteMessageByID(msgId, user) {
 
 async function notifyUserofMessage(user, recv_id, message) {
     let userSockets = await socketService.findWhere({ where: { user_id: recv_id },group: ['socket_id'] });
-    console.log(userSockets);
+    // console.log(userSockets);
     let userNotification = await notiService.add({
         user_id: recv_id,
         text: `You have unread messages from ${user.first_name} ${user.last_name}`,
@@ -58,7 +58,7 @@ async function notifyUserofMessage(user, recv_id, message) {
         let { id, first_name, last_name } = user
         let userSend = { id, first_name, last_name }
         for (usSocket of userSockets) {
-            console.log("socket ran now");
+            // console.log("socket ran now");
             socket.to(usSocket.socket_id).emit('message', { message, userSend });
         }
 
@@ -103,7 +103,7 @@ async function createMessage(req, res) {
     reqObject.sent_by = user.id
 
 
-    console.log(reqObject);
+    // console.log(reqObject);
     const message = await insertMessage(reqObject);
     notifyUserofMessage(user, reqObject.recieved_by, message );
     res.send({ message });
@@ -154,7 +154,7 @@ async function deleteMessage(req, res) {
             }
         })
         .catch(err => {
-            console.log(err);
+            // console.log(err);
             res.send({ error: err })
         })
 

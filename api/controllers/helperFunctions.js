@@ -27,9 +27,9 @@ async function sendEmailsToUserFriends(postId , userName){
 
 async function getPostSocketIdsByRole(postId) {
 
-    console.log("post id is", postId);
+    // console.log("post id is", postId);
     let assigned_group = await postService.getOneByID({ where: { id: postId }, attributes: ['assigned_group'], raw: true })
-    console.log(assigned_group);
+    // console.log(assigned_group);
     let socketIds = await model.sequelize.query(`SELECT socket_ids.socket_id FROM socket_ids JOIN users ON users.id = socket_ids.user_id WHERE users.role = '${assigned_group.assigned_group}'`, { type: QueryTypes.SELECT, raw: true })
     return socketIds;
 
@@ -66,5 +66,5 @@ async function emitPostIdToUsers(postId, type) {
         socket.to(sockets.socket_id).emit('post', postId);
     }
    
-    console.log("logging from helperfunc.emitPostIdToUsers socket-ids:",socketIds);
+    // console.log("logging from helperfunc.emitPostIdToUsers socket-ids:",socketIds);
 }

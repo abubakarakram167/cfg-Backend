@@ -1,4 +1,5 @@
 /* eslint no-console:0, no-param-reassign:0 */
+
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -26,13 +27,20 @@ logger.initializeGlobalHandlers();
 
 const { authFactory } = require('./middleware/auth-handler');
 
-
+var whitelist = ['https://dev.mycfg.org', 'http://localhost:3001' , undefined];
 
 const corsOptions = {
-    //origin:"*"
-    origin: config.corsWhiteList,
-    credentials: true,
-    withCredentials: true,
+
+  origin: function (origin, callback) {
+    console.log(origin);
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  withCredentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -203,3 +211,4 @@ console.log('Endpoints: \n', listEndpoints(app));
 // }).then((data) => { console.log(data[0]); });
 
 module.exports = app;
+//require('apminsight')()
