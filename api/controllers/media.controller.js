@@ -76,7 +76,7 @@ async function createSignedUrl(url){
 async function createOneMedia(req, res) {
     const reqObj = req.body;
     const thumbDir = '../../static/thumbnails/';
-    //console.log(reqObj);
+    // console.log(reqObj);
     const { user } = req;
     const mediaFiles = req.files;
     const category = reqObj.category ? reqObj.category : 'general';
@@ -84,7 +84,8 @@ async function createOneMedia(req, res) {
     let insertObject = [];
     for (let file of mediaFiles) {
         let mediaObject = {};
-        file.filename = _.replace(file.filename, ' ', '_');
+        file.filename = file.filename.replace(/ /g,"_"); 
+        // console.log("here",fn);
         mediaObject.title = file.originalname;
         mediaObject.mime_type = file.mimetype.split('/')[1];
         mediaObject.url = file.path;

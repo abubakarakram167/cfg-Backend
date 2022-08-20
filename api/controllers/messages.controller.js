@@ -190,7 +190,8 @@ async function getUserFamily(req, res){
 
             friend.isOnline = isOnline
 
-            let signedUrl = await mediaCtrl.createSignedUrl(url);
+            let signedUrl = url === null ? null : await mediaCtrl.createSignedUrl(url);
+            
 
             friend.photoUrl = signedUrl;
 
