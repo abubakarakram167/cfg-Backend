@@ -28,8 +28,6 @@ module.exports = {
 async function insertMedia(mediaData) {
     const media = mediaData;
     const mediaDb = await mediaService.addMany(media);
-
-
     return mediaDb;
 }
 async function getByIDMedia(mediaData) {
@@ -40,8 +38,6 @@ async function getByIDMedia(mediaData) {
         return mediaRaw;
     }
     return null;
-
-    
 }
 
 async function findAllMedia(options) {
@@ -52,7 +48,6 @@ async function findAllMedia(options) {
 async function createSignedUrl(url){
 
     var cfUtil = require('aws-cloudfront-sign');
-
     // Sample private key. This would need to be replaced with the private key from
     // your CloudFront key pair.
     var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
@@ -67,11 +62,7 @@ async function createSignedUrl(url){
         privateKeyString: cfPk
     });
     return signedUrl;
-
 }
-
-
-
 
 async function createOneMedia(req, res) {
     const reqObj = req.body;
@@ -130,7 +121,8 @@ async function createOneMedia(req, res) {
         var stream = fs.createReadStream(file.path);
         
         
-        s3fsImpl.writeFile(file.filename, stream).then(function () {
+        s3fsImpl.writeFile(file.filename, stream).then(function (data) {
+            console.log(data);
             console.log("uploaded to s3");
             fs.appendFile(path.join(__dirname, '../../static/s3-log.txt'), `${file.filename} uploaded, ${os.EOL}`, err => {
                 if (err) {
@@ -222,7 +214,6 @@ async function getOneMediaByID(req, res) {
     //     console.log("err occured on s3");
     //     res.status(504).send({ message: err.message })
     // })
-
 }
 
 async function getListMediaMultiple(_req, res) {
@@ -234,7 +225,6 @@ async function getListMediaMultiple(_req, res) {
         },
         attributes: ['id', 'file_name', 'title', 'description', 'category', 'created_by', 'created_at']
     });
-
     res.send(media);
 }
 
@@ -292,7 +282,6 @@ async function deleteMedia(req, res) {
         res.send({ message: "Error Deleting Media" });
     }
     console.log(media);
-
 }
 
 

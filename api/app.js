@@ -27,11 +27,9 @@ logger.initializeGlobalHandlers();
 
 const { authFactory } = require('./middleware/auth-handler');
 
-
-
 const corsOptions = {
-    //origin:"*"
-    origin: config.corsWhiteList,
+    origin:"*",
+    //origin: config.corsWhiteList,
     credentials: true,
     withCredentials: true,
 };
