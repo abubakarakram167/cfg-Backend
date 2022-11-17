@@ -30,7 +30,7 @@ async function deleteLogs() {
 	let tenPercent = logCountSpecified * Number(`0.10`)
 
 	if (logResult.count > logCountSpecified) {
-		console.log(logResult.count, logCountSpecified);
+		// console.log(logResult.count, logCountSpecified);
 		//id from which the smaller records are to be deleted
 		let delMax = Number(logResult.id) + Number(logResult.count - logCountSpecified);
 
