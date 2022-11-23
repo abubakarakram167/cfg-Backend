@@ -50,18 +50,26 @@ async function createSignedUrl(url){
     var cfUtil = require('aws-cloudfront-sign');
     // Sample private key. This would need to be replaced with the private key from
     // your CloudFront key pair.
-    var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+    var cfPk = 'str';
+    try{
+
+        cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+        var cfKeypairId = 'K30S0N0WWH7I01';
+        var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
+    
+        var signedUrl = cfUtil.getSignedUrl(cfURL, {
+            keypairId: cfKeypairId,
+            expireTime: Date.now() + (50 * 60 * 1000),
+            privateKeyString: cfPk
+        });
+        return signedUrl;
+    }
+    catch(e){
+        console.log(e.message)
+        return null
+    }
     // Sample key pair ID. This would need to be replaced by the Access Key ID from
     // your CloudFront key pair.
-    var cfKeypairId = 'K30S0N0WWH7I01';
-    var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
-
-    var signedUrl = cfUtil.getSignedUrl(cfURL, {
-        keypairId: cfKeypairId,
-        expireTime: Date.now() + (50 * 60 * 1000),
-        privateKeyString: cfPk
-    });
-    return signedUrl;
 }
 
 async function createOneMedia(req, res) {
