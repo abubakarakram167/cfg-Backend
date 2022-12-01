@@ -2,6 +2,7 @@
 
 const postService = require('../dal/user_posts.dao');
 const userService = require('../dal/users.dao');
+const notificationSubscriptionService = require('../dal/notification_subscriptions.dao');
 const commentService = require('../dal/comments.dao');
 const model = require('../models');
 const { QueryTypes } = require('sequelize');
@@ -11,6 +12,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op;
 const dayJs = require('dayjs')
 const helpers = require('./helperFunctions')
+const notificationService = require('../helpers/notify');
 
 module.exports = {
     createOnePost,
@@ -196,9 +198,6 @@ async function findTimelinePosts(user, req) {
         delete post["user.last_name"];
         delete post["user.photo_url"];
     }
-
-
-
     return posts;
 }
 
@@ -212,27 +211,44 @@ async function deletePostByID(postId, user) {
     } else {
         postDb = await postService.update({ deletedAt }, { where: { id: postId, user_id: userId } });
     }
-
-
     return postDb;
 }
 
 
-
-
-
+async function getSubcriptionTokens(user_id) {
+    const subscriptions = await notificationSubscriptionService.findWhere({ where: {},
+        attributes: ['id', 'user_id', 'token'], raw: true });
+    return subscriptions.filter(sub => sub.user_id !== user_id).map(sub => sub.token)
+}
 //Req Processor functions
 
 async function createOnePost(req, res) {
 
     const requestObject = req.body;
 
-
     requestObject.user_id = req.user.id;
 
 
     // console.log(requestObject);
     const post = await insertPost(requestObject);
+    //publish push notification
+    //snsService.publishNotification(post, req.user, requestObject.imageUrl);
+    console.log(requestObject.imageUrl)
+//     const tokens = ['d_uYodzsigSOjt9KT9FDX8:APA91bFRsA2mpfppi7M20MsZDPcgs9J62oPX3nbhOZxvCCW-LWOBYwD6Bebs8w5OuOXrLbTzaX0zoQYhQKWqL90TbDFd8PMvW0vKThUR5mWP78iARFzY7p65t8rugfAssk2GIEaE7h6b',
+// 'd638jtB97viUOCi2mJvJDF:APA91bHOT8QIh7cA5SE8FRNbfMCjKyC_xSCK3pGt_XUy7Uc2j2iFyeJ3h3uxmVUHfTQ_C0iieSCs0B22ksnC24QwqnOk7eHCdpY-oc50LWkAydOUbnrFMN4oFEK73kTmPDX-ApoW3drC'];
+    const tokens = await getSubcriptionTokens(req.user.id);
+    console.log({tokens})
+    const notificationData = {
+            image: requestObject.imageUrl, 
+            userId: String(req.user.id), 
+            url: "http://localhost:3001/",
+            title: "New Post By: " + req.user.first_name + " " + req.user.last_name, 
+            body: post.content.substring(0,90)+"...", 
+        };
+
+    notificationService.sendNotificationToClient(tokens, notificationData);
+    //const id = post.id;
+    //const topic = post.title.replaceAll(' ','') + id;
     helpers.emitPostIdToUsers(post.id, "user")
     helpers.sendEmailsToUserFriends(post.id, req.user.first_name)
     res.send({ post });
@@ -240,7 +256,6 @@ async function createOnePost(req, res) {
 
 async function getTimelinePosts(req, res) {
     const { user } = req;
-
 
     let posts = await findTimelinePosts(user, req);
 
@@ -257,10 +272,10 @@ async function updatePost(req, res) {
         if (!allowedKeys.includes(key)) {
             Reflect.deleteProperty(reqObj, key);
         }
-    })
+    });
     let updateResp = await postService.update(reqObj, {
         where: { id }
-    })
+    });
 
     if (updateResp[0] > 0) {
         let post = await postService.getOneByID({
