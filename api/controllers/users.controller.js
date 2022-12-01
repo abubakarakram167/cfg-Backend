@@ -31,24 +31,21 @@ module.exports = {
   getUserGroupById
 };
 
-async function insert(userData,userId) {
+async function insert(userData , userId = null) {
   const user = { ...userData };
   user.passwordResetToken = authHelper.generateResetToken(64);
-  //user.passwordResetTokenSentTime = new Date();
   user.salt = authHelper.generateRandomSalt();
   user.password = bcrypt.hashSync(user.password + user.salt, 10);
   user.created_at = new Date()
   user.created_by = userId;
-  
-  //console.log(user);
-  //username done
   user.user_name = user.email.split('@')[0];
   const userDb = await userService.addUser(user);
   const userRaw = await userDb.get({ plain: true });
+  console.log("user is ", user);
   delete userRaw.password;
   delete userRaw.salt;
 
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken , "createPassword");
+  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "createPassword");
   sendWelcomeEmail(user, resetLink);
 
   return userRaw;
@@ -56,17 +53,14 @@ async function insert(userData,userId) {
 
 async function addUser(req, res) {
   const requestObject = req.body;
-  const {user} = req;
+  const { user } = req;
   console.log(user);
   requestObject.createdBy = req.user.id;
   requestObject.password = 'addedByUser';
 
-  await insert(requestObject , req.user.id);
+  await insert(requestObject, req.user.id);
   res.send({ message: responseMessages.recordAddSuccess });
 }
-
-
-
 
 
 async function editUser(req, res) {
@@ -78,7 +72,7 @@ async function editUser(req, res) {
   if (password) {
     user.salt = authHelper.generateRandomSalt();
     user.password = bcrypt.hashSync(password + user.salt, 10);
-   
+
   }
   const userRef = await userService.findOne({ where: { id: user.id } });
   if (!userRef) {
@@ -104,20 +98,28 @@ async function editUser(req, res) {
 }
 
 
-
-
-
-
 async function register(req, res) {
-  const password = "Jmb@123#inact"
-  const requestObject = req.body;
-  if (!authHelper.validatePassword(password)) {
+  const reqObject = req.body;
+  let RequiredKeys = ["first_name", "last_name", "email", "phone", "institution", "parish", "age_range", "password"];
+  for (e of RequiredKeys) {
+    if (!reqObject.hasOwnProperty(e)) {
+      return res
+        .status(400)
+        .send({ ...reqObject, message: "Some Required Fields Are Missing." });
+    }
+  }
+  let allowedKeys = ["first_name", "last_name", "email", "phone", "institution", "parish", "age_range", "password"];
+
+  for (const property in reqObject) {
+    if (!allowedKeys.includes(property)) {
+      delete reqObject[property];
+    }
+  }
+  if (!authHelper.validatePassword(reqObject.password)) {
     res.status(422).json({ message: responseMessages.invalidPasswordFormat });
     return;
   }
-  requestObject.passwordResetToken = authHelper.generateResetToken(64);
-  //requestObject.passwordResetTokenSentTime = new Date();
-  await insert(requestObject);
+  await insert(reqObject);
   res.send({ message: responseMessages.recordAddSuccess });
 }
 
@@ -278,7 +280,7 @@ async function resetPassword(req, res) {
     password: bcrypt.hashSync(password + salt, 10),
     passwordResetTokenSentTime: null,
     passwordAttemptsCount: 0,
-    password_changed_at:new Date(),
+    password_changed_at: new Date(),
   };
   let newUser = false;
   if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
@@ -332,16 +334,16 @@ async function getOneByID(req, res) {
   const { id } = req.params;
   let user = await userService.findOne({
     where: { id },
-    attributes: ['first_name', 'last_name', 'user_name', 'photo_url', 'bio' , "default_home_page_view"]
+    attributes: ['first_name', 'last_name', 'user_name', 'photo_url', 'bio', "default_home_page_view"]
   })
   res.send(user)
 }
 
 async function getUserGroup(req, res) {
   const { user } = req;
-  
+
   let userGroup = await userGroupService.getOneByID({
-    where: { user_id:user.id },
+    where: { user_id: user.id },
     attributes: ['group_id']
   })
   res.send(userGroup)
@@ -350,7 +352,7 @@ async function getUserGroup(req, res) {
 
 async function getUserGroupById(req, res) {
   const { user_id } = req.body;
-  
+
   let userGroup = await userGroupService.getOneByID({
     where: { user_id },
     attributes: ['group_id']
@@ -363,7 +365,7 @@ async function addUserSocket(user_id, socket_id) {
   let data = {
     user_id, socket_id
   };
-  let socket = await socketService.findOrCreate({where:data})
+  let socket = await socketService.findOrCreate({ where: data })
   return socket;
 }
 
