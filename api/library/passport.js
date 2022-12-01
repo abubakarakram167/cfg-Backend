@@ -33,9 +33,9 @@ const localLogin = new LocalStrategy({
         passwordAttemptTime: new Date(),
     });
 
-    if (user.status !== 1) {
-        return done(null, false, { message: responseMessages.userInactive });
-    }
+    // if (user.status !== 1) {
+    //     return done(null, false, { message: responseMessages.userInactive });
+    // }
     user = await user.get({ plain: true });
     done(null, user);
 });
