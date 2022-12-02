@@ -64,9 +64,9 @@ const exportObj = {
             
             You will now have access to all the tools that you will need to help you unearth and build your inner Greatness; tracking your progress along the way. 
             <br>
-            Completing registration is easy! Create a strong password with at least 8 characters, including capital letters, numbers and special characters and you’re all set. 
+            Completing registration is easy! Just Click on the link to verify your email and you're all set. 
             <br><br>
-            Click the link to create password: <a href="${link}">Create Password</a>
+            Click the link to verify your email address: <a href="${link}">Verify Email</a>
             <br><br>
             
             Blessings,
