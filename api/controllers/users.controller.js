@@ -28,7 +28,8 @@ module.exports = {
   removeAllUserSockets,
   addWindowSocket,
   getUserGroup,
-  getUserGroupById
+  getUserGroupById,
+  activateUser
 };
 
 async function insert(userData , userId = null) {
@@ -45,7 +46,7 @@ async function insert(userData , userId = null) {
   delete userRaw.password;
   delete userRaw.salt;
 
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "createPassword");
+  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "verifyEmail");
   sendWelcomeEmail(user, resetLink);
 
   return userRaw;
@@ -359,6 +360,41 @@ async function getUserGroupById(req, res) {
   })
   res.send(userGroup)
 
+}
+
+async function activateUser(req, res) {
+  const { token } = req.body;
+  const tmptoken = token.split('.');
+  const hash = tmptoken[1];
+  const user = await userService.findOne({
+    where: { passwordResetToken: tmptoken[0] },
+  });
+  if (
+    !user ||
+    dayjs(user.passwordResetTokenSentTime).add(30, 'minutes') < new Date()
+  ) {
+    res
+      .status(422)
+      .send({ message: responseMessages.passwordResetTokenInvalid });
+    return;
+  }
+  
+  const salt = authHelper.generateRandomSalt();
+  const updateData = {
+    salt,
+    passwordResetToken: null,
+    passwordResetTokenSentTime: null,
+  };
+  let newUser = false;
+  if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
+    newUser = true;
+    updateData.status = 1;
+  }else{
+    return res.status(400).send({ message: "Account already verified." });
+  }
+  updateData.terms_accepted = 1;
+  await user.update(updateData);
+  res.send({ message: responseMessages.passwordChangeSuccess, newUser });
 }
 
 async function addUserSocket(user_id, socket_id) {
