@@ -379,9 +379,8 @@ async function activateUser(req, res) {
     return;
   }
   
-  const salt = authHelper.generateRandomSalt();
+ 
   const updateData = {
-    salt,
     passwordResetToken: null,
     passwordResetTokenSentTime: null,
   };
