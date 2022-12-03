@@ -82,5 +82,6 @@ function validatePassword(password) {
   );
 }
 function getResetPasswordLink(token, type) {
+  console.log("base url is",config.appBaseUrl)
   return `${config.appBaseUrl}/${type}?token=${token}`;
 }

@@ -26,6 +26,7 @@
     "express-async-handler": "^1.1.4",
     "express-list-endpoints": "^4.0.1",
     "express-request-id": "^1.4.1",
+    "firebase-admin": "^11.2.1",
     "helmet": "^3.21.2",
     "jsonwebtoken": "latest",
     "lodash": "^4.17.21",
@@ -55,6 +56,7 @@
   "scripts": {
     "seed:data": "sequelize db:seed:all",
     "bootsrap": "sequelize db:seed:all",
+    "migrate":"sequelize db:migrate",
     "start": " nodemon -r dotenv/config api/app.js",
     "start:prod": "node -r dotenv/config api/app.js",
     "lint": "eslint ."

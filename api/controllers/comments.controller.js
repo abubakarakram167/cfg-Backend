@@ -6,7 +6,6 @@ const { QueryTypes } = require('sequelize');
 
 const responseMessages = require('../helpers/response-messages');
 
-
 module.exports = {
     addComment,
     getPostComments,
@@ -65,10 +64,6 @@ async function deleteCommentByID(commId, user) {
 }
 
 
-
-
-
-
 async function addComment(req, res) {
     const { user } = req;
     let userId = user.id;
@@ -95,10 +90,7 @@ async function getPostComments(req, res) {
     let userId = user.id;
     let postId = req.params.postId;
 
-
     let comments = await getPostCommentsById(postId)
-
-
 
     for (let comment of comments) {
         // eslint-disable-next-line no-await-in-loop
@@ -116,8 +108,7 @@ async function getPostComments(req, res) {
 async function deleteComment(req, res) {
     const { user } = req;
     let commId = req.params.commId;
-
-
+    
     deleteCommentByID(commId, user)
         .then(result => {
 
