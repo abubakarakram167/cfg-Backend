@@ -1,5 +1,4 @@
 /* eslint no-console:0, no-param-reassign:0 */
-
 const path = require('path');
 const express = require('express');
 const app = express();

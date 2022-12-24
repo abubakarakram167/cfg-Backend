@@ -19,7 +19,8 @@ const config = {
   appBaseUrl: env.get('APP_BASE_URL', 'http://localhost:3001'),
   corsWhiteList: env.get('CORS_WHITELIST', 'http://localhost:3001'),
   logCode: env.get('logCode' , 400),
-  logCountSpecified:env.get('logCount' , 1000)
+  logCountSpecified:env.get('logCount' , 1000),
+  
 };
 
 module.exports = config;
