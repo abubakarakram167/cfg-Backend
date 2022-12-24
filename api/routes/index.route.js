@@ -31,7 +31,9 @@ const journalRoutes = require('./journal.route');
 const inviteRoutes = require('./cfg_invites.route');
 const messageRoutes = require('./messages.route');
 const testRoutes = require('./test.route');
+const subscriptionRoutes = require('./content_subsribers.route')
 const notificationSubscriptionRoutes = require('./notification_subscriptions.route');
+
 
 const router = express.Router();
 
@@ -71,6 +73,7 @@ router.use('/journals', journalRoutes)
 router.use('/invites', inviteRoutes)
 router.use('/messages', messageRoutes)
 router.use('/test', testRoutes)
+router.use('/contentSubscribers' , subscriptionRoutes)
 // router.use('/session_categories',session_categoriesRoutes);
 // router.use('/session_groups',session_groupsRoutes);
 // router.use('/user_groups', user_groupsRoutes);
