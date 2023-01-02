@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('content', {
         allowNull: true,
     },
     event_type: {
-        type: DataTypes.ENUM('live-video', 'group-chat', 'zoom-video', ''),
+        type: DataTypes.ENUM('live-video', 'group-chat', 'zoom-video', 'face-to-face'),
         allowNull: true,
     },
     meta: {
