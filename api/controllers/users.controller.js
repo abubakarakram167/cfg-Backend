@@ -1,14 +1,14 @@
-const bcrypt = require('bcryptjs');
-const { Op } = require('sequelize');
-const dayjs = require('dayjs');
-const userService = require('../dal/users.dao');
-const userNotifService = require('../dal/user_notifications.dao');
-const userGroupService = require('../dal/user_groups.dao');
-const socketService = require('../dal/socket-ids.dao');
-const authHelper = require('../helpers/auth.helper');
-const responseMessages = require('../helpers/response-messages');
-const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
-const model = require('../models/index');
+const bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
+const dayjs = require("dayjs");
+const userService = require("../dal/users.dao");
+const userNotifService = require("../dal/user_notifications.dao");
+const userGroupService = require("../dal/user_groups.dao");
+const socketService = require("../dal/socket-ids.dao");
+const authHelper = require("../helpers/auth.helper");
+const responseMessages = require("../helpers/response-messages");
+const { sendEmail, sendWelcomeEmail } = require("../helpers/mail.helper");
+const model = require("../models/index");
 
 module.exports = {
   addUser,
@@ -29,27 +29,30 @@ module.exports = {
   addWindowSocket,
   getUserGroup,
   getUserGroupById,
-  activateUser
+  activateUser,
 };
 
-async function insert(userData , userId = null) {
+async function insert(userData, userId = null) {
   const user = { ...userData };
   user.passwordResetToken = authHelper.generateResetToken(64);
   user.salt = authHelper.generateRandomSalt();
   user.password = bcrypt.hashSync(user.password + user.salt, 10);
-  user.created_at = new Date()
+  user.created_at = new Date();
   user.created_by = userId;
-  user.user_name = user.email.split('@')[0];
-  const userDb = await userService.addUser(user);
-  const userRaw = await userDb.get({ plain: true });
-  console.log("user is ", user);
-  delete userRaw.password;
-  delete userRaw.salt;
+  user.user_name = user.email.split("@")[0];
+  try {
+    const userDb = await userService.addUser(user);
+    const userRaw = await userDb.get({ plain: true });
+    delete userRaw.password;
+    delete userRaw.salt;
+    const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "verifyEmail");
+    sendWelcomeEmail(user, resetLink);
+    return {userRaw , isError:false};
+  } catch (error) {
+    return {error , isError:true}
+  }
 
-  const resetLink = authHelper.getResetPasswordLink(user.passwordResetToken, "verifyEmail");
-  sendWelcomeEmail(user, resetLink);
-
-  return userRaw;
+  
 }
 
 async function addUser(req, res) {
@@ -57,12 +60,11 @@ async function addUser(req, res) {
   const { user } = req;
   console.log(user);
   requestObject.createdBy = req.user.id;
-  requestObject.password = 'addedByUser';
+  requestObject.password = "addedByUser";
 
   await insert(requestObject, req.user.id);
   res.send({ message: responseMessages.recordAddSuccess });
 }
-
 
 async function editUser(req, res) {
   const { password, ...user } = req.body;
@@ -73,18 +75,12 @@ async function editUser(req, res) {
   if (password) {
     user.salt = authHelper.generateRandomSalt();
     user.password = bcrypt.hashSync(password + user.salt, 10);
-
   }
   const userRef = await userService.findOne({ where: { id: user.id } });
   if (!userRef) {
-    res
-      .status(404)
-      .send({
-        message: responseMessages.notFound.replace(
-          '?',
-          'User not registered or'
-        ),
-      });
+    res.status(404).send({
+      message: responseMessages.notFound.replace("?", "User not registered or"),
+    });
     return;
   }
   const statusObj = {
@@ -92,21 +88,29 @@ async function editUser(req, res) {
     pending: 0,
     disabled: 2,
   };
-  user.status != undefined ? user.status = statusObj[user.status.toLowerCase()] || 3 : null;
-  user.updated_at = new Date()
+  user.status != undefined ? (user.status = statusObj[user.status.toLowerCase()] || 3) : null;
+  user.updated_at = new Date();
   await userRef.update(user);
   res.send({ message: responseMessages.recordUpdateSuccess });
 }
 
-
 async function register(req, res) {
+  // Code block for third paty registration
+  if(req.headers?.origin === 'https://iteneri.com/api/v1'){
+    let reqQueryParams = req.query;
+    console.log(reqQueryParams)
+    if(reqQueryParams.key !== "bseir@tr74yrj3u8$7657873z3045358Y78F"){
+      return res.status(403).send("Invalid Request.")
+    }
+    
+  }
+  //Code block for third party registration end
+
   const reqObject = req.body;
   let RequiredKeys = ["first_name", "last_name", "email", "phone", "institution", "parish", "age_range", "password"];
   for (e of RequiredKeys) {
     if (!reqObject.hasOwnProperty(e)) {
-      return res
-        .status(400)
-        .send({ ...reqObject, message: "Some Required Fields Are Missing." });
+      return res.status(400).send({ ...reqObject, message: "Some Required Fields Are Missing." });
     }
   }
   let allowedKeys = ["first_name", "last_name", "email", "phone", "institution", "parish", "age_range", "password"];
@@ -120,12 +124,15 @@ async function register(req, res) {
     res.status(422).json({ message: responseMessages.invalidPasswordFormat });
     return;
   }
-  await insert(reqObject);
-  res.send({ message: responseMessages.recordAddSuccess });
+  let userCreated = await insert(reqObject);
+  if(!userCreated.isError){
+    res.send({ message: responseMessages.recordAddSuccess });
+  }else{
+    let error = {name:userCreated.error?.name , message:userCreated.error?.errors[0]?.message}
+    res.send({message:'Failed to add user' , error})
+  }
+  
 }
-
-
-
 
 async function login(req, res) {
   const { user } = req;
@@ -137,18 +144,10 @@ async function login(req, res) {
   res.json({ user, token });
 }
 
-
-
-
-
-
 async function loginSocial(req, res) {
   const { email, source, socialId, firstName } = req.body;
 
-  if (
-    !['facebook', 'google', 'twitter', 'microsoft'].includes(source) ||
-    !socialId
-  ) {
+  if (!["facebook", "google", "twitter", "microsoft"].includes(source) || !socialId) {
     res.status(422).send({ message: responseMessages.invalidSocial });
     return;
   }
@@ -169,7 +168,7 @@ async function loginSocial(req, res) {
   if (!user) {
     // add user and send email
     const requestObject = {
-      firstName: firstName || '',
+      firstName: firstName || "",
       email,
       [`${source}Id`]: socialId,
       password: Math.random().toString(36).substring(8),
@@ -187,10 +186,6 @@ async function loginSocial(req, res) {
   authHelper.setTokenCookie(res, authHelper.generateToken(user));
   res.json({ user, token });
 }
-
-
-
-
 
 async function listUsers(req, res) {
   const { limit, offset } = req.pagination;
@@ -210,7 +205,7 @@ async function listUsers(req, res) {
   const users = await userService.findWhere({ where, offset, limit });
   const usersPlain = JSON.parse(JSON.stringify(users));
   let userResponse = [];
-  usersPlain.forEach(user => {
+  usersPlain.forEach((user) => {
     let temp = user;
     delete temp.password;
     delete temp.salt;
@@ -219,13 +214,9 @@ async function listUsers(req, res) {
     delete temp.passwordResetToken;
     delete temp.passwordResetTokenSentTime;
     userResponse.push(temp);
-  })
+  });
   res.json({ userResponse });
 }
-
-
-
-
 
 async function forgotPassword(req, res) {
   const { email } = req.body;
@@ -238,36 +229,30 @@ async function forgotPassword(req, res) {
         passwordResetTokenSentTime: new Date(),
       })
       .then(() => {
-        console.log(authHelper.getResetPasswordLink(token, "reset"))
+        console.log(authHelper.getResetPasswordLink(token, "reset"));
         sendEmail(
           email,
           responseMessages.passwordResetRequested,
-          `click the link to reset password <a href="${authHelper.getResetPasswordLink(token, "reset")}">Reset Password</a>`
+          `click the link to reset password <a href="${authHelper.getResetPasswordLink(
+            token,
+            "reset"
+          )}">Reset Password</a>`
         );
       });
   }
   res.send({ message: responseMessages.passwordResetRequestSent });
 }
 
-
-
-
-
 async function resetPassword(req, res) {
   const { token, password } = req.body;
-  const tmptoken = token.split('.');
+  const tmptoken = token.split(".");
   const hash = tmptoken[1];
 
   const user = await userService.findOne({
     where: { passwordResetToken: tmptoken[0] },
   });
-  if (
-    !user ||
-    dayjs(user.passwordResetTokenSentTime).add(30, 'minutes') < new Date()
-  ) {
-    res
-      .status(422)
-      .send({ message: responseMessages.passwordResetTokenInvalid });
+  if (!user || dayjs(user.passwordResetTokenSentTime).add(30, "minutes") < new Date()) {
+    res.status(422).send({ message: responseMessages.passwordResetTokenInvalid });
     return;
   }
   if (!authHelper.validatePassword(password)) {
@@ -284,7 +269,7 @@ async function resetPassword(req, res) {
     password_changed_at: new Date(),
   };
   let newUser = false;
-  if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
+  if (hash && hash === "9CD599A3523898E6A12E13EC787DA50A") {
     newUser = true;
     updateData.status = 1;
   }
@@ -335,9 +320,9 @@ async function getOneByID(req, res) {
   const { id } = req.params;
   let user = await userService.findOne({
     where: { id },
-    attributes: ['first_name', 'last_name', 'user_name', 'photo_url', 'bio', "default_home_page_view"]
-  })
-  res.send(user)
+    attributes: ["first_name", "last_name", "user_name", "photo_url", "bio", "default_home_page_view"],
+  });
+  res.send(user);
 }
 
 async function getUserGroup(req, res) {
@@ -345,10 +330,9 @@ async function getUserGroup(req, res) {
 
   let userGroup = await userGroupService.getOneByID({
     where: { user_id: user.id },
-    attributes: ['group_id']
-  })
-  res.send(userGroup)
-
+    attributes: ["group_id"],
+  });
+  res.send(userGroup);
 }
 
 async function getUserGroupById(req, res) {
@@ -356,39 +340,32 @@ async function getUserGroupById(req, res) {
 
   let userGroup = await userGroupService.getOneByID({
     where: { user_id },
-    attributes: ['group_id']
-  })
-  res.send(userGroup)
-
+    attributes: ["group_id"],
+  });
+  res.send(userGroup);
 }
 
 async function activateUser(req, res) {
   const { token } = req.body;
-  const tmptoken = token.split('.');
+  const tmptoken = token.split(".");
   const hash = tmptoken[1];
   const user = await userService.findOne({
     where: { passwordResetToken: tmptoken[0] },
   });
-  if (
-    !user ||
-    dayjs(user.passwordResetTokenSentTime).add(30, 'minutes') < new Date()
-  ) {
-    res
-      .status(422)
-      .send({ message: responseMessages.passwordResetTokenInvalid });
+  if (!user || dayjs(user.passwordResetTokenSentTime).add(30, "minutes") < new Date()) {
+    res.status(422).send({ message: responseMessages.passwordResetTokenInvalid });
     return;
   }
-  
- 
+
   const updateData = {
     passwordResetToken: null,
     passwordResetTokenSentTime: null,
   };
   let newUser = false;
-  if (hash && hash === '9CD599A3523898E6A12E13EC787DA50A') {
+  if (hash && hash === "9CD599A3523898E6A12E13EC787DA50A") {
     newUser = true;
     updateData.status = 1;
-  }else{
+  } else {
     return res.status(400).send({ message: "Account already verified." });
   }
   updateData.terms_accepted = 1;
@@ -398,37 +375,34 @@ async function activateUser(req, res) {
 
 async function addUserSocket(user_id, socket_id) {
   let data = {
-    user_id, socket_id
+    user_id,
+    socket_id,
   };
-  let socket = await socketService.findOrCreate({ where: data })
+  let socket = await socketService.findOrCreate({ where: data });
   return socket;
 }
 
 async function addWindowSocket(user_id, socket_id) {
-
   let data = {
-    user_id, socket_id
+    user_id,
+    socket_id,
   };
   //console.log(data);
-  let socket = await socketService.findOrCreate({ where: data })
+  let socket = await socketService.findOrCreate({ where: data });
   return socket;
-
 }
 
 async function removeUserSocket(socket_id) {
-
-  let socket = await socketService.deleteOne({ socket_id })
+  let socket = await socketService.deleteOne({ socket_id });
   return socket;
 }
 
 async function removeAllUserSockets(user_id) {
-
-  let socket = await socketService.deleteOne({ user_id })
+  let socket = await socketService.deleteOne({ user_id });
   return socket;
 }
 
 async function removeAllSockets() {
-
-  let socket = await socketService.emptyTable()
+  let socket = await socketService.emptyTable();
   return socket;
 }
