@@ -46,6 +46,7 @@ function init(sequelize) {
     model.cfg_invites = sequelize.import('./schemas/cfg_invites.js')
     model.logs = sequelize.import('./schemas/logs.js')
     model.messages = sequelize.import('./schemas/messages.js')
+    model.notification_subscriptions = sequelize.import('./schemas/notification_subscriptions.js')
 
 
     model.quiz.belongsToMany(model.question, {
@@ -59,6 +60,9 @@ function init(sequelize) {
         as: "quizes",
         foreignKey: "question_id",
     });
+
+    model.users.hasMany(model.notification_subscriptions);
+    model.notification_subscriptions.belongsTo(model.users , {foreignKey: 'user_id'});
 
     model.users.hasMany(model.user_posts);
     model.user_posts.belongsTo(model.users , {foreignKey: 'user_id'});

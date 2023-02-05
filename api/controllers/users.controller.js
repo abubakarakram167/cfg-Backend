@@ -1,14 +1,15 @@
-const bcrypt = require("bcryptjs");
-const { Op } = require("sequelize");
-const dayjs = require("dayjs");
-const userService = require("../dal/users.dao");
-const userNotifService = require("../dal/user_notifications.dao");
-const userGroupService = require("../dal/user_groups.dao");
-const socketService = require("../dal/socket-ids.dao");
-const authHelper = require("../helpers/auth.helper");
-const responseMessages = require("../helpers/response-messages");
-const { sendEmail, sendWelcomeEmail } = require("../helpers/mail.helper");
-const model = require("../models/index");
+const bcrypt = require('bcryptjs');
+const { Op } = require('sequelize');
+const dayjs = require('dayjs');
+const userService = require('../dal/users.dao');
+const userNotifService = require('../dal/user_notifications.dao');
+const notificationSubscriptionService = require('../dal/notification_subscriptions.dao');
+const userGroupService = require('../dal/user_groups.dao');
+const socketService = require('../dal/socket-ids.dao');
+const authHelper = require('../helpers/auth.helper');
+const responseMessages = require('../helpers/response-messages');
+const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
+const model = require('../models/index');
 
 module.exports = {
   addUser,
@@ -134,6 +135,14 @@ async function register(req, res) {
   
 }
 
+async function getUserSubscriptionTokens(id){
+  console.log(id);
+  const subs = await notificationSubscriptionService.findWhere({ where: { user_id: id },
+       attributes: ['id', 'user_id', 'token'], raw: true });
+  return subs.map(sub => sub.token);
+}
+
+
 async function login(req, res) {
   const { user } = req;
   delete user.password;
@@ -141,7 +150,8 @@ async function login(req, res) {
   const token = authHelper.generateToken(user);
   authHelper.setTokenCookie(res, authHelper.generateToken(user));
   // authHelper.setCloudFrontSignedCookie(res);
-  res.json({ user, token });
+  const userSubscriptionTokens = await getUserSubscriptionTokens(user.id);
+  res.json({ user, token, subscriptionTokens: userSubscriptionTokens });
 }
 
 async function loginSocial(req, res) {
@@ -184,7 +194,8 @@ async function loginSocial(req, res) {
   delete user.salt;
   const token = authHelper.generateToken(user);
   authHelper.setTokenCookie(res, authHelper.generateToken(user));
-  res.json({ user, token });
+  const userSubscriptionTokens = await getUserSubscriptionTokens(user.id);
+  res.json({ user, token, subscriptionTokens: userSubscriptionTokens });
 }
 
 async function listUsers(req, res) {

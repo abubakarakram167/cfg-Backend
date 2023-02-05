@@ -32,6 +32,8 @@ const inviteRoutes = require('./cfg_invites.route');
 const messageRoutes = require('./messages.route');
 const testRoutes = require('./test.route');
 const subscriptionRoutes = require('./content_subsribers.route')
+const notificationSubscriptionRoutes = require('./notification_subscriptions.route');
+
 
 const router = express.Router();
 
@@ -40,6 +42,8 @@ router.get('/health-check', (req, res) => res.send('OK'));
 
 router.use(pagination);
 router.use('/auth', authRoutes);
+
+router.use('/notification-subscription', notificationSubscriptionRoutes);
 
 //router.use('/keywords', keywordsRoutes);
 router.use('/preferences', preferencesRoutes);

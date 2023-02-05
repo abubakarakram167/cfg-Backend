@@ -28,8 +28,6 @@ module.exports = {
 async function insertMedia(mediaData) {
     const media = mediaData;
     const mediaDb = await mediaService.addMany(media);
-
-
     return mediaDb;
 }
 async function getByIDMedia(mediaData) {
@@ -40,8 +38,6 @@ async function getByIDMedia(mediaData) {
         return mediaRaw;
     }
     return null;
-
-    
 }
 
 async function findAllMedia(options) {
@@ -52,26 +48,29 @@ async function findAllMedia(options) {
 async function createSignedUrl(url){
 
     var cfUtil = require('aws-cloudfront-sign');
-
     // Sample private key. This would need to be replaced with the private key from
     // your CloudFront key pair.
-    var cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+    var cfPk = 'str';
+    try{
+
+        cfPk = Buffer.from(process.env.CF_PRIVATE_KEY, 'base64');
+        var cfKeypairId = 'K30S0N0WWH7I01';
+        var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
+    
+        var signedUrl = cfUtil.getSignedUrl(cfURL, {
+            keypairId: cfKeypairId,
+            expireTime: Date.now() + (50 * 60 * 1000),
+            privateKeyString: cfPk
+        });
+        return signedUrl;
+    }
+    catch(e){
+        console.log(e.message)
+        return null
+    }
     // Sample key pair ID. This would need to be replaced by the Access Key ID from
     // your CloudFront key pair.
-    var cfKeypairId = 'K30S0N0WWH7I01';
-    var cfURL = `https://du1jzqmqkepz6.cloudfront.net/${url}`;
-
-    var signedUrl = cfUtil.getSignedUrl(cfURL, {
-        keypairId: cfKeypairId,
-        expireTime: Date.now() + (50 * 60 * 1000),
-        privateKeyString: cfPk
-    });
-    return signedUrl;
-
 }
-
-
-
 
 async function createOneMedia(req, res) {
     const reqObj = req.body;
@@ -223,7 +222,6 @@ async function getOneMediaByID(req, res) {
     //     console.log("err occured on s3");
     //     res.status(504).send({ message: err.message })
     // })
-
 }
 
 async function getListMediaMultiple(_req, res) {
@@ -235,7 +233,6 @@ async function getListMediaMultiple(_req, res) {
         },
         attributes: ['id', 'file_name', 'title', 'description', 'category', 'created_by', 'created_at']
     });
-
     res.send(media);
 }
 
