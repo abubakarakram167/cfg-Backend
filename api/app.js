@@ -20,6 +20,7 @@ const logger = require("./library/logger");
 const fs = require("fs");
 const schedule = require("node-schedule");
 const logHelper = require("./helpers/logger");
+const envHelper = require('./library/env');
 const loggerFormat =
   ':id $"[:date[web]]" $:req[origin] $":method" $":url" $:req[x-forwarded-for] $":user-agent" $:status $:response-time';
 
@@ -27,7 +28,11 @@ logger.initializeGlobalHandlers();
 
 const { authFactory } = require("./middleware/auth-handler");
 
-var whitelist = ["https://dev.mycfg.org", "https://mycfg.org", "http://localhost:3001", 'https://iteneri.com/api/v1'];
+//CORS Part
+
+var whitelist = ["https://dev.mycfg.org", "https://mycfg.org", "http://localhost:3001"];
+
+whitelist.push(envHelper.get('THIRD_PARTY_REGISTER_URL' , 'https://iteneri.com/api/v1'))
 
 const corsOptions = {
 
@@ -43,7 +48,7 @@ const corsOptions = {
   withCredentials: true,
   preflightContinue: true,
 };
-
+//CORS part end
 
 
 app.use(cors(corsOptions));

@@ -10,6 +10,7 @@ const authHelper = require('../helpers/auth.helper');
 const responseMessages = require('../helpers/response-messages');
 const { sendEmail, sendWelcomeEmail } = require('../helpers/mail.helper');
 const model = require('../models/index');
+const envHelper = require('../library/env');
 
 module.exports = {
   addUser,
@@ -97,7 +98,8 @@ async function editUser(req, res) {
 
 async function register(req, res) {
   // Code block for third paty registration
-  if(req.headers?.origin === 'https://iteneri.com/api/v1'){
+  const thirdPartyRegUrl = envHelper.get('THIRD_PARTY_REGISTER_URL' , 'https://iteneri.com/api/v1')
+  if(req.headers?.origin === thirdPartyRegUrl){
     let reqQueryParams = req.query;
     console.log(reqQueryParams)
     if(reqQueryParams.key !== "bseir@tr74yrj3u8$7657873z3045358Y78F"){
