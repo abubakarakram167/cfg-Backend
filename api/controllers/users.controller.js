@@ -99,10 +99,13 @@ async function editUser(req, res) {
 async function register(req, res) {
   // Code block for third paty registration
   const thirdPartyRegUrl = envHelper.get('THIRD_PARTY_REGISTER_URL' , 'https://iteneri.com/api/v1')
+  const thirdPartAuthKey = envHelper.get('THIRD_PARTY_AUTH_KEY' , 'nokey')
   if(req.headers?.origin === thirdPartyRegUrl){
+    if(thirdPartAuthKey === 'nokey'){
+      return res.status(403).send("Invalid Request.")
+    }
     let reqQueryParams = req.query;
-    console.log(reqQueryParams)
-    if(reqQueryParams.key !== "bseir@tr74yrj3u8$7657873z3045358Y78F"){
+    if(reqQueryParams.key !== thirdPartAuthKey){
       return res.status(403).send("Invalid Request.")
     }
     
